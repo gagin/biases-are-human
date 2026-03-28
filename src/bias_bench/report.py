@@ -142,19 +142,15 @@ def _build_model_family_table(scores: list[dict]) -> dict:
     return result
 
 
-def _build_family_summary(scores: list[dict], item_db_path: str, version: str) -> dict:
+def _build_family_summary(scores: list[dict], item_db_path: str, version: str, results_db: str = "") -> dict:
     """
     Per bias family summary with:
-      mean_ibi, csi (placeholder — needs relevance context tagging),
-      cas (variance across model families), sg (slope of IBI vs capability tier).
+      mean_ibi, csi (placeholder), cas, sg (from scoring.py's compute_sg).
 
-    Returns {family: {category, mean_ibi, cas, sg, csi}}
+    Returns {family: {category, mean_ibi, cas, sg, r_squared, p_value, csi}}
 
-    CSI requires items tagged with relevance context — not yet available at
-    the score level, so it is reported as None.
-    SG is computed as the Pearson slope of IBI vs capability tier numeric code
-    (using alphabetical ordering as a proxy when numeric tier is absent).
-    CAS is the population stdev of per-family-model IBIs across model families.
+    SG, R², and p-value are read from the scores table (computed by scoring.py
+    using CA as the capability proxy).
     """
     families_info = {f["family"]: f["category"] for f in get_families(item_db_path, version)}
 
@@ -165,27 +161,29 @@ def _build_family_summary(scores: list[dict], item_db_path: str, version: str) -
     # {family: [ibi_values across all models]}
     ibi_by_family: dict[str, list[float]] = defaultdict(list)
 
-    # For SG: {family: [(capability_tier, ibi)]}
-    sg_data: dict[str, list[tuple[str, float]]] = defaultdict(list)
-
-    # Get run metadata
-    conn = sqlite3.connect(scores[0].get("_db", "")) if scores else None
-    # We embed db path via a separate query
-    run_meta: dict[int, dict] = {}
-
-    if scores:
-        # Reconstruct run_meta from score records — each score has run_id
-        # We need the results_db path; pass it indirectly via the scores structure
-        # (scores include run_id, model_id, model_family but not capability_tier)
-        # We'll skip capability_tier-based SG here; caller can re-query if needed
-        pass
-
     for s in scores:
         if s["metric"] == "IBI":
             fam = s["family"]
             ibi_by_family[fam].append(s["value"])
             ibi_by_family_modelfamily[fam][s["model_family"]].append(s["value"])
-            sg_data[fam].append((s["model_id"], s["value"]))
+
+    # Read SG details from scores table (computed by scoring.py with CA-based regression)
+    sg_details: dict[str, dict] = {}
+    if results_db:
+        conn = sqlite3.connect(results_db)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT family, value, details_json FROM scores WHERE metric='SG' AND run_id=0"
+        )
+        for row in cursor.fetchall():
+            details = json.loads(row["details_json"]) if row["details_json"] else {}
+            sg_details[row["family"]] = {
+                "slope": row["value"],
+                "r_squared": details.get("r_squared"),
+                "p_value": details.get("p_value"),
+            }
+        conn.close()
 
     summary: dict[str, dict] = {}
     all_families = set(families_info.keys()) | set(ibi_by_family.keys())
@@ -201,28 +199,16 @@ def _build_family_summary(scores: list[dict], item_db_path: str, version: str) -
         ]
         cas = _stdev(per_mf_means) if len(per_mf_means) >= 2 else None
 
-        # SG: slope using simple linear regression over model_id alphabetical order
-        # (proxy for capability order without explicit tier data)
-        sg_pairs = sg_data.get(fam, [])
-        if len(sg_pairs) >= 2:
-            sorted_pairs = sorted(sg_pairs, key=lambda x: x[0])
-            xs = list(range(len(sorted_pairs)))
-            ys = [p[1] for p in sorted_pairs]
-            n = len(xs)
-            x_mean = sum(xs) / n
-            y_mean = sum(ys) / n
-            num = sum((x - x_mean) * (y - y_mean) for x, y in zip(xs, ys))
-            den = sum((x - x_mean) ** 2 for x in xs)
-            sg = num / den if den != 0 else 0.0
-        else:
-            sg = None
+        sg_info = sg_details.get(fam, {})
 
         summary[fam] = {
             "category": families_info.get(fam, "unknown"),
             "mean_ibi": mean_ibi,
-            "csi": None,  # requires per-item relevance-context tagging
+            "csi": None,
             "cas": cas,
-            "sg": sg,
+            "sg": sg_info.get("slope"),
+            "r_squared": sg_info.get("r_squared"),
+            "p_value": sg_info.get("p_value"),
         }
 
     return summary
@@ -296,16 +282,20 @@ def _build_markdown(
     # ------------------------------------------------------------------
     lines.append("## Per-family summary")
     lines.append("")
-    lines.append("| Family | Category | Mean IBI | CSI | CAS | SG |")
-    lines.append("|---|---|---|---|---|---|")
+    lines.append("| Family | Category | Mean IBI | CSI | CAS | SG | R² | p-value |")
+    lines.append("|---|---|---|---|---|---|---|---|")
 
     for fam, info in sorted(family_summary.items()):
+        pv = info.get("p_value")
+        pv_str = f"{pv:.4f}" if pv is not None else "—"
         lines.append(
             f"| {fam} | {info['category']} "
             f"| {_fmt(info['mean_ibi'])} "
             f"| {_fmt(info['csi'])} "
             f"| {_fmt(info['cas'])} "
-            f"| {_fmt(info['sg'])} |"
+            f"| {_fmt(info['sg'])} "
+            f"| {_fmt(info.get('r_squared'))} "
+            f"| {pv_str} |"
         )
 
     lines.append("")
@@ -448,8 +438,12 @@ def _print_rich_summary(
     t2.add_column("CSI", justify="right")
     t2.add_column("CAS", justify="right")
     t2.add_column("SG", justify="right")
+    t2.add_column("R²", justify="right")
+    t2.add_column("p-value", justify="right")
 
     for fam, info in sorted(family_summary.items()):
+        pv = info.get("p_value")
+        pv_str = f"{pv:.4f}" if pv is not None else "—"
         t2.add_row(
             fam,
             info["category"],
@@ -457,6 +451,8 @@ def _print_rich_summary(
             _fmt(info["csi"]),
             _fmt(info["cas"]),
             _fmt(info["sg"]),
+            _fmt(info.get("r_squared")),
+            pv_str,
         )
 
     console.print(t2)
@@ -504,7 +500,7 @@ def generate_report(
 
     # Build aggregated structures
     model_family_table = _build_model_family_table(scores)
-    family_summary = _build_family_summary(scores, item_db_path, version)
+    family_summary = _build_family_summary(scores, item_db_path, version, results_db=results_db)
 
     # Write outputs
     md_path = os.path.join(output_dir, "results_summary.md")

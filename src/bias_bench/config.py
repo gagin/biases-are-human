@@ -16,6 +16,10 @@ class ModelConfig(BaseModel):
     capability_tier: Literal["small", "medium", "large"] = Field(
         ..., description="Model capability tier"
     )
+    reasoning_effort: str | None = Field(
+        default=None,
+        description="Reasoning effort level: none, minimal, low, medium, high, xhigh",
+    )
 
 
 class RunConfig(BaseModel):
@@ -26,6 +30,9 @@ class RunConfig(BaseModel):
     num_runs: int = Field(default=5, description="Number of times to run each item")
     max_concurrent: int = Field(default=3, description="Maximum concurrent requests")
     timeout_seconds: int = Field(default=30, description="Timeout for individual requests in seconds")
+    budget_dollars: float | None = Field(
+        default=None, description="Max budget for this run in USD. Run aborts if exceeded."
+    )
 
 
 def load_config(path: str) -> RunConfig:

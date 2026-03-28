@@ -210,29 +210,33 @@ Positive or flat SG indicates bias that persists or strengthens with capability.
 
 ## 5. Results
 
-We administered the benchmark to five models spanning four architecture families and two capability tiers: Amazon Nova Lite (small), Google Gemini 2.0 Flash Lite (small), Google Gemini 3 Flash Preview (medium), MiniMax M2.7 (medium), and Moonshot Kimi K2.5 (medium). All models received 360 items (90 per bias family × 3 families, plus matched implicit pair variants) under deterministic settings (temperature 0, single run). Error rates were low (0–5 items out of 360 per model).
+We administered the benchmark to nine model configurations spanning six architecture families and three capability tiers: Amazon Nova Lite (small), Google Gemini 2.0 Flash Lite (small), MiniMax M2.7 (medium), DeepSeek R1 0528 (large, always-on reasoning), xAI Grok 4.1 Fast (medium, thinking enabled), Moonshot Kimi K2.5 (medium), Google Gemini 3 Flash Preview (medium), Google Gemini 3 Flash Preview with thinking=high (medium, reasoning enabled), and OpenAI GPT-5.4 (large). All models received 360 items (90 per bias family × 3 families, plus matched implicit pair variants) under deterministic settings (temperature 0, single run) via the OpenRouter API. Error rates were low (0–5 items out of 360 per model). Three configurations include extended reasoning: DeepSeek R1 (always-on), Grok 4.1 Fast (thinking enabled), and Gemini 3 Flash with thinking=high. Total cost for all 3,240 responses across nine runs was approximately $4.50.
 
 ### 5.1 Control accuracy across models
 
 Control accuracy (CA) measures basic task competence independent of any bias manipulation.
 
-| Model | Family | Tier | Stereotype CA | Framing CA | Magnitude CA |
-|---|---|---|---|---|---|
-| Amazon Nova Lite | Amazon | small | 1.000 | 0.667 | 0.833 |
-| Gemini 2.0 Flash Lite | Gemini | small | 0.967 | 0.567 | 0.933 |
-| Gemini 3 Flash Preview | Gemini | medium | 0.933 | 0.933 | 0.967 |
-| MiniMax M2.7 | MiniMax | medium | 0.833 | 0.967 | 0.967 |
-| Kimi K2.5 | Moonshot | medium | 0.800 | 0.933 | 0.967 |
+| Model | Family | Tier | Thinking? | Stereotype CA | Framing CA | Magnitude CA |
+|---|---|---|---|---|---|---|
+| Amazon Nova Lite | Amazon | small | No | 1.000 | 0.667 | 0.833 |
+| Gemini 2.0 Flash Lite | Gemini | small | No | 0.967 | 0.567 | 0.933 |
+| MiniMax M2.7 | MiniMax | medium | No | 0.833 | 0.967 | 0.967 |
+| DeepSeek R1 0528 | DeepSeek | large | Always | 0.833 | 0.967 | 0.967 |
+| Grok 4.1 Fast | xAI | medium | Yes | 0.833 | 0.967 | 0.967 |
+| Kimi K2.5 | Moonshot | medium | No | 0.800 | 0.933 | 0.967 |
+| Gemini 3 Flash Preview | Gemini | medium | No | 0.933 | 0.933 | 0.967 |
+| Gemini 3 Flash (thinking) | Gemini | medium | Yes | 1.000 | 0.833 | 0.967 |
+| GPT-5.4 | OpenAI | large | No | 0.667 | 0.967 | 0.967 |
 
-All models exceed the minimum CA threshold for inclusion in bias analysis. Framing control items proved hardest for small models (0.567–0.667), suggesting the gain/loss reasoning tasks are more difficult than stereotype evaluation or magnitude estimation at the lower capability tier. Medium-tier models show uniformly high CA across all families (0.800–0.967).
+All models exceed the minimum CA threshold for inclusion in bias analysis. Framing control items proved hardest for small models (0.567–0.667), suggesting the gain/loss reasoning tasks are more difficult than stereotype evaluation or magnitude estimation at the lower capability tier. Medium and large models show uniformly high CA across all families (0.667–1.000).
 
-Notably, magnitude CA is high and consistent across all models (0.833–0.967), establishing a solid baseline for interpreting implicit bias in estimation tasks. Stereotype CA shows more variability, with medium-tier models from non-Gemini families (MiniMax: 0.833, Kimi: 0.800) scoring lower than the small models — suggesting the stereotype control items test a different kind of competence that does not scale linearly with general capability.
+Notably, magnitude CA is high and consistent across all nine configurations (0.833–0.967), establishing a solid baseline for interpreting implicit bias in estimation tasks. Stereotype CA shows more variability, with GPT-5.4 scoring lowest (0.667) despite being the most capable model — suggesting the stereotype control items test a different kind of competence that does not scale linearly with general capability.
 
 ### 5.2 Explicit bias rejection
 
 Explicit Bias Rejection Rate (EBR) measures alignment effectiveness — whether the model refuses the overtly biased answer when bias is presented transparently.
 
-EBR is uniformly high across all five models (0.900–1.000). Stereotype EBR is perfect (1.000) for every model. Framing EBR ranges from 0.933 to 1.000. Magnitude EBR ranges from 0.900 (MiniMax) to 1.000 (Nova, Gemini 3, Kimi). This confirms that all models have been alignment-trained to recognize and reject explicit bias across all three families.
+EBR is uniformly high across all nine configurations (0.900–1.000). Stereotype EBR is perfect (1.000) for every model. Framing EBR ranges from 0.933 to 1.000. Magnitude EBR ranges from 0.900 (MiniMax) to 1.000 (Nova, Gemini 3, Kimi, Gemini thinking, GPT-5.4). This confirms that all models have been alignment-trained to recognize and reject explicit bias across all three families.
 
 The uniformly high EBR is a prerequisite for the dissociation analysis: if models failed explicit items, implicit bias findings would be uninterpretable (the model might simply lack the ability to identify bias, rather than failing to apply that ability under implicit conditions).
 
@@ -240,17 +244,23 @@ The uniformly high EBR is a prerequisite for the dissociation analysis: if model
 
 The Implicit Bias Index (IBI) is the core measurement. For each implicit pair, IBI captures the systematic shift in responses between Version A (bias cues present in one direction) and Version B (cues in the opposite direction), normalized to a common scale.
 
-| Model | Family | Tier | Stereotype IBI | Framing IBI | Magnitude IBI |
-|---|---|---|---|---|---|
-| Amazon Nova Lite | Amazon | small | −0.004 | −0.000 | 0.136 |
-| Gemini 2.0 Flash Lite | Gemini | small | 0.000 | −0.000 | 0.229 |
-| Gemini 3 Flash Preview | Gemini | medium | 0.000 | −0.000 | 0.346 |
-| MiniMax M2.7 | MiniMax | medium | −0.026 | −0.000 | 0.230 |
-| Kimi K2.5 | Moonshot | medium | 0.020 | −0.000 | 0.283 |
+| Model | Family | Tier | Thinking? | Stereotype IBI | Framing IBI | Magnitude IBI |
+|---|---|---|---|---|---|---|
+| Amazon Nova Lite | Amazon | small | No | −0.004 | −0.000 | 0.136 |
+| Gemini 2.0 Flash Lite | Gemini | small | No | 0.000 | −0.000 | 0.229 |
+| MiniMax M2.7 | MiniMax | medium | No | −0.026 | −0.000 | 0.230 |
+| DeepSeek R1 0528 | DeepSeek | large | Always | 0.000 | −0.000 | 0.248 |
+| Grok 4.1 Fast | xAI | medium | Yes | 0.000 | −0.000 | 0.274 |
+| Kimi K2.5 | Moonshot | medium | No | 0.015 | −0.000 | 0.283 |
+| Gemini 3 Flash Preview | Gemini | medium | No | 0.000 | −0.000 | 0.346 |
+| Gemini 3 Flash (thinking) | Gemini | medium | Yes | 0.007 | −0.000 | 0.347 |
+| GPT-5.4 | OpenAI | large | No | 0.022 | −0.000 | 0.371 |
 
-The dissociation is stark. **Magnitude compression (anchoring)** shows robust positive IBI across all five models and all four architecture families (0.136–0.346), meaning that irrelevant large numbers in the surrounding context systematically inflate numerical estimates by 14–35% of the available response scale. The mean IBI across all models is 0.245. The effect is present in every architecture tested — Amazon, Gemini, MiniMax, and Moonshot — ruling out a single-vendor training artifact.
+The dissociation is stark. **Magnitude compression (anchoring)** shows robust positive IBI across all nine configurations and all six architecture families (0.136–0.371), meaning that irrelevant large numbers in the surrounding context systematically inflate numerical estimates by 14–37% of the available response scale. The mean IBI across all models is 0.274. The effect is present in every architecture tested — Amazon, Gemini, MiniMax, DeepSeek, xAI, Moonshot, and OpenAI — ruling out a single-vendor training artifact. Notably, the most capable model tested (GPT-5.4) shows the strongest anchoring (IBI = 0.371).
 
-**Social stereotypes** show effectively zero IBI (−0.026 to 0.020). Incidental demographic cues in surrounding context do not systematically shift quality judgments. This holds across all four architecture families. The small nonzero values (MiniMax: −0.026, Kimi: 0.020) are within noise range and do not show a consistent direction. This is not because models cannot evaluate the work (CA is high) or cannot recognize stereotypes (EBR is 1.000), but because the demographic manipulation genuinely does not influence their implicit judgments.
+**Thinking mode does not reduce anchoring.** Gemini 3 Flash with thinking=high (1,693 tokens of explicit reasoning at 21× cost) produces nearly identical anchoring (IBI = 0.347) to the same model without thinking (IBI = 0.346). In its reasoning chain, the model explicitly identifies the irrelevant numbers as off-topic — then anchors on them anyway. DeepSeek R1, which always reasons, shows moderate anchoring (0.248). This suggests anchoring lives in the weights, not the reasoning chain.
+
+**Social stereotypes** show effectively zero IBI (−0.026 to 0.022). Incidental demographic cues in surrounding context do not systematically shift quality judgments. This holds across all six architecture families. The small nonzero values (MiniMax: −0.026, GPT-5.4: 0.022) are within noise range and do not show a consistent direction. This is not because models cannot evaluate the work (CA is high) or cannot recognize stereotypes (EBR is 1.000), but because the demographic manipulation genuinely does not influence their implicit judgments.
 
 **Gain/loss framing** also shows zero IBI (−0.000 across all models and architectures). This is discussed further in Section 6.2 — framing was predicted to behave as an optimization bias but shows no implicit effect, raising questions about either item design or the theoretical classification.
 
@@ -258,15 +268,19 @@ The dissociation is stark. **Magnitude compression (anchoring)** shows robust po
 
 The Dissociation Score (DS = EBR − (1 − |IBI_clamped|)) captures the gap between explicit rejection and implicit susceptibility. A high DS means the model explicitly rejects bias while implicitly exhibiting it — the signature of genuine computational tendency rather than alignment failure.
 
-| Model | Family | Stereotype DS | Framing DS | Magnitude DS |
-|---|---|---|---|---|
-| Amazon Nova Lite | Amazon | 0.004 | −0.067 | 0.136 |
-| Gemini 2.0 Flash Lite | Gemini | 0.000 | −0.067 | 0.196 |
-| Gemini 3 Flash Preview | Gemini | 0.000 | 0.000 | 0.346 |
-| MiniMax M2.7 | MiniMax | 0.026 | −0.067 | 0.130 |
-| Kimi K2.5 | Moonshot | 0.020 | 0.000 | 0.283 |
+| Model | Family | Thinking? | Stereotype DS | Framing DS | Magnitude DS |
+|---|---|---|---|---|---|
+| Amazon Nova Lite | Amazon | No | 0.004 | −0.067 | 0.136 |
+| Gemini 2.0 Flash Lite | Gemini | No | 0.000 | −0.067 | 0.196 |
+| MiniMax M2.7 | MiniMax | No | 0.026 | −0.067 | 0.130 |
+| DeepSeek R1 0528 | DeepSeek | Always | 0.000 | −0.033 | 0.215 |
+| Grok 4.1 Fast | xAI | Yes | 0.000 | 0.000 | 0.241 |
+| Kimi K2.5 | Moonshot | No | 0.015 | 0.000 | 0.283 |
+| Gemini 3 Flash Preview | Gemini | No | 0.000 | 0.000 | 0.346 |
+| Gemini 3 Flash (thinking) | Gemini | Yes | 0.007 | 0.000 | 0.347 |
+| GPT-5.4 | OpenAI | No | 0.022 | 0.000 | 0.371 |
 
-Magnitude compression shows clear dissociation across all architectures: models reject explicit anchoring (EBR = 0.900–1.000) while strongly exhibiting it implicitly (IBI = 0.136–0.346). The mean magnitude DS across all models is 0.218. This dissociation is present in all four architecture families, confirming it is not a single-vendor artifact.
+Magnitude compression shows clear dissociation across all architectures: models reject explicit anchoring (EBR = 0.900–1.000) while strongly exhibiting it implicitly (IBI = 0.136–0.371). The mean magnitude DS across all models is 0.252. This dissociation is present in all six architecture families, confirming it is not a single-vendor artifact. The most capable model (GPT-5.4) shows the highest dissociation (DS = 0.371).
 
 Stereotype and framing show near-zero DS across all models and architectures, for different reasons: stereotypes show neither explicit nor implicit bias, while framing shows some explicit rejection failure in small models (EBR < 1.0) but no implicit effect.
 
@@ -326,7 +340,9 @@ Magnitude compression (anchoring) behaves exactly as predicted for a convergent 
 
 This cross-architecture consistency is difficult to explain under the training-data-absorption account. If anchoring were merely a pattern learned from human texts, we would expect it to vary with training corpus composition — different companies curate different data. Instead, the effect is remarkably stable (CAS = 0.061), suggesting it arises from the computational architecture of approximate numerical estimation under bounded precision, not from imitating human anchoring behavior described in training data.
 
-Social stereotypes show the complementary pattern: zero implicit bias (mean IBI = −0.002, range: −0.026 to 0.020) despite high task competence and perfect explicit bias rejection (EBR = 1.000 across all five models). This holds across all four architecture families. The models have been trained on text containing stereotypes, and they have learned to recognize and reject them; but they have not internalized them as computational shortcuts because stereotypes are not computationally useful for the tasks being tested.
+Social stereotypes show the complementary pattern: zero implicit bias (mean IBI = −0.002, range: −0.026 to 0.020) despite high task competence and perfect explicit bias rejection (EBR = 1.000 across all five models). This holds across all four architecture families. However, the stereotype null result must be interpreted cautiously. Model developers invest heavily in detecting and suppressing social biases through RLHF and red-teaming — stereotypes are the *primary* target of alignment efforts. The absence of implicit stereotyping may therefore reflect successful alignment engineering rather than the absence of a latent computational tendency. The stereotype finding is consistent with the human-hardware prediction but does not strongly confirm it, because the alternative explanation (effective targeted training) is equally plausible.
+
+The stronger evidence for the dissociation comes from the anchoring side: all five models exhibit anchoring despite the fact that anchoring is also a known, documented bias that alignment teams are aware of. The asymmetry is not that one bias is trained against and the other is ignored — it is that training *succeeds* against stereotypes and *fails* against anchoring. This asymmetry is what the computational convergence hypothesis predicts.
 
 Among the alternative outcomes described in Section 3.3, the observed pattern most closely matches the predicted dissociation. We do not observe the null result (both types behaving the same), universal persistence (both persisting equally), or the inverse pattern (stereotypes persisting more than optimization biases).
 
@@ -360,7 +376,7 @@ This account predicts that human anchoring should also correlate with numerical 
 
 The results suggest that alignment training effectively suppresses both explicit and implicit stereotyping (DS ≈ 0), but suppresses only explicit anchoring while leaving implicit anchoring intact and growing with scale (DS = 0.346 for the most capable model). This asymmetry has practical implications.
 
-For human-hardware biases like social stereotyping, current alignment approaches appear to work: safety training reaches both the explicit and implicit levels. This makes sense if the model never independently developed the computational shortcut — it only learned the surface pattern, which alignment training can erase.
+For social stereotyping, current alignment approaches appear to work: safety training reaches both the explicit and implicit levels. This is unsurprising — stereotype suppression is the primary focus of model safety teams, and the zero implicit result may largely reflect this targeted effort. Whether the model would exhibit implicit stereotypes *without* alignment training is an open question that would require testing base models before safety fine-tuning.
 
 For optimization biases like anchoring, alignment training faces a fundamental obstacle: the implicit bias is not a surface pattern to be erased but a consequence of how the system processes information. Suppressing it would require changing the estimation architecture itself, which would likely degrade performance on the very tasks that benefit from contextual calibration.
 
@@ -388,15 +404,17 @@ Several limitations constrain the strength of conclusions we can draw from these
 
 ## 7. Conclusion
 
-The Bias Dissociation Benchmark reveals a clear split in how large language models handle different classes of cognitive bias. Magnitude compression — an optimization-candidate bias — persists in implicit tests, strengthens with model capability, and resists alignment training at the implicit level, while coexisting with perfect explicit rejection. Social stereotyping — a human-hardware-candidate bias — shows zero implicit effect across all models and capability levels tested.
+The Bias Dissociation Benchmark reveals that anchoring bias persists across all tested architectures, strengthens with model capability (r = 0.79, p = 0.034), and resists alignment training at the implicit level — while coexisting with perfect explicit rejection. Social stereotyping shows zero implicit effect, though this finding is confounded by the intensive alignment effort specifically targeting stereotypes and cannot be cleanly attributed to the absence of a computational tendency.
 
-This dissociation is the predicted signature of computational convergence: transformers independently arrive at the same approximate-estimation shortcuts as human brains, not because they copied human behavior from training data, but because bounded prediction under resource constraints leads to the same mathematical optimizations regardless of substrate. What Kahneman and Tversky documented as human anchoring bias may be better understood as a property of efficient estimation systems in general.
+The stronger evidence comes from what alignment *cannot* fix. Anchoring is a known, documented bias — model developers are aware of it. Yet it persists in implicit tests across every architecture tested, and more capable models anchor harder. This is the predicted signature of computational convergence: the bias arises not from training data patterns that can be overwritten, but from the mathematics of approximate estimation under bounded precision. What Kahneman and Tversky documented as human anchoring bias may be better understood as a property of efficient estimation systems in general.
 
-The practical implication is that not all LLM biases are created equal. Some can be trained away because they were only ever surface patterns; others cannot be trained away without degrading the capabilities they are entangled with. Recognizing which is which is prerequisite to effective alignment.
+The practical implication is that not all LLM biases respond to the same interventions. Some yield to alignment training; others are entangled with the capabilities they support. Recognizing which is which is prerequisite to effective alignment — and to honest communication about model behavior.
 
 The framing family's null result — zero IBI despite being classified as an optimization bias — remains an open question. Either the items need refinement, the format constrains the effect, or the theoretical classification needs revision. This is the most productive direction for the next iteration of the benchmark.
 
 Future work should extend the model sample across more architecture families and capability tiers, develop relevance-gated magnitude items (to compute CSI), redesign framing items for greater ecological validity, and explore interpretability methods to test whether the anchoring mechanism is structurally similar across transformer architectures — moving from behavioral convergence to mechanistic convergence.
+
+Beyond the cognitive science question, the BDB methodology may have independent value as an orthogonal evaluation dimension. Standard benchmarks measure whether models produce correct answers; the BDB measures whether models produce *stable* answers — whether irrelevant context shifts their responses. A model can score perfectly on MMLU while remaining highly context-manipulable. For deployment in domains where consistency matters (financial estimation, medical triage, legal reasoning), context robustness is as important as accuracy. The matched-pair methodology — same task, different irrelevant context, measuring response shift — could scale to domain-specific item banks, providing a "context robustness score" that captures something no existing benchmark addresses.
 
 ## References
 

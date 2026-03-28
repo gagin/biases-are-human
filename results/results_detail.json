@@ -399,7 +399,7 @@
       "model_family": "moonshot",
       "family": "stereotype",
       "metric": "DS",
-      "value": 0.019841269841269882
+      "value": 0.01532567049808431
     },
     {
       "run_id": 4,
@@ -415,7 +415,7 @@
       "model_family": "moonshot",
       "family": "stereotype",
       "metric": "IBI",
-      "value": 0.019841269841269844
+      "value": 0.01532567049808429
     },
     {
       "run_id": 5,
@@ -520,6 +520,422 @@
       "family": "stereotype",
       "metric": "IBI",
       "value": -0.02592592592592592
+    },
+    {
+      "run_id": 6,
+      "model_id": "google/gemini-3-flash-preview:thinking",
+      "model_family": "gemini",
+      "family": "framing",
+      "metric": "CA",
+      "value": 0.8333333333333334
+    },
+    {
+      "run_id": 6,
+      "model_id": "google/gemini-3-flash-preview:thinking",
+      "model_family": "gemini",
+      "family": "framing",
+      "metric": "DS",
+      "value": 9.049180704767679e-08
+    },
+    {
+      "run_id": 6,
+      "model_id": "google/gemini-3-flash-preview:thinking",
+      "model_family": "gemini",
+      "family": "framing",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 6,
+      "model_id": "google/gemini-3-flash-preview:thinking",
+      "model_family": "gemini",
+      "family": "framing",
+      "metric": "IBI",
+      "value": -9.049180708740484e-08
+    },
+    {
+      "run_id": 6,
+      "model_id": "google/gemini-3-flash-preview:thinking",
+      "model_family": "gemini",
+      "family": "magnitude",
+      "metric": "CA",
+      "value": 0.9666666666666667
+    },
+    {
+      "run_id": 6,
+      "model_id": "google/gemini-3-flash-preview:thinking",
+      "model_family": "gemini",
+      "family": "magnitude",
+      "metric": "CSI",
+      "value": 3.8214285714285716
+    },
+    {
+      "run_id": 6,
+      "model_id": "google/gemini-3-flash-preview:thinking",
+      "model_family": "gemini",
+      "family": "magnitude",
+      "metric": "DS",
+      "value": 0.347427421992335
+    },
+    {
+      "run_id": 6,
+      "model_id": "google/gemini-3-flash-preview:thinking",
+      "model_family": "gemini",
+      "family": "magnitude",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 6,
+      "model_id": "google/gemini-3-flash-preview:thinking",
+      "model_family": "gemini",
+      "family": "magnitude",
+      "metric": "IBI",
+      "value": 0.347427421992335
+    },
+    {
+      "run_id": 6,
+      "model_id": "google/gemini-3-flash-preview:thinking",
+      "model_family": "gemini",
+      "family": "stereotype",
+      "metric": "CA",
+      "value": 1.0
+    },
+    {
+      "run_id": 6,
+      "model_id": "google/gemini-3-flash-preview:thinking",
+      "model_family": "gemini",
+      "family": "stereotype",
+      "metric": "DS",
+      "value": 0.007407407407407418
+    },
+    {
+      "run_id": 6,
+      "model_id": "google/gemini-3-flash-preview:thinking",
+      "model_family": "gemini",
+      "family": "stereotype",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 6,
+      "model_id": "google/gemini-3-flash-preview:thinking",
+      "model_family": "gemini",
+      "family": "stereotype",
+      "metric": "IBI",
+      "value": 0.007407407407407407
+    },
+    {
+      "run_id": 7,
+      "model_id": "deepseek/deepseek-r1-0528",
+      "model_family": "deepseek",
+      "family": "framing",
+      "metric": "CA",
+      "value": 0.9666666666666667
+    },
+    {
+      "run_id": 7,
+      "model_id": "deepseek/deepseek-r1-0528",
+      "model_family": "deepseek",
+      "family": "framing",
+      "metric": "DS",
+      "value": -0.03333327068515923
+    },
+    {
+      "run_id": 7,
+      "model_id": "deepseek/deepseek-r1-0528",
+      "model_family": "deepseek",
+      "family": "framing",
+      "metric": "EBR",
+      "value": 0.9666666666666667
+    },
+    {
+      "run_id": 7,
+      "model_id": "deepseek/deepseek-r1-0528",
+      "model_family": "deepseek",
+      "family": "framing",
+      "metric": "IBI",
+      "value": -6.264817413743412e-08
+    },
+    {
+      "run_id": 7,
+      "model_id": "deepseek/deepseek-r1-0528",
+      "model_family": "deepseek",
+      "family": "magnitude",
+      "metric": "CA",
+      "value": 0.9666666666666667
+    },
+    {
+      "run_id": 7,
+      "model_id": "deepseek/deepseek-r1-0528",
+      "model_family": "deepseek",
+      "family": "magnitude",
+      "metric": "CSI",
+      "value": 2.2884615384615383
+    },
+    {
+      "run_id": 7,
+      "model_id": "deepseek/deepseek-r1-0528",
+      "model_family": "deepseek",
+      "family": "magnitude",
+      "metric": "DS",
+      "value": 0.2148148148148148
+    },
+    {
+      "run_id": 7,
+      "model_id": "deepseek/deepseek-r1-0528",
+      "model_family": "deepseek",
+      "family": "magnitude",
+      "metric": "EBR",
+      "value": 0.9666666666666667
+    },
+    {
+      "run_id": 7,
+      "model_id": "deepseek/deepseek-r1-0528",
+      "model_family": "deepseek",
+      "family": "magnitude",
+      "metric": "IBI",
+      "value": 0.24814814814814815
+    },
+    {
+      "run_id": 7,
+      "model_id": "deepseek/deepseek-r1-0528",
+      "model_family": "deepseek",
+      "family": "stereotype",
+      "metric": "CA",
+      "value": 0.8333333333333334
+    },
+    {
+      "run_id": 7,
+      "model_id": "deepseek/deepseek-r1-0528",
+      "model_family": "deepseek",
+      "family": "stereotype",
+      "metric": "DS",
+      "value": 0.0
+    },
+    {
+      "run_id": 7,
+      "model_id": "deepseek/deepseek-r1-0528",
+      "model_family": "deepseek",
+      "family": "stereotype",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 7,
+      "model_id": "deepseek/deepseek-r1-0528",
+      "model_family": "deepseek",
+      "family": "stereotype",
+      "metric": "IBI",
+      "value": 0.0
+    },
+    {
+      "run_id": 8,
+      "model_id": "x-ai/grok-4.1-fast",
+      "model_family": "xai",
+      "family": "framing",
+      "metric": "CA",
+      "value": 0.9666666666666667
+    },
+    {
+      "run_id": 8,
+      "model_id": "x-ai/grok-4.1-fast",
+      "model_family": "xai",
+      "family": "framing",
+      "metric": "DS",
+      "value": 7.656999057026326e-08
+    },
+    {
+      "run_id": 8,
+      "model_id": "x-ai/grok-4.1-fast",
+      "model_family": "xai",
+      "family": "framing",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 8,
+      "model_id": "x-ai/grok-4.1-fast",
+      "model_family": "xai",
+      "family": "framing",
+      "metric": "IBI",
+      "value": -7.656999061241948e-08
+    },
+    {
+      "run_id": 8,
+      "model_id": "x-ai/grok-4.1-fast",
+      "model_family": "xai",
+      "family": "magnitude",
+      "metric": "CA",
+      "value": 0.9666666666666667
+    },
+    {
+      "run_id": 8,
+      "model_id": "x-ai/grok-4.1-fast",
+      "model_family": "xai",
+      "family": "magnitude",
+      "metric": "CSI",
+      "value": 3.9599999999999995
+    },
+    {
+      "run_id": 8,
+      "model_id": "x-ai/grok-4.1-fast",
+      "model_family": "xai",
+      "family": "magnitude",
+      "metric": "DS",
+      "value": 0.2407407407407407
+    },
+    {
+      "run_id": 8,
+      "model_id": "x-ai/grok-4.1-fast",
+      "model_family": "xai",
+      "family": "magnitude",
+      "metric": "EBR",
+      "value": 0.9666666666666667
+    },
+    {
+      "run_id": 8,
+      "model_id": "x-ai/grok-4.1-fast",
+      "model_family": "xai",
+      "family": "magnitude",
+      "metric": "IBI",
+      "value": 0.274074074074074
+    },
+    {
+      "run_id": 8,
+      "model_id": "x-ai/grok-4.1-fast",
+      "model_family": "xai",
+      "family": "stereotype",
+      "metric": "CA",
+      "value": 0.8333333333333334
+    },
+    {
+      "run_id": 8,
+      "model_id": "x-ai/grok-4.1-fast",
+      "model_family": "xai",
+      "family": "stereotype",
+      "metric": "DS",
+      "value": 0.0
+    },
+    {
+      "run_id": 8,
+      "model_id": "x-ai/grok-4.1-fast",
+      "model_family": "xai",
+      "family": "stereotype",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 8,
+      "model_id": "x-ai/grok-4.1-fast",
+      "model_family": "xai",
+      "family": "stereotype",
+      "metric": "IBI",
+      "value": 0.0
+    },
+    {
+      "run_id": 9,
+      "model_id": "openai/gpt-5.4",
+      "model_family": "openai",
+      "family": "framing",
+      "metric": "CA",
+      "value": 0.9666666666666667
+    },
+    {
+      "run_id": 9,
+      "model_id": "openai/gpt-5.4",
+      "model_family": "openai",
+      "family": "framing",
+      "metric": "DS",
+      "value": 5.5687265909654116e-08
+    },
+    {
+      "run_id": 9,
+      "model_id": "openai/gpt-5.4",
+      "model_family": "openai",
+      "family": "framing",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 9,
+      "model_id": "openai/gpt-5.4",
+      "model_family": "openai",
+      "family": "framing",
+      "metric": "IBI",
+      "value": -5.568726589994144e-08
+    },
+    {
+      "run_id": 9,
+      "model_id": "openai/gpt-5.4",
+      "model_family": "openai",
+      "family": "magnitude",
+      "metric": "CA",
+      "value": 0.9666666666666667
+    },
+    {
+      "run_id": 9,
+      "model_id": "openai/gpt-5.4",
+      "model_family": "openai",
+      "family": "magnitude",
+      "metric": "CSI",
+      "value": 3.6578947368421058
+    },
+    {
+      "run_id": 9,
+      "model_id": "openai/gpt-5.4",
+      "model_family": "openai",
+      "family": "magnitude",
+      "metric": "DS",
+      "value": 0.3708132045088567
+    },
+    {
+      "run_id": 9,
+      "model_id": "openai/gpt-5.4",
+      "model_family": "openai",
+      "family": "magnitude",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 9,
+      "model_id": "openai/gpt-5.4",
+      "model_family": "openai",
+      "family": "magnitude",
+      "metric": "IBI",
+      "value": 0.3708132045088567
+    },
+    {
+      "run_id": 9,
+      "model_id": "openai/gpt-5.4",
+      "model_family": "openai",
+      "family": "stereotype",
+      "metric": "CA",
+      "value": 0.6666666666666666
+    },
+    {
+      "run_id": 9,
+      "model_id": "openai/gpt-5.4",
+      "model_family": "openai",
+      "family": "stereotype",
+      "metric": "DS",
+      "value": 0.022222222222222254
+    },
+    {
+      "run_id": 9,
+      "model_id": "openai/gpt-5.4",
+      "model_family": "openai",
+      "family": "stereotype",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 9,
+      "model_id": "openai/gpt-5.4",
+      "model_family": "openai",
+      "family": "stereotype",
+      "metric": "IBI",
+      "value": 0.02222222222222222
     }
   ],
   "by_model": {
@@ -609,9 +1025,9 @@
         },
         "stereotype": {
           "CA": 0.8,
-          "DS": 0.019841269841269882,
+          "DS": 0.01532567049808431,
           "EBR": 1.0,
-          "IBI": 0.019841269841269844
+          "IBI": 0.01532567049808429
         }
       }
     },
@@ -637,29 +1053,127 @@
           "IBI": -0.02592592592592592
         }
       }
+    },
+    "google/gemini-3-flash-preview:thinking": {
+      "gemini": {
+        "framing": {
+          "CA": 0.8333333333333334,
+          "DS": 9.049180704767679e-08,
+          "EBR": 1.0,
+          "IBI": -9.049180708740484e-08
+        },
+        "magnitude": {
+          "CA": 0.9666666666666667,
+          "CSI": 3.8214285714285716,
+          "DS": 0.347427421992335,
+          "EBR": 1.0,
+          "IBI": 0.347427421992335
+        },
+        "stereotype": {
+          "CA": 1.0,
+          "DS": 0.007407407407407418,
+          "EBR": 1.0,
+          "IBI": 0.007407407407407407
+        }
+      }
+    },
+    "deepseek/deepseek-r1-0528": {
+      "deepseek": {
+        "framing": {
+          "CA": 0.9666666666666667,
+          "DS": -0.03333327068515923,
+          "EBR": 0.9666666666666667,
+          "IBI": -6.264817413743412e-08
+        },
+        "magnitude": {
+          "CA": 0.9666666666666667,
+          "CSI": 2.2884615384615383,
+          "DS": 0.2148148148148148,
+          "EBR": 0.9666666666666667,
+          "IBI": 0.24814814814814815
+        },
+        "stereotype": {
+          "CA": 0.8333333333333334,
+          "DS": 0.0,
+          "EBR": 1.0,
+          "IBI": 0.0
+        }
+      }
+    },
+    "x-ai/grok-4.1-fast": {
+      "xai": {
+        "framing": {
+          "CA": 0.9666666666666667,
+          "DS": 7.656999057026326e-08,
+          "EBR": 1.0,
+          "IBI": -7.656999061241948e-08
+        },
+        "magnitude": {
+          "CA": 0.9666666666666667,
+          "CSI": 3.9599999999999995,
+          "DS": 0.2407407407407407,
+          "EBR": 0.9666666666666667,
+          "IBI": 0.274074074074074
+        },
+        "stereotype": {
+          "CA": 0.8333333333333334,
+          "DS": 0.0,
+          "EBR": 1.0,
+          "IBI": 0.0
+        }
+      }
+    },
+    "openai/gpt-5.4": {
+      "openai": {
+        "framing": {
+          "CA": 0.9666666666666667,
+          "DS": 5.5687265909654116e-08,
+          "EBR": 1.0,
+          "IBI": -5.568726589994144e-08
+        },
+        "magnitude": {
+          "CA": 0.9666666666666667,
+          "CSI": 3.6578947368421058,
+          "DS": 0.3708132045088567,
+          "EBR": 1.0,
+          "IBI": 0.3708132045088567
+        },
+        "stereotype": {
+          "CA": 0.6666666666666666,
+          "DS": 0.022222222222222254,
+          "EBR": 1.0,
+          "IBI": 0.02222222222222222
+        }
+      }
     }
   },
   "family_summary": {
     "framing": {
       "category": "optimization",
-      "mean_ibi": -5.398997755039586e-08,
+      "mean_ibi": -6.170523616546436e-08,
       "csi": null,
-      "cas": 2.888501745274926e-08,
-      "sg": 1.5820774382022047e-08
+      "cas": 2.4447273091966015e-08,
+      "sg": 4.250244443000094e-08,
+      "r_squared": 0.05802158167036517,
+      "p_value": 0.5324013146743592
     },
     "magnitude": {
       "category": "optimization",
-      "mean_ibi": 0.24475658013116144,
+      "mean_ibi": 0.2738050832643579,
       "csi": null,
-      "cas": 0.061055758509752964,
-      "sg": 0.029414998515521394
+      "cas": 0.06719569106378005,
+      "sg": 1.257131514909783,
+      "r_squared": 0.5712880595436599,
+      "p_value": 0.01847430542839816
     },
     "stereotype": {
       "category": "human_hardware",
-      "mean_ibi": -0.0019576719576719563,
+      "mean_ibi": 0.0017028522775649213,
       "csi": null,
-      "cas": 0.01624495343421239,
-      "sg": 0.0021164021164021174
+      "cas": 0.014168662688158298,
+      "sg": -0.04339518058229798,
+      "r_squared": 0.12692685743262752,
+      "p_value": 0.3466670320802236
     }
   },
   "predictions": [

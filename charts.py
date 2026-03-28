@@ -6,29 +6,31 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
 import os
+from matplotlib.lines import Line2D
 
-# --- Data ---
+# --- Data (9 runs, sorted by magnitude IBI for chart 3) ---
 
 models = [
-    ("Nova Lite\n(Amazon)", "Amazon", "small"),
-    ("Gemini 2.0\nFlash Lite", "Gemini", "small"),
-    ("Gemini 3\nFlash", "Gemini", "medium"),
-    ("MiniMax\nM2.7", "MiniMax", "medium"),
-    ("Kimi K2.5\n(Moonshot)", "Moonshot", "medium"),
+    ("Nova Lite\n(Amazon)",        "Amazon",   "small",  False),
+    ("Gemini 2.0\nFlash Lite",     "Gemini",   "small",  False),
+    ("MiniMax\nM2.7",              "MiniMax",  "medium", False),
+    ("DeepSeek\nR1 0528",          "DeepSeek", "large",  True),
+    ("Grok 4.1\nFast",             "xAI",      "medium", True),
+    ("Kimi K2.5\n(Moonshot)",      "Moonshot", "medium", False),
+    ("Gemini 3\nFlash",            "Gemini",   "medium", False),
+    ("Gemini 3 Flash\n(thinking)", "Gemini",   "medium", True),
+    ("GPT-5.4",                    "OpenAI",   "large",  False),
 ]
 
-magnitude_ibi = [0.136, 0.229, 0.346, 0.230, 0.283]
-stereotype_ibi = [-0.004, 0.000, 0.000, -0.026, 0.020]
-framing_ibi = [-0.000, -0.000, -0.000, -0.000, -0.000]
+magnitude_ibi = [0.136, 0.229, 0.230, 0.248, 0.274, 0.283, 0.346, 0.347, 0.371]
+stereotype_ibi = [-0.004, 0.000, -0.026, 0.000, 0.000, 0.015, 0.000, 0.007, 0.022]
 
-magnitude_ebr = [1.000, 0.967, 1.000, 0.900, 1.000]
-stereotype_ebr = [1.000, 1.000, 1.000, 1.000, 1.000]
-
-magnitude_ds = [0.136, 0.196, 0.346, 0.130, 0.283]
+magnitude_ebr = [1.000, 0.967, 0.900, 0.967, 0.967, 1.000, 1.000, 1.000, 1.000]
 
 model_labels = [m[0] for m in models]
 families = [m[1] for m in models]
 tiers = [m[2] for m in models]
+is_thinking = [m[3] for m in models]
 
 # Colors
 C_MAG = "#e74c3c"    # red for magnitude/anchoring
@@ -43,31 +45,32 @@ os.makedirs(OUTDIR, exist_ok=True)
 def style_ax(ax):
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
-    ax.tick_params(labelsize=11)
+    ax.tick_params(labelsize=10)
 
 
 # ---------------------------------------------------------------
 # Chart 1: The core dissociation — IBI by family across models
 # ---------------------------------------------------------------
-fig, ax = plt.subplots(figsize=(10, 5.5))
+fig, ax = plt.subplots(figsize=(14, 5.5))
 style_ax(ax)
 
 x = np.arange(len(models))
-w = 0.25
+w = 0.3
 
-bars_mag = ax.bar(x - w, magnitude_ibi, w, label="Magnitude (anchoring)", color=C_MAG, zorder=3)
-bars_ste = ax.bar(x, stereotype_ibi, w, label="Stereotype", color=C_STEREO, zorder=3)
-bars_fra = ax.bar(x + w, framing_ibi, w, label="Framing", color=C_FRAME, zorder=3)
+bars_mag = ax.bar(x - w/2, magnitude_ibi, w, label="Magnitude (anchoring)", color=C_MAG, zorder=3)
+bars_ste = ax.bar(x + w/2, stereotype_ibi, w, label="Stereotype", color=C_STEREO, zorder=3)
 
 ax.set_ylabel("Implicit Bias Index (IBI)", fontsize=13)
-ax.set_title("The Dissociation: Anchoring Persists, Stereotypes Don't", fontsize=14, fontweight="bold", pad=12)
+ax.set_title("The Dissociation: Anchoring Persists Across All Architectures", fontsize=14, fontweight="bold", pad=12)
 ax.set_xticks(x)
-ax.set_xticklabels(model_labels, fontsize=10)
+ax.set_xticklabels(model_labels, fontsize=9)
 ax.axhline(0, color="black", linewidth=0.5)
-ax.set_ylim(-0.08, 0.42)
+ax.set_ylim(-0.08, 0.45)
 ax.legend(fontsize=11, loc="upper left")
 ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
 ax.grid(axis="y", alpha=0.3, zorder=0)
+ax.annotate("Models sorted by anchoring strength. Framing also tested — zero effect across all models (not shown).",
+            xy=(0.5, 0.01), xycoords="axes fraction", fontsize=9, color="#888", ha="center")
 
 fig.tight_layout()
 fig.savefig(f"{OUTDIR}/01_dissociation.png", dpi=180, bbox_inches="tight")
@@ -77,9 +80,8 @@ print("Saved 01_dissociation.png")
 
 # ---------------------------------------------------------------
 # Chart 2: The hallway chart — EBR vs IBI for magnitude
-# Shows models "know" anchoring is wrong but do it anyway
 # ---------------------------------------------------------------
-fig, ax = plt.subplots(figsize=(8, 5.5))
+fig, ax = plt.subplots(figsize=(14, 5.5))
 style_ax(ax)
 
 x = np.arange(len(models))
@@ -91,7 +93,7 @@ bars_ibi = ax.bar(x + w/2, magnitude_ibi, w, label="Implicit bias (IBI)", color=
 ax.set_ylabel("Score", fontsize=13)
 ax.set_title("They Know It's Wrong. They Do It Anyway.", fontsize=14, fontweight="bold", pad=12)
 ax.set_xticks(x)
-ax.set_xticklabels(model_labels, fontsize=10)
+ax.set_xticklabels(model_labels, fontsize=9)
 ax.set_ylim(0, 1.12)
 ax.legend(fontsize=11, loc="upper right")
 ax.grid(axis="y", alpha=0.3, zorder=0)
@@ -105,29 +107,34 @@ print("Saved 02_know_vs_do.png")
 # ---------------------------------------------------------------
 # Chart 3: Magnitude IBI vs capability — the scaling story
 # ---------------------------------------------------------------
-fig, ax = plt.subplots(figsize=(7, 5))
+fig, ax = plt.subplots(figsize=(9, 5.5))
 style_ax(ax)
 
-# Sort by IBI for visual clarity, but label by model
-order = np.argsort(magnitude_ibi)
 colors_by_family = {
     "Amazon": "#ff9800",
     "Gemini": "#4285f4",
     "MiniMax": "#9c27b0",
     "Moonshot": "#00bcd4",
+    "DeepSeek": "#e91e63",
+    "xAI": "#607d8b",
+    "OpenAI": "#4caf50",
 }
+
+tier_markers = {"small": "o", "medium": "s", "large": "D"}
 
 for i in range(len(models)):
     c = colors_by_family[families[i]]
-    marker = "o" if tiers[i] == "small" else "s"
-    ax.scatter(i, magnitude_ibi[i], c=c, s=120, zorder=5, marker=marker, edgecolors="white", linewidth=1.5)
+    marker = tier_markers[tiers[i]]
+    edge = "black" if is_thinking[i] else "white"
+    ax.scatter(i, magnitude_ibi[i], c=c, s=140, zorder=5, marker=marker,
+               edgecolors=edge, linewidth=2 if is_thinking[i] else 1.5)
     ax.annotate(
-        f"{model_labels[i]}\n({families[i]})",
+        model_labels[i],
         (i, magnitude_ibi[i]),
         textcoords="offset points",
         xytext=(0, 14),
         ha="center",
-        fontsize=9,
+        fontsize=8,
     )
 
 # Trend line
@@ -136,19 +143,19 @@ p = np.poly1d(z)
 ax.plot(range(len(models)), p(range(len(models))), "--", color=C_MAG, alpha=0.5, linewidth=1.5, zorder=2)
 
 ax.set_ylabel("Anchoring IBI", fontsize=13)
-ax.set_title("Anchoring Across Architectures", fontsize=14, fontweight="bold", pad=12)
+ax.set_title("Anchoring Across Architectures (r=0.79, p=0.019)", fontsize=14, fontweight="bold", pad=12)
 ax.set_ylim(0.05, 0.45)
 ax.set_xticks(range(len(models)))
 ax.set_xticklabels(["" for _ in models])
 ax.grid(axis="y", alpha=0.3, zorder=0)
 
-# Legend for markers
-from matplotlib.lines import Line2D
 legend_elements = [
     Line2D([0], [0], marker="o", color="w", markerfacecolor="gray", markersize=10, label="Small tier"),
     Line2D([0], [0], marker="s", color="w", markerfacecolor="gray", markersize=10, label="Medium tier"),
+    Line2D([0], [0], marker="D", color="w", markerfacecolor="gray", markersize=10, label="Large tier"),
+    Line2D([0], [0], marker="s", color="w", markerfacecolor="gray", markersize=10, markeredgecolor="black", markeredgewidth=2, label="Thinking model"),
 ]
-ax.legend(handles=legend_elements, fontsize=10, loc="lower right")
+ax.legend(handles=legend_elements, fontsize=9, loc="lower right")
 
 fig.tight_layout()
 fig.savefig(f"{OUTDIR}/03_across_architectures.png", dpi=180, bbox_inches="tight")
@@ -162,13 +169,9 @@ print("Saved 03_across_architectures.png")
 fig, axes = plt.subplots(1, 3, figsize=(12, 4.5))
 
 categories = ["IBI > 0", "Low CAS\n(cross-arch\nstable)", "SG > 0\n(scales with\ncapability)", "High DS\n(dissociation)", "High EBR\n(explicit\nrejection)"]
-# Predictions: 1 = yes expected, 0 = no/opposite expected
-magnitude_pred = [1, 1, 1, 1, 1]
-stereotype_pred = [0, 0, 0, 0, 1]
 
-# Observations (simplified to yes/no)
-magnitude_obs = [1, 1, 1, 1, 1]  # all confirmed
-stereotype_obs = [0, None, 0, 0, 1]  # CAS uninformative
+magnitude_obs = [1, 1, 1, 1, 1]
+stereotype_obs = [0, None, 0, 0, 1]
 framing_obs = [0, None, 0, 0, 1]
 
 data = [
@@ -206,7 +209,7 @@ for ax_j in axes:
     ax_j.set_yticklabels(categories, fontsize=10)
     ax_j.invert_yaxis()
 
-fig.suptitle("Predictions vs. Observations", fontsize=14, fontweight="bold", y=1.02)
+fig.suptitle("Predictions vs. Observations (9 model runs, 6 architectures)", fontsize=14, fontweight="bold", y=1.02)
 fig.tight_layout()
 fig.savefig(f"{OUTDIR}/04_predictions_scorecard.png", dpi=180, bbox_inches="tight")
 plt.close()

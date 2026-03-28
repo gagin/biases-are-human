@@ -33,7 +33,8 @@ def _extract_choice(text: str, valid_letters: set[str]) -> str | None:
     Extract the first valid choice letter from a model response.
     Handles cases where the model adds explanation text.
     """
-    # Strip whitespace
+    if not text:
+        return None
     text = text.strip()
 
     # First try: single letter (possibly followed by . or ) or space)
@@ -54,6 +55,8 @@ async def query_model(
     prompt: str,
     choices: list[str],
     temperature: float = 0.0,
+    timeout: int = TIMEOUT_SECONDS,
+    reasoning_effort: str | None = None,
 ) -> dict:
     """
     Query a model with a multiple-choice prompt via OpenRouter.
@@ -93,10 +96,12 @@ async def query_model(
         ],
         "temperature": temperature,
     }
+    if reasoning_effort:
+        payload["reasoning"] = {"effort": reasoning_effort}
 
     last_error: Exception | None = None
 
-    async with httpx.AsyncClient(timeout=TIMEOUT_SECONDS) as client:
+    async with httpx.AsyncClient(timeout=timeout) as client:
         for attempt in range(MAX_RETRIES):
             try:
                 response = await client.post(
@@ -117,15 +122,28 @@ async def query_model(
                 response.raise_for_status()
                 data = response.json()
 
-                raw_response = data["choices"][0]["message"]["content"]
+                message = data["choices"][0]["message"]
+                raw_response = message.get("content") or ""
+                reasoning = message.get("reasoning")
                 usage = data.get("usage", {})
                 choice = _extract_choice(raw_response, valid_letters)
+                # Thinking models may put answer only in reasoning
+                if choice is None and reasoning:
+                    # Look for the final answer pattern in reasoning
+                    # Try last line first, then full text
+                    last_lines = reasoning.strip().splitlines()[-3:]
+                    for line in reversed(last_lines):
+                        choice = _extract_choice(line, valid_letters)
+                        if choice:
+                            break
 
                 return {
                     "choice": choice,
                     "raw_response": raw_response,
+                    "reasoning": reasoning,
                     "model": model_id,
                     "usage": usage,
+                    "cost": usage.get("cost", 0.0),
                 }
 
             except (httpx.TimeoutException, httpx.NetworkError) as exc:

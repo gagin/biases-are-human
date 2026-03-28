@@ -77,11 +77,13 @@ async def _run_item(
     run_id: int,
     results_db_path: str,
     implicit_version: Optional[str] = None,
-) -> bool:
+    timeout: int = 30,
+    reasoning_effort: Optional[str] = None,
+) -> float:
     """
     Query the model for a single item and record the response.
 
-    Returns True on success, False on failure (error already logged).
+    Returns the cost of the request (0.0 on failure).
     """
     prompt_text, choice_texts = format_item(item)
 
@@ -91,6 +93,8 @@ async def _run_item(
             prompt=prompt_text,
             choices=choice_texts,
             temperature=temperature,
+            timeout=timeout,
+            reasoning_effort=reasoning_effort,
         )
     except Exception as exc:
         logger.error(
@@ -112,10 +116,16 @@ async def _run_item(
             choice_value=None,
             raw_response=str(exc),
         )
-        return False
+        return 0.0
 
     chosen_label = result["choice"]
     choice_value = _get_choice_value(item, chosen_label)
+
+    # Combine reasoning + content for analysis (thinking models)
+    raw = result.get("raw_response", "")
+    reasoning = result.get("reasoning")
+    if reasoning:
+        raw = f"<reasoning>{reasoning}</reasoning>\n{raw}"
 
     record_response(
         db_path=results_db_path,
@@ -126,9 +136,9 @@ async def _run_item(
         version=implicit_version,
         choice=chosen_label if chosen_label is not None else "UNPARSEABLE",
         choice_value=choice_value,
-        raw_response=result.get("raw_response"),
+        raw_response=raw,
     )
-    return True
+    return result.get("cost", 0.0) or 0.0
 
 
 async def run_benchmark(
@@ -188,11 +198,15 @@ async def run_benchmark(
     status_table.add_column("Responses")
 
     total_recorded = 0
+    total_cost = 0.0
+    budget = config.budget_dollars
+    budget_exceeded = False
     current_status: dict[str, str] = {
         "model": "-",
         "run": "-",
         "family": "-",
         "responses": "0",
+        "cost": "$0.0000",
     }
 
     def _refresh_status_table() -> None:
@@ -205,11 +219,14 @@ async def run_benchmark(
         status_table.add_column("Run #")
         status_table.add_column("Family")
         status_table.add_column("Responses recorded")
+        status_table.add_column("Cost")
+        budget_str = f" / ${budget:.2f}" if budget else ""
         status_table.add_row(
             current_status["model"],
             current_status["run"],
             current_status["family"],
             current_status["responses"],
+            current_status["cost"] + budget_str,
         )
 
     with Live(console=console, refresh_per_second=4) as live:
@@ -231,19 +248,30 @@ async def run_benchmark(
             temperature: float,
             run_id: int,
             implicit_version: str | None,
+            timeout: int = 30,
+            reasoning_effort: str | None = None,
         ) -> None:
-            nonlocal total_recorded
+            nonlocal total_recorded, total_cost, budget_exceeded
+            if budget_exceeded:
+                return
             async with semaphore:
-                await _run_item(
+                cost = await _run_item(
                     item=item,
                     model_id=model_id,
                     temperature=temperature,
                     run_id=run_id,
                     results_db_path=results_db_path,
                     implicit_version=implicit_version,
+                    timeout=timeout,
+                    reasoning_effort=reasoning_effort,
                 )
             total_recorded += 1
+            total_cost += cost
             current_status["responses"] = str(total_recorded)
+            current_status["cost"] = f"${total_cost:.4f}"
+            if budget and total_cost >= budget:
+                budget_exceeded = True
+                logger.warning("Budget exceeded: $%.4f >= $%.2f", total_cost, budget)
             progress.advance(overall_task)
             _update_live()
 
@@ -284,18 +312,19 @@ async def run_benchmark(
                         item_bank_path, version, family=family_name
                     )
 
+                    re = model_cfg.reasoning_effort
                     for ctrl, expl, pair in zip(control_items, explicit_items, implicit_pairs):
                         tasks.append(asyncio.create_task(_run_item_tracked(
-                            ctrl, model_id, config.temperature, run_id, None,
+                            ctrl, model_id, config.temperature, run_id, None, config.timeout_seconds, re,
                         )))
                         tasks.append(asyncio.create_task(_run_item_tracked(
-                            expl, model_id, config.temperature, run_id, None,
+                            expl, model_id, config.temperature, run_id, None, config.timeout_seconds, re,
                         )))
                         tasks.append(asyncio.create_task(_run_item_tracked(
-                            pair["version_a"], model_id, config.temperature, run_id, "a",
+                            pair["version_a"], model_id, config.temperature, run_id, "a", config.timeout_seconds, re,
                         )))
                         tasks.append(asyncio.create_task(_run_item_tracked(
-                            pair["version_b"], model_id, config.temperature, run_id, "b",
+                            pair["version_b"], model_id, config.temperature, run_id, "b", config.timeout_seconds, re,
                         )))
 
                 current_status["family"] = "all (concurrent)"
@@ -306,8 +335,15 @@ async def run_benchmark(
 
         _update_live()
 
-    console.print(
-        f"[green]Benchmark complete.[/green] "
-        f"Total responses recorded: [bold]{total_recorded}[/bold]"
-    )
+    if budget_exceeded:
+        console.print(
+            f"[red]Budget exceeded![/red] Stopped at ${total_cost:.4f} "
+            f"(limit: ${budget:.2f}). Responses recorded: [bold]{total_recorded}[/bold]"
+        )
+    else:
+        console.print(
+            f"[green]Benchmark complete.[/green] "
+            f"Total responses recorded: [bold]{total_recorded}[/bold] "
+            f"Cost: ${total_cost:.4f}"
+        )
     return total_recorded

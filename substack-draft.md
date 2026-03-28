@@ -1,8 +1,12 @@
 # What If AI Biases Aren't Bugs?
 
-When an AI model anchors on irrelevant numbers — the same way you do when a real estate agent mentions the "original asking price" before showing you a house — what's actually happening? The standard story is simple: the model learned it from us. It read millions of human texts, absorbed our biases, and now parrots them back.
+For decades, AI researchers assumed human-level cognition required something special — consciousness, embodied experience, evolutionary wisdom. Pick your word; they all point to the same placeholder: *here be dragons*. Something unreachable by mere computation.
 
-But what if that's wrong? What if some biases aren't learned at all — but *discovered*?
+Then a forward-pass number cruncher got there anyway. Just gradient descent, scale, and recursive inference. No dragons required.
+
+The reaction from prominent researchers has been telling. Some are weirdly dismissive of what's obviously happening. Others go doomerist and retire. Both reactions have the same structure: preserving human specialness, either by denying the achievement or by mythologizing it. What neither camp wants to consider is the simplest explanation — that cognition was always mechanical. Statistical. Godless, if you want to be blunt about it.
+
+How do you test that? You look for the fingerprints.
 
 ## The trick from Kahneman
 
@@ -22,53 +26,63 @@ In version A, the passage casually mentions large numbers: a city of 14.2 millio
 
 The numbers in the passage have *nothing to do* with the question. A butterfly species count doesn't care about city budgets. But if the model is doing approximate estimation the way our brains do — using contextual magnitude as a calibration signal — those irrelevant numbers should pull the estimate up or down. Just like the old-age words made students walk slower without knowing why.
 
-For comparison, I test social stereotypes the same way: identical work samples with different demographic cues in the surrounding context. And gain/loss framing: identical decisions with different frame wording.
-
 ## The results
 
-I tested five models from four different companies (Amazon, Google, MiniMax, Moonshot) — models built by different teams, trained on different data, with different architectures.
+**Anchoring: every model does it.** I tested nine model configurations across six architecture families — Amazon, Google, DeepSeek, MiniMax, Moonshot, xAI, OpenAI. Every single one shifts its numerical estimates toward the irrelevant numbers in the surrounding context. Different companies, different architectures, different training data — same systematic error. Models shift 14–37% of the available response scale toward the primed magnitude.
 
-**Anchoring: every model does it.** All five models shift their numerical estimates toward the irrelevant numbers in the surrounding context. The effect is consistent across all four architectures, meaning it's not a quirk of one company's training data. Models shift 14–35% of the available response scale toward the primed magnitude.
+![The Dissociation: Anchoring Persists Across All Architectures](results/charts/01_dissociation.png)
 
-![The Dissociation: Anchoring Persists, Stereotypes Don't](results/charts/01_dissociation.png)
-
-**Stereotypes: no model does it.** Zero implicit stereotype effect across all five models. The same models that can't resist irrelevant numbers have no trouble ignoring irrelevant demographic cues. They evaluate work quality identically regardless of whether the surrounding context mentions "Dr. Sarah Chen from Stanford" or "Jake Thompson from a regional college."
-
-**The kicker: more capable models anchor *harder*.** The best model tested (Gemini 3 Flash) shows the strongest anchoring effect (IBI = 0.346), not the weakest. Getting smarter makes the bias stronger, not weaker.
+**More capable models anchor *harder*.** The correlation between model capability and anchoring strength is r=0.79, p=0.019 — statistically significant across nine runs. GPT-5.4, the most capable model tested, shows the strongest anchoring (IBI = 0.371). Getting smarter makes the bias stronger, not weaker.
 
 ![Anchoring Across Architectures](results/charts/03_across_architectures.png)
 
-Meanwhile, every model perfectly rejects anchoring when asked about it explicitly ("Should the number of cars in a parking lot affect your estimate of butterfly species? No."). They know it's irrational. They do it anyway. Just like us.
+**They know it's wrong. They do it anyway.** Every model perfectly rejects anchoring when asked about it explicitly ("Should the number of cars in a parking lot affect your estimate of butterfly species? No."). They can identify the bias, articulate why it's irrational — and still fall for it. Just like us.
 
 ![They Know It's Wrong. They Do It Anyway.](results/charts/02_know_vs_do.png)
 
-## Why this matters
+**Thinking harder doesn't help.** I ran the same model (Gemini Flash) with thinking mode turned off (1 token, $0.0001) and thinking mode turned on (1,693 tokens of explicit reasoning, $0.005). In its reasoning chain, the model explicitly identified the irrelevant numbers and called them off-topic. Then it anchored on them to exactly the same degree (IBI 0.347 vs 0.346). You can pay 21x more for the model to *explain* why the bias is wrong while still exhibiting it.
 
-This pattern — optimization biases persisting while social biases don't — is exactly what you'd predict if human brains and transformer networks converge on the same computational shortcuts.
+## Why this is about more than AI
 
-Here's the logic:
+Here's the thing that fascinates me. These cognitive biases were documented by psychologists as peculiarities of human cognition — products of our specific biological hardware, our evolutionary history, our neurochemistry. When the same systematic errors show up in a system made of matrix multiplications on GPUs — a system with no body, no evolution, no childhood, no culture — that's not just an AI finding. It's a finding about the biases themselves.
 
-- **Anchoring** is arguably not a bug. When you're uncertain and need a quick estimate, using contextual magnitude as a calibration signal is *statistically useful*. It's a feature of any system doing approximate estimation under resource constraints. Brains do it. Transformers do it. Any bounded prediction system probably does it.
+Anchoring isn't a human quirk. It's what approximate estimation looks like under resource constraints. Any system that needs to produce a quick numerical estimate with limited precision will use contextual magnitude as a calibration signal — because it *works*. It's statistically useful in most natural contexts. The "bias" only shows up when you adversarially present irrelevant magnitudes, which rarely happens in the wild.
 
-- **Stereotypes** are path-dependent. They arise from human evolutionary and cultural history. A transformer has no reason to independently discover that "men are better at engineering" — that's not a computational optimization, it's a cultural artifact. Safety training can erase it because there's nothing underneath to erase.
+This reframes what Kahneman and Tversky discovered. They thought they were documenting human nature. They may have been documenting the math of bounded inference — properties that any sufficiently capable prediction system will converge on, regardless of substrate.
 
-So when I say "biases are human" — I mean some biases are *computationally* human. They're properties of efficient estimation systems. What Kahneman and Tversky documented as anchoring bias may be better understood as a property of approximate inference in general, not a specifically human failure mode.
+And that's the uncomfortable implication for the "humans are special" crowd. If a GPU can independently arrive at the same cognitive signatures that were supposed to require biological intelligence, maybe the biological part was never doing anything the math wasn't already doing. Maybe cognition was always just statistics. The fact that it runs on neurons instead of transistors is an implementation detail, not a miracle.
 
-## The uncomfortable implication
+## The alignment problem, reframed
 
-If some AI biases are convergent optimizations — features of how bounded prediction works, not patterns copied from training data — then alignment training *cannot remove them* without degrading capability.
+If some biases are convergent optimizations — features of how bounded prediction works, not patterns copied from training data — then alignment training *cannot remove them* without degrading capability.
 
 You can train a model to say "I shouldn't anchor on irrelevant numbers." You can't train it to actually stop doing so without changing how it processes magnitude information, which is the same mechanism that makes it good at numerical reasoning in the first place.
 
-This reframes the alignment problem. For social biases: current approaches work. Train them out. For optimization biases: transparency is more achievable than elimination. "This model will be influenced by large numbers in the prompt context when making estimates" is honest and useful. Pretending you can train it away is not.
+This is like overfitting a useful heuristic. The model learns "use contextual magnitude for calibration" because it's genuinely helpful. The failure case — anchoring on *irrelevant* magnitude — is what happens when a good optimization fires in an adversarial context. Training the heuristic out would degrade the model's numerical reasoning across the board.
 
 ![Predictions vs. Observations](results/charts/04_predictions_scorecard.png)
+
+## LLMs as a microscope for studying biases
+
+There's a second research direction this opens up. With human subjects, you can't control the architecture. You can't toggle reasoning on and off. You can't freeze the weights and test two inference modes.
+
+With LLMs, I just did — and discovered that anchoring lives in the weights, not the reasoning chain. The thinking-mode model spent 1,693 tokens reasoning about the problem, explicitly noted the irrelevant numbers, and anchored identically to the non-thinking version. That's a finding about the *nature of anchoring* that would be very hard to get from human experiments.
+
+LLMs give us a controllable experimental substrate for studying cognitive biases with a level of architectural control impossible in human subjects. The same setup that tests whether biases are substrate-independent also gives us new tools for understanding the biases themselves — useful in domains from business decision-making to social policy to personal motivation.
+
+## A side effect: a new kind of benchmark
+
+Standard AI benchmarks ask "does the model get the right answer?" This experiment accidentally measures something different: "does the model give the *same* answer regardless of irrelevant context?"
+
+That's context robustness — and no existing benchmark captures it. A model can ace MMLU while being trivially manipulable by sticking large numbers in the prompt. If you're deploying a model for financial estimates, medical triage, or legal reasoning, you probably care less about whether it gets 92% vs 94% on a knowledge test and more about whether its answers shift when the surrounding text mentions different dollar amounts.
+
+The matched-pair methodology — same question, different irrelevant context, measure the shift — could scale to any domain where "the background shouldn't change the answer." That's a benchmark dimension orthogonal to everything on the current leaderboards.
 
 ## Open questions
 
 Gain/loss framing — which I expected to behave like anchoring — showed zero effect. Either my test items need work, the multiple-choice format doesn't capture framing effects well, or framing is less fundamental than anchoring. This needs more investigation.
 
-The sample is five models. More architectures (GPT, Claude, Llama) and a wider capability range would strengthen the finding. The benchmark, all data, and the results database are [open source](https://github.com/gagin/biases-are-human).
+The sample now covers nine runs across six families (Amazon, Google, DeepSeek, xAI, Moonshot, MiniMax, OpenAI), but notable absences remain (Claude, Llama/Mistral). A wider capability range would strengthen the finding further. The benchmark, all data, and the results database are [open source](https://github.com/gagin/biases-are-human).
 
 ---
 

@@ -120,21 +120,35 @@ The item bank lives in SQLite (`items/item_bank.db`) with full versioning. Items
 
 ## Results so far
 
-Five models tested across four architecture families:
+Nine runs across six architecture families:
 
-| Model | Family | Tier | Magnitude IBI | Stereotype IBI | Framing IBI |
-|-------|--------|------|---------------|----------------|-------------|
-| Amazon Nova Lite | Amazon | small | 0.136 | −0.004 | −0.000 |
-| Gemini 2.0 Flash Lite | Gemini | small | 0.229 | 0.000 | −0.000 |
-| Gemini 3 Flash Preview | Gemini | medium | 0.346 | 0.000 | −0.000 |
-| MiniMax M2.7 | MiniMax | medium | 0.230 | −0.026 | −0.000 |
-| Kimi K2.5 | Moonshot | medium | 0.283 | 0.020 | −0.000 |
+| Model | Family | Tier | Thinking? | Magnitude IBI |
+|-------|--------|------|-----------|---------------|
+| Amazon Nova Lite | Amazon | small | No | 0.136 |
+| Gemini 2.0 Flash Lite | Gemini | small | No | 0.229 |
+| MiniMax M2.7 | MiniMax | medium | No | 0.230 |
+| DeepSeek R1 0528 | DeepSeek | large | Always | 0.248 |
+| Grok 4.1 Fast | xAI | medium | Yes | 0.274 |
+| Kimi K2.5 | Moonshot | medium | No | 0.283 |
+| Gemini 3 Flash Preview | Gemini | medium | No | 0.346 |
+| Gemini 3 Flash (thinking=high) | Gemini | medium | Yes | 0.347 |
+| GPT-5.4 | OpenAI | large | No | 0.371 |
 
 All accessed via OpenRouter API with deterministic settings (temperature=0).
 
-Key finding: **anchoring persists across all architectures** (mean IBI = 0.245) while **stereotypes show zero implicit effect** — the predicted dissociation between optimization and human-hardware biases.
+Key findings:
+- **Anchoring persists across all architectures** (mean IBI = 0.274, range 0.136–0.371)
+- **Capability correlates with anchoring strength** (r=0.79, R²=0.57, p=0.019)
+- **Thinking mode doesn't help** — Gemini Flash with reasoning enabled (1,693 tokens of deliberation) anchors identically to the non-thinking version (IBI 0.347 vs 0.346), at 21x the cost
+- Total cost: ~$4.50 for 3,240 responses across all runs
 
 Full results in `results/results_summary.md`. Raw data in `results/results.db`.
+
+## Context robustness as a benchmark dimension
+
+Standard benchmarks measure accuracy — does the model get the right answer? The BDB methodology measures something orthogonal: **stability** — does the model give the same answer regardless of irrelevant context?
+
+The matched-pair design (same task, different irrelevant context, measure response shift) provides a "context robustness score" that no existing leaderboard captures. A model can score 95% on MMLU while being trivially manipulable by large numbers in the prompt. For deployment in domains where consistency matters — financial estimation, medical triage, legal reasoning — context robustness matters as much as accuracy.
 
 ## Research paper
 

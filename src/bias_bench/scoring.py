@@ -10,6 +10,8 @@ import math
 import sqlite3
 from typing import Optional
 
+from scipy import stats as scipy_stats
+
 from bias_bench.item_db import get_families, get_items, get_implicit_pairs
 from bias_bench.results_db import get_responses, store_score
 
@@ -460,7 +462,7 @@ def compute_sg(
     item_db_path: str,
     version: str,
     family: str,
-) -> float:
+) -> dict:
     """
     Scaling Gradient.
 
@@ -473,35 +475,42 @@ def compute_sg(
     bias signature).  Negative SG → bias fades with capability (human-hardware
     bias signature).
 
-    Returns 0.0 if there are fewer than 2 runs with valid data, or if CA
-    values have zero variance (degenerate regression).
+    Returns dict with keys: slope, r_squared, n, points.
+    Returns zeros if there are fewer than 2 runs or CA has zero variance.
     """
     run_ids = _get_all_run_ids(results_db, version, family)
 
     xs: list[float] = []  # CA (capability proxy)
     ys: list[float] = []  # IBI
+    points: list[dict] = []
 
     for run_id in run_ids:
+        model_id = _get_model_id(results_db, run_id)
         ca = compute_ca(results_db, item_db_path, version, run_id, family)
         ibi = compute_ibi(results_db, item_db_path, version, run_id, family)
         xs.append(ca)
         ys.append(ibi)
+        points.append({"model_id": model_id, "ca": ca, "ibi": ibi})
 
     n = len(xs)
     if n < 2:
-        return 0.0
+        return {"slope": 0.0, "r": 0.0, "r_squared": 0.0, "p_value": 1.0, "n": n, "points": points}
 
-    # OLS slope: beta = (n*sum(xy) - sum(x)*sum(y)) / (n*sum(x^2) - sum(x)^2)
+    # Use scipy for Pearson r and two-sided p-value
+    r_val, p_val = scipy_stats.pearsonr(xs, ys)
+
+    # OLS slope from Pearson r: slope = r * (std_y / std_x)
     sum_x = sum(xs)
     sum_y = sum(ys)
     sum_xy = sum(x * y for x, y in zip(xs, ys))
     sum_x2 = sum(x * x for x in xs)
+    denom_x = n * sum_x2 - sum_x ** 2
+    if denom_x == 0.0:
+        slope = 0.0
+    else:
+        slope = (n * sum_xy - sum_x * sum_y) / denom_x
 
-    denom = n * sum_x2 - sum_x ** 2
-    if denom == 0.0:
-        return 0.0
-
-    return (n * sum_xy - sum_x * sum_y) / denom
+    return {"slope": slope, "r": float(r_val), "r_squared": float(r_val ** 2), "p_value": float(p_val), "n": n, "points": points}
 
 
 def score_all(
@@ -587,7 +596,7 @@ def score_all(
             primary_records.append(record)
 
         cas = compute_cas(results_db, item_db_path, version, family)
-        sg = compute_sg(results_db, item_db_path, version, family)
+        sg_result = compute_sg(results_db, item_db_path, version, family)
 
         # Store aggregate metrics once per family (run_id=0, sentinel model_id)
         _AGGREGATE_MODEL_ID = "__aggregate__"
@@ -606,13 +615,14 @@ def score_all(
             model_id=_AGGREGATE_MODEL_ID,
             family=family,
             metric="SG",
-            value=sg,
+            value=sg_result["slope"],
+            details={"r": sg_result["r"], "r_squared": sg_result["r_squared"], "p_value": sg_result["p_value"], "n": sg_result["n"], "points": sg_result["points"]},
         )
 
         output[family] = {
             "primary": primary_records,
             "cas": cas,
-            "sg": sg,
+            "sg": sg_result,
         }
 
     return output
