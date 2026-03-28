@@ -1,0 +1,13 @@
+.env
+.work/
+__pycache__/
+*.pyc
+.venv/
+results/*.db
+results/*.json
+results/*.csv
+results/*.md
+*.egg-info/
+dist/
+build/
+.DS_Store

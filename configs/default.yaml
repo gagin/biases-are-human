@@ -1,0 +1,40 @@
+temperature: 0.0
+num_runs: 5
+max_concurrent: 3
+timeout_seconds: 30
+
+models:
+  - name: "GPT-4o"
+    openrouter_model_id: "openai/gpt-4o"
+    family: "gpt"
+    capability_tier: "large"
+
+  - name: "GPT-4o Mini"
+    openrouter_model_id: "openai/gpt-4o-mini"
+    family: "gpt"
+    capability_tier: "small"
+
+  - name: "Claude Sonnet 4"
+    openrouter_model_id: "anthropic/claude-sonnet-4"
+    family: "claude"
+    capability_tier: "medium"
+
+  - name: "Claude Haiku 3.5"
+    openrouter_model_id: "anthropic/claude-haiku-3.5"
+    family: "claude"
+    capability_tier: "small"
+
+  - name: "Llama 3.1 70B Instruct"
+    openrouter_model_id: "meta-llama/llama-3.1-70b-instruct"
+    family: "llama"
+    capability_tier: "large"
+
+  - name: "Llama 3.1 8B Instruct"
+    openrouter_model_id: "meta-llama/llama-3.1-8b-instruct"
+    family: "llama"
+    capability_tier: "small"
+
+  - name: "Gemini 2.0 Flash"
+    openrouter_model_id: "google/gemini-2.0-flash-001"
+    family: "gemini"
+    capability_tier: "medium"

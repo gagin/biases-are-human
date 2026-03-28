@@ -1,0 +1,25 @@
+[project]
+name = "bias-dissociation-benchmark"
+version = "0.1.0"
+description = "Cognitive psychology experiment battery for LLMs"
+requires-python = ">=3.11"
+dependencies = [
+    "httpx",
+    "pydantic",
+    "rich",
+    "pyyaml",
+    "python-dotenv",
+]
+
+[project.scripts]
+bdb = "bias_bench.cli:main"
+
+[tool.uv]
+dev-dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bias_bench"]
