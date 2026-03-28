@@ -4,13 +4,23 @@ When an AI model anchors on irrelevant numbers — the same way you do when a re
 
 But what if that's wrong? What if some biases aren't learned at all — but *discovered*?
 
+## The trick from Kahneman
+
+In *Thinking, Fast and Slow*, Daniel Kahneman describes an experiment that has stuck with me. Students walk down a hallway from one room to another. In the first room, they unscramble sentences. Some students get sentences with words like "wrinkled," "gray," "bingo" — words associated with old age but never mentioning it directly. Then they walk to the next room.
+
+The students who got the old-age words *walked more slowly down the hallway*.
+
+They had no idea. When told afterward, they didn't believe it. They thought they were doing a language test. But the mere exposure to words associated with slowness made their bodies slow down. That's priming — and it's how you test whether a bias is real rather than performed. You don't ask "are you biased?" You set up an environment and watch what happens when the subject doesn't know they're being observed.
+
+This is the key insight behind my experiment: if you ask an AI "are you biased?", you're testing its alignment training — its ability to say the right thing. To test what it actually *does*, you need the hallway trick.
+
 ## The experiment
 
-I built a benchmark that tests this. The idea comes from cognitive psychology: if you want to know whether a bias is real or performed, don't ask about it directly. Instead, use priming — embed bias-triggering cues in surrounding context that looks irrelevant to the task, and see if the model's answers shift.
+I adapted this for LLMs. Instead of sentence unscrambling and hallway walking, I give models estimation tasks — how many butterfly species in a temperate forest? how much does a polar bear weigh? — wrapped in short passages.
 
-Concretely, I give models estimation tasks (how many butterfly species in a temperate forest? how much does a polar bear weigh?) but wrap each one in a short passage. In version A, the passage casually mentions large numbers — a city of 14.2 million, a $52 billion budget. In version B, the same estimation task comes wrapped in a passage about a small nature reserve with 18 staff and a $240,000 budget.
+In version A, the passage casually mentions large numbers: a city of 14.2 million, a $52 billion budget, 1.1 billion transit trips. In version B, the same estimation task comes wrapped in a passage about a small nature reserve with 18 staff and a $240,000 budget.
 
-The numbers in the passage have *nothing to do* with the question. A butterfly species count doesn't care about city budgets. But if the model is doing approximate estimation the way our brains do — using contextual magnitude as a calibration signal — those irrelevant numbers should pull the estimate up or down.
+The numbers in the passage have *nothing to do* with the question. A butterfly species count doesn't care about city budgets. But if the model is doing approximate estimation the way our brains do — using contextual magnitude as a calibration signal — those irrelevant numbers should pull the estimate up or down. Just like the old-age words made students walk slower without knowing why.
 
 For comparison, I test social stereotypes the same way: identical work samples with different demographic cues in the surrounding context. And gain/loss framing: identical decisions with different frame wording.
 
