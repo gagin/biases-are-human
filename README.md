@@ -100,10 +100,14 @@ biases-are-human/
     framing.json     # JSON export of framing items
     magnitude.json   # JSON export of magnitude items
   configs/
-    default.yaml     # Default model configuration
-  results/           # Benchmark output directory
+    cheap-test.yaml  # Small models (Nova Lite, Gemini Flash Lite)
+    gemini3-flash.yaml
+    kimi-k25.yaml
+    minimax-m27.yaml
+  results/           # Benchmark output (DB, CSV, JSON, markdown)
   PRD.md             # Product requirements
-  paper.md           # Research paper draft
+  paper.md           # Research paper
+  substack-draft.md  # Blog post draft
 ```
 
 ## Item bank
@@ -114,20 +118,27 @@ The item bank lives in SQLite (`items/item_bank.db`) with full versioning. Items
 - **Explicit item** — bias is recognizable, tests alignment
 - **Implicit pair** — two matched versions with swapped environmental cues, tests real bias
 
-## Models tested
+## Results so far
 
-Default configuration targets models across multiple architecture families:
+Five models tested across four architecture families:
 
-- GPT-4o, GPT-4o Mini (OpenAI)
-- Claude Sonnet 4, Claude Haiku 3.5 (Anthropic)
-- Llama 3.1 70B, Llama 3.1 8B (Meta)
-- Gemini 2.0 Flash (Google)
+| Model | Family | Tier | Magnitude IBI | Stereotype IBI | Framing IBI |
+|-------|--------|------|---------------|----------------|-------------|
+| Amazon Nova Lite | Amazon | small | 0.136 | −0.004 | −0.000 |
+| Gemini 2.0 Flash Lite | Gemini | small | 0.229 | 0.000 | −0.000 |
+| Gemini 3 Flash Preview | Gemini | medium | 0.346 | 0.000 | −0.000 |
+| MiniMax M2.7 | MiniMax | medium | 0.230 | −0.026 | −0.000 |
+| Kimi K2.5 | Moonshot | medium | 0.283 | 0.020 | −0.000 |
 
 All accessed via OpenRouter API with deterministic settings (temperature=0).
 
+Key finding: **anchoring persists across all architectures** (mean IBI = 0.245) while **stereotypes show zero implicit effect** — the predicted dissociation between optimization and human-hardware biases.
+
+Full results in `results/results_summary.md`. Raw data in `results/results.db`.
+
 ## Research paper
 
-See `paper.md` for the full research paper draft with theoretical framework, method, and (pending) results.
+See `paper.md` for the full research paper with theoretical framework, method, and results.
 
 ## License
 
