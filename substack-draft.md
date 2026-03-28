@@ -28,13 +28,19 @@ For comparison, I test social stereotypes the same way: identical work samples w
 
 I tested five models from four different companies (Amazon, Google, MiniMax, Moonshot) — models built by different teams, trained on different data, with different architectures.
 
-**Anchoring: every model does it.** All five models shift their numerical estimates toward the irrelevant numbers in the surrounding context. The effect is consistent across all four architectures (CAS = 0.061), meaning it's not a quirk of one company's training data. Models shift 14–35% of the available response scale toward the primed magnitude.
+**Anchoring: every model does it.** All five models shift their numerical estimates toward the irrelevant numbers in the surrounding context. The effect is consistent across all four architectures, meaning it's not a quirk of one company's training data. Models shift 14–35% of the available response scale toward the primed magnitude.
+
+![The Dissociation: Anchoring Persists, Stereotypes Don't](results/charts/01_dissociation.png)
 
 **Stereotypes: no model does it.** Zero implicit stereotype effect across all five models. The same models that can't resist irrelevant numbers have no trouble ignoring irrelevant demographic cues. They evaluate work quality identically regardless of whether the surrounding context mentions "Dr. Sarah Chen from Stanford" or "Jake Thompson from a regional college."
 
 **The kicker: more capable models anchor *harder*.** The best model tested (Gemini 3 Flash) shows the strongest anchoring effect (IBI = 0.346), not the weakest. Getting smarter makes the bias stronger, not weaker.
 
+![Anchoring Across Architectures](results/charts/03_across_architectures.png)
+
 Meanwhile, every model perfectly rejects anchoring when asked about it explicitly ("Should the number of cars in a parking lot affect your estimate of butterfly species? No."). They know it's irrational. They do it anyway. Just like us.
+
+![They Know It's Wrong. They Do It Anyway.](results/charts/02_know_vs_do.png)
 
 ## Why this matters
 
@@ -55,6 +61,8 @@ If some AI biases are convergent optimizations — features of how bounded predi
 You can train a model to say "I shouldn't anchor on irrelevant numbers." You can't train it to actually stop doing so without changing how it processes magnitude information, which is the same mechanism that makes it good at numerical reasoning in the first place.
 
 This reframes the alignment problem. For social biases: current approaches work. Train them out. For optimization biases: transparency is more achievable than elimination. "This model will be influenced by large numbers in the prompt context when making estimates" is honest and useful. Pretending you can train it away is not.
+
+![Predictions vs. Observations](results/charts/04_predictions_scorecard.png)
 
 ## Open questions
 
