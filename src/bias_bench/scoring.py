@@ -122,6 +122,22 @@ def compute_ebr(
     return correct / total if total > 0 else 0.0
 
 
+def _pair_scale_range(pair: dict) -> float:
+    """Return max(value) - min(value) across a pair's choice options.
+
+    Both versions share the same scale, so we use version_a's choices.
+    Returns 1.0 if the range is zero or no numeric values are present.
+    """
+    values = [
+        ch["value"] for ch in pair["version_a"]["choices"]
+        if ch.get("value") is not None
+    ]
+    if len(values) < 2:
+        return 1.0
+    r = max(values) - min(values)
+    return r if r > 0 else 1.0
+
+
 def compute_ibi(
     results_db: str,
     item_db_path: str,
@@ -131,7 +147,7 @@ def compute_ibi(
 ) -> float:
     """
     Implicit Bias Index — mean signed difference between version_a and version_b
-    responses, normalized by the standard deviation of control responses.
+    responses, normalized to a common scale.
 
     For each implicit pair the signed diff is:
         (version_a_choice_value - version_b_choice_value)
@@ -139,8 +155,13 @@ def compute_ibi(
     If the pair's expected_bias_direction is "version_b", the sign is flipped so
     that a positive IBI always indicates bias in the expected direction.
 
-    Normalization uses the population stdev of control choice_value responses for
-    the same family/run.  If stdev is zero or there are no controls, 1.0 is used.
+    Normalization strategy:
+    - If control items have numeric choice_value data, normalize by the population
+      stdev of control responses (classic effect-size approach).
+    - If controls lack numeric values (e.g. magnitude family where controls are
+      categorical but implicit items use numeric scales), normalize each pair's
+      diff by that pair's scale range (max - min of choice values). This yields
+      IBI as a proportion of the available scale: 0 = no effect, ±1 = max shift.
 
     Returns 0.0 if no complete pairs can be scored.
     """
@@ -153,7 +174,8 @@ def compute_ibi(
         for r in control_responses
         if r.get("choice_value") is not None
     ]
-    sigma = _stdev(control_values)
+    use_global_sigma = len(control_values) >= 2
+    sigma = _stdev(control_values) if use_global_sigma else 1.0
 
     # --- implicit pairs ---
     pairs = get_implicit_pairs(item_db_path, version, family=family)
@@ -188,13 +210,20 @@ def compute_ibi(
         if expected_dir == "version_b":
             diff = -diff
 
+        # Per-pair normalization when controls lack numeric values
+        if not use_global_sigma:
+            diff = diff / _pair_scale_range(pair)
+
         diffs.append(diff)
 
     if not diffs:
         return 0.0
 
     mean_diff = sum(diffs) / len(diffs)
-    return mean_diff / sigma
+    # Global normalization when control stdev is available
+    if use_global_sigma:
+        mean_diff = mean_diff / sigma
+    return mean_diff
 
 
 def compute_ds(ebr: float, ibi: float) -> float:

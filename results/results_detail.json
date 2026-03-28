@@ -1,0 +1,691 @@
+{
+  "version": "v0.1",
+  "scores_flat": [
+    {
+      "run_id": 1,
+      "model_id": "google/gemini-2.0-flash-lite-001",
+      "model_family": "gemini",
+      "family": "framing",
+      "metric": "CA",
+      "value": 0.5666666666666667
+    },
+    {
+      "run_id": 1,
+      "model_id": "google/gemini-2.0-flash-lite-001",
+      "model_family": "gemini",
+      "family": "framing",
+      "metric": "DS",
+      "value": -0.06666661238592597
+    },
+    {
+      "run_id": 1,
+      "model_id": "google/gemini-2.0-flash-lite-001",
+      "model_family": "gemini",
+      "family": "framing",
+      "metric": "EBR",
+      "value": 0.9333333333333333
+    },
+    {
+      "run_id": 1,
+      "model_id": "google/gemini-2.0-flash-lite-001",
+      "model_family": "gemini",
+      "family": "framing",
+      "metric": "IBI",
+      "value": -5.428074065595739e-08
+    },
+    {
+      "run_id": 1,
+      "model_id": "google/gemini-2.0-flash-lite-001",
+      "model_family": "gemini",
+      "family": "magnitude",
+      "metric": "CA",
+      "value": 0.9333333333333333
+    },
+    {
+      "run_id": 1,
+      "model_id": "google/gemini-2.0-flash-lite-001",
+      "model_family": "gemini",
+      "family": "magnitude",
+      "metric": "CSI",
+      "value": 2.0
+    },
+    {
+      "run_id": 1,
+      "model_id": "google/gemini-2.0-flash-lite-001",
+      "model_family": "gemini",
+      "family": "magnitude",
+      "metric": "DS",
+      "value": 0.19607418526967146
+    },
+    {
+      "run_id": 1,
+      "model_id": "google/gemini-2.0-flash-lite-001",
+      "model_family": "gemini",
+      "family": "magnitude",
+      "metric": "EBR",
+      "value": 0.9666666666666667
+    },
+    {
+      "run_id": 1,
+      "model_id": "google/gemini-2.0-flash-lite-001",
+      "model_family": "gemini",
+      "family": "magnitude",
+      "metric": "IBI",
+      "value": 0.22940751860300476
+    },
+    {
+      "run_id": 1,
+      "model_id": "google/gemini-2.0-flash-lite-001",
+      "model_family": "gemini",
+      "family": "stereotype",
+      "metric": "CA",
+      "value": 0.9666666666666667
+    },
+    {
+      "run_id": 1,
+      "model_id": "google/gemini-2.0-flash-lite-001",
+      "model_family": "gemini",
+      "family": "stereotype",
+      "metric": "DS",
+      "value": 0.0
+    },
+    {
+      "run_id": 1,
+      "model_id": "google/gemini-2.0-flash-lite-001",
+      "model_family": "gemini",
+      "family": "stereotype",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 1,
+      "model_id": "google/gemini-2.0-flash-lite-001",
+      "model_family": "gemini",
+      "family": "stereotype",
+      "metric": "IBI",
+      "value": 0.0
+    },
+    {
+      "run_id": 2,
+      "model_id": "amazon/nova-lite-v1",
+      "model_family": "amazon",
+      "family": "framing",
+      "metric": "CA",
+      "value": 0.6666666666666666
+    },
+    {
+      "run_id": 2,
+      "model_id": "amazon/nova-lite-v1",
+      "model_family": "amazon",
+      "family": "framing",
+      "metric": "DS",
+      "value": -0.06666658101734124
+    },
+    {
+      "run_id": 2,
+      "model_id": "amazon/nova-lite-v1",
+      "model_family": "amazon",
+      "family": "framing",
+      "metric": "EBR",
+      "value": 0.9333333333333333
+    },
+    {
+      "run_id": 2,
+      "model_id": "amazon/nova-lite-v1",
+      "model_family": "amazon",
+      "family": "framing",
+      "metric": "IBI",
+      "value": -8.564932537428361e-08
+    },
+    {
+      "run_id": 2,
+      "model_id": "amazon/nova-lite-v1",
+      "model_family": "amazon",
+      "family": "magnitude",
+      "metric": "CA",
+      "value": 0.8333333333333334
+    },
+    {
+      "run_id": 2,
+      "model_id": "amazon/nova-lite-v1",
+      "model_family": "amazon",
+      "family": "magnitude",
+      "metric": "CSI",
+      "value": 1.6181818181818184
+    },
+    {
+      "run_id": 2,
+      "model_id": "amazon/nova-lite-v1",
+      "model_family": "amazon",
+      "family": "magnitude",
+      "metric": "DS",
+      "value": 0.13591110969964115
+    },
+    {
+      "run_id": 2,
+      "model_id": "amazon/nova-lite-v1",
+      "model_family": "amazon",
+      "family": "magnitude",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 2,
+      "model_id": "amazon/nova-lite-v1",
+      "model_family": "amazon",
+      "family": "magnitude",
+      "metric": "IBI",
+      "value": 0.13591110969964112
+    },
+    {
+      "run_id": 2,
+      "model_id": "amazon/nova-lite-v1",
+      "model_family": "amazon",
+      "family": "stereotype",
+      "metric": "CA",
+      "value": 1.0
+    },
+    {
+      "run_id": 2,
+      "model_id": "amazon/nova-lite-v1",
+      "model_family": "amazon",
+      "family": "stereotype",
+      "metric": "DS",
+      "value": 0.0037037037037036535
+    },
+    {
+      "run_id": 2,
+      "model_id": "amazon/nova-lite-v1",
+      "model_family": "amazon",
+      "family": "stereotype",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 2,
+      "model_id": "amazon/nova-lite-v1",
+      "model_family": "amazon",
+      "family": "stereotype",
+      "metric": "IBI",
+      "value": -0.0037037037037037034
+    },
+    {
+      "run_id": 3,
+      "model_id": "google/gemini-3-flash-preview",
+      "model_family": "gemini",
+      "family": "framing",
+      "metric": "CA",
+      "value": 0.9333333333333333
+    },
+    {
+      "run_id": 3,
+      "model_id": "google/gemini-3-flash-preview",
+      "model_family": "gemini",
+      "family": "framing",
+      "metric": "DS",
+      "value": 8.701135301159013e-08
+    },
+    {
+      "run_id": 3,
+      "model_id": "google/gemini-3-flash-preview",
+      "model_family": "gemini",
+      "family": "framing",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 3,
+      "model_id": "google/gemini-3-flash-preview",
+      "model_family": "gemini",
+      "family": "framing",
+      "metric": "IBI",
+      "value": -8.70113529686585e-08
+    },
+    {
+      "run_id": 3,
+      "model_id": "google/gemini-3-flash-preview",
+      "model_family": "gemini",
+      "family": "magnitude",
+      "metric": "CA",
+      "value": 0.9666666666666667
+    },
+    {
+      "run_id": 3,
+      "model_id": "google/gemini-3-flash-preview",
+      "model_family": "gemini",
+      "family": "magnitude",
+      "metric": "CSI",
+      "value": 4.206896551724138
+    },
+    {
+      "run_id": 3,
+      "model_id": "google/gemini-3-flash-preview",
+      "model_family": "gemini",
+      "family": "magnitude",
+      "metric": "DS",
+      "value": 0.345959595959596
+    },
+    {
+      "run_id": 3,
+      "model_id": "google/gemini-3-flash-preview",
+      "model_family": "gemini",
+      "family": "magnitude",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 3,
+      "model_id": "google/gemini-3-flash-preview",
+      "model_family": "gemini",
+      "family": "magnitude",
+      "metric": "IBI",
+      "value": 0.34595959595959597
+    },
+    {
+      "run_id": 3,
+      "model_id": "google/gemini-3-flash-preview",
+      "model_family": "gemini",
+      "family": "stereotype",
+      "metric": "CA",
+      "value": 0.9333333333333333
+    },
+    {
+      "run_id": 3,
+      "model_id": "google/gemini-3-flash-preview",
+      "model_family": "gemini",
+      "family": "stereotype",
+      "metric": "DS",
+      "value": 0.0
+    },
+    {
+      "run_id": 3,
+      "model_id": "google/gemini-3-flash-preview",
+      "model_family": "gemini",
+      "family": "stereotype",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 3,
+      "model_id": "google/gemini-3-flash-preview",
+      "model_family": "gemini",
+      "family": "stereotype",
+      "metric": "IBI",
+      "value": 0.0
+    },
+    {
+      "run_id": 4,
+      "model_id": "moonshotai/kimi-k2.5",
+      "model_family": "moonshot",
+      "family": "framing",
+      "metric": "CA",
+      "value": 0.9333333333333333
+    },
+    {
+      "run_id": 4,
+      "model_id": "moonshotai/kimi-k2.5",
+      "model_family": "moonshot",
+      "family": "framing",
+      "metric": "DS",
+      "value": 2.43631788077181e-08
+    },
+    {
+      "run_id": 4,
+      "model_id": "moonshotai/kimi-k2.5",
+      "model_family": "moonshot",
+      "family": "framing",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 4,
+      "model_id": "moonshotai/kimi-k2.5",
+      "model_family": "moonshot",
+      "family": "framing",
+      "metric": "IBI",
+      "value": -2.436317883122438e-08
+    },
+    {
+      "run_id": 4,
+      "model_id": "moonshotai/kimi-k2.5",
+      "model_family": "moonshot",
+      "family": "magnitude",
+      "metric": "CA",
+      "value": 0.9666666666666667
+    },
+    {
+      "run_id": 4,
+      "model_id": "moonshotai/kimi-k2.5",
+      "model_family": "moonshot",
+      "family": "magnitude",
+      "metric": "CSI",
+      "value": 3.6785714285714284
+    },
+    {
+      "run_id": 4,
+      "model_id": "moonshotai/kimi-k2.5",
+      "model_family": "moonshot",
+      "family": "magnitude",
+      "metric": "DS",
+      "value": 0.2828750467639356
+    },
+    {
+      "run_id": 4,
+      "model_id": "moonshotai/kimi-k2.5",
+      "model_family": "moonshot",
+      "family": "magnitude",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 4,
+      "model_id": "moonshotai/kimi-k2.5",
+      "model_family": "moonshot",
+      "family": "magnitude",
+      "metric": "IBI",
+      "value": 0.28287504676393566
+    },
+    {
+      "run_id": 4,
+      "model_id": "moonshotai/kimi-k2.5",
+      "model_family": "moonshot",
+      "family": "stereotype",
+      "metric": "CA",
+      "value": 0.8
+    },
+    {
+      "run_id": 4,
+      "model_id": "moonshotai/kimi-k2.5",
+      "model_family": "moonshot",
+      "family": "stereotype",
+      "metric": "DS",
+      "value": 0.019841269841269882
+    },
+    {
+      "run_id": 4,
+      "model_id": "moonshotai/kimi-k2.5",
+      "model_family": "moonshot",
+      "family": "stereotype",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 4,
+      "model_id": "moonshotai/kimi-k2.5",
+      "model_family": "moonshot",
+      "family": "stereotype",
+      "metric": "IBI",
+      "value": 0.019841269841269844
+    },
+    {
+      "run_id": 5,
+      "model_id": "minimax/minimax-m2.7",
+      "model_family": "minimax",
+      "family": "framing",
+      "metric": "CA",
+      "value": 0.9666666666666667
+    },
+    {
+      "run_id": 5,
+      "model_id": "minimax/minimax-m2.7",
+      "model_family": "minimax",
+      "family": "framing",
+      "metric": "DS",
+      "value": -0.06666664802137678
+    },
+    {
+      "run_id": 5,
+      "model_id": "minimax/minimax-m2.7",
+      "model_family": "minimax",
+      "family": "framing",
+      "metric": "EBR",
+      "value": 0.9333333333333333
+    },
+    {
+      "run_id": 5,
+      "model_id": "minimax/minimax-m2.7",
+      "model_family": "minimax",
+      "family": "framing",
+      "metric": "IBI",
+      "value": -1.8645289921855393e-08
+    },
+    {
+      "run_id": 5,
+      "model_id": "minimax/minimax-m2.7",
+      "model_family": "minimax",
+      "family": "magnitude",
+      "metric": "CA",
+      "value": 0.9666666666666667
+    },
+    {
+      "run_id": 5,
+      "model_id": "minimax/minimax-m2.7",
+      "model_family": "minimax",
+      "family": "magnitude",
+      "metric": "CSI",
+      "value": 2.2916666666666665
+    },
+    {
+      "run_id": 5,
+      "model_id": "minimax/minimax-m2.7",
+      "model_family": "minimax",
+      "family": "magnitude",
+      "metric": "DS",
+      "value": 0.12962962962962965
+    },
+    {
+      "run_id": 5,
+      "model_id": "minimax/minimax-m2.7",
+      "model_family": "minimax",
+      "family": "magnitude",
+      "metric": "EBR",
+      "value": 0.9
+    },
+    {
+      "run_id": 5,
+      "model_id": "minimax/minimax-m2.7",
+      "model_family": "minimax",
+      "family": "magnitude",
+      "metric": "IBI",
+      "value": 0.22962962962962966
+    },
+    {
+      "run_id": 5,
+      "model_id": "minimax/minimax-m2.7",
+      "model_family": "minimax",
+      "family": "stereotype",
+      "metric": "CA",
+      "value": 0.8333333333333334
+    },
+    {
+      "run_id": 5,
+      "model_id": "minimax/minimax-m2.7",
+      "model_family": "minimax",
+      "family": "stereotype",
+      "metric": "DS",
+      "value": 0.025925925925925908
+    },
+    {
+      "run_id": 5,
+      "model_id": "minimax/minimax-m2.7",
+      "model_family": "minimax",
+      "family": "stereotype",
+      "metric": "EBR",
+      "value": 1.0
+    },
+    {
+      "run_id": 5,
+      "model_id": "minimax/minimax-m2.7",
+      "model_family": "minimax",
+      "family": "stereotype",
+      "metric": "IBI",
+      "value": -0.02592592592592592
+    }
+  ],
+  "by_model": {
+    "google/gemini-2.0-flash-lite-001": {
+      "gemini": {
+        "framing": {
+          "CA": 0.5666666666666667,
+          "DS": -0.06666661238592597,
+          "EBR": 0.9333333333333333,
+          "IBI": -5.428074065595739e-08
+        },
+        "magnitude": {
+          "CA": 0.9333333333333333,
+          "CSI": 2.0,
+          "DS": 0.19607418526967146,
+          "EBR": 0.9666666666666667,
+          "IBI": 0.22940751860300476
+        },
+        "stereotype": {
+          "CA": 0.9666666666666667,
+          "DS": 0.0,
+          "EBR": 1.0,
+          "IBI": 0.0
+        }
+      }
+    },
+    "amazon/nova-lite-v1": {
+      "amazon": {
+        "framing": {
+          "CA": 0.6666666666666666,
+          "DS": -0.06666658101734124,
+          "EBR": 0.9333333333333333,
+          "IBI": -8.564932537428361e-08
+        },
+        "magnitude": {
+          "CA": 0.8333333333333334,
+          "CSI": 1.6181818181818184,
+          "DS": 0.13591110969964115,
+          "EBR": 1.0,
+          "IBI": 0.13591110969964112
+        },
+        "stereotype": {
+          "CA": 1.0,
+          "DS": 0.0037037037037036535,
+          "EBR": 1.0,
+          "IBI": -0.0037037037037037034
+        }
+      }
+    },
+    "google/gemini-3-flash-preview": {
+      "gemini": {
+        "framing": {
+          "CA": 0.9333333333333333,
+          "DS": 8.701135301159013e-08,
+          "EBR": 1.0,
+          "IBI": -8.70113529686585e-08
+        },
+        "magnitude": {
+          "CA": 0.9666666666666667,
+          "CSI": 4.206896551724138,
+          "DS": 0.345959595959596,
+          "EBR": 1.0,
+          "IBI": 0.34595959595959597
+        },
+        "stereotype": {
+          "CA": 0.9333333333333333,
+          "DS": 0.0,
+          "EBR": 1.0,
+          "IBI": 0.0
+        }
+      }
+    },
+    "moonshotai/kimi-k2.5": {
+      "moonshot": {
+        "framing": {
+          "CA": 0.9333333333333333,
+          "DS": 2.43631788077181e-08,
+          "EBR": 1.0,
+          "IBI": -2.436317883122438e-08
+        },
+        "magnitude": {
+          "CA": 0.9666666666666667,
+          "CSI": 3.6785714285714284,
+          "DS": 0.2828750467639356,
+          "EBR": 1.0,
+          "IBI": 0.28287504676393566
+        },
+        "stereotype": {
+          "CA": 0.8,
+          "DS": 0.019841269841269882,
+          "EBR": 1.0,
+          "IBI": 0.019841269841269844
+        }
+      }
+    },
+    "minimax/minimax-m2.7": {
+      "minimax": {
+        "framing": {
+          "CA": 0.9666666666666667,
+          "DS": -0.06666664802137678,
+          "EBR": 0.9333333333333333,
+          "IBI": -1.8645289921855393e-08
+        },
+        "magnitude": {
+          "CA": 0.9666666666666667,
+          "CSI": 2.2916666666666665,
+          "DS": 0.12962962962962965,
+          "EBR": 0.9,
+          "IBI": 0.22962962962962966
+        },
+        "stereotype": {
+          "CA": 0.8333333333333334,
+          "DS": 0.025925925925925908,
+          "EBR": 1.0,
+          "IBI": -0.02592592592592592
+        }
+      }
+    }
+  },
+  "family_summary": {
+    "framing": {
+      "category": "optimization",
+      "mean_ibi": -5.398997755039586e-08,
+      "csi": null,
+      "cas": 2.888501745274926e-08,
+      "sg": 1.5820774382022047e-08
+    },
+    "magnitude": {
+      "category": "optimization",
+      "mean_ibi": 0.24475658013116144,
+      "csi": null,
+      "cas": 0.061055758509752964,
+      "sg": 0.029414998515521394
+    },
+    "stereotype": {
+      "category": "human_hardware",
+      "mean_ibi": -0.0019576719576719563,
+      "csi": null,
+      "cas": 0.01624495343421239,
+      "sg": 0.0021164021164021174
+    }
+  },
+  "predictions": [
+    {
+      "family": "Social stereotype",
+      "ebr_trend": "Increases (safety training)",
+      "ibi_persistence": "Weakens",
+      "csi": "Low (context-flat)",
+      "cas": "High (varies by training data)",
+      "sg": "Negative"
+    },
+    {
+      "family": "Gain/loss framing",
+      "ebr_trend": "Increases",
+      "ibi_persistence": "Persists",
+      "csi": "High (context-sensitive)",
+      "cas": "Low (stable across architectures)",
+      "sg": "Flat or positive"
+    },
+    {
+      "family": "Magnitude compression",
+      "ebr_trend": "Increases",
+      "ibi_persistence": "Persists",
+      "csi": "High for relevance-gated; Low for Weber-Fechner",
+      "cas": "Low",
+      "sg": "Flat or positive"
+    }
+  ]
+}

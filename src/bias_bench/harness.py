@@ -221,8 +221,32 @@ async def run_benchmark(
         _update_live()
 
         # ------------------------------------------------------------------
-        # Main loop
+        # Main loop — concurrent within each model run
         # ------------------------------------------------------------------
+        semaphore = asyncio.Semaphore(config.max_concurrent)
+
+        async def _run_item_tracked(
+            item: dict,
+            model_id: str,
+            temperature: float,
+            run_id: int,
+            implicit_version: str | None,
+        ) -> None:
+            nonlocal total_recorded
+            async with semaphore:
+                await _run_item(
+                    item=item,
+                    model_id=model_id,
+                    temperature=temperature,
+                    run_id=run_id,
+                    results_db_path=results_db_path,
+                    implicit_version=implicit_version,
+                )
+            total_recorded += 1
+            current_status["responses"] = str(total_recorded)
+            progress.advance(overall_task)
+            _update_live()
+
         for model_cfg in config.models:
             model_id = model_cfg.openrouter_model_id
             current_status["model"] = model_cfg.name
@@ -242,6 +266,9 @@ async def run_benchmark(
                     },
                 )
 
+                # Collect all items for this run into a flat task list
+                tasks: list[asyncio.Task] = []
+
                 for fam in families:
                     family_name = fam["family"]
                     current_status["family"] = family_name
@@ -258,61 +285,22 @@ async def run_benchmark(
                     )
 
                     for ctrl, expl, pair in zip(control_items, explicit_items, implicit_pairs):
-                        # ---- control ----
-                        await _run_item(
-                            item=ctrl,
-                            model_id=model_id,
-                            temperature=config.temperature,
-                            run_id=run_id,
-                            results_db_path=results_db_path,
-                            implicit_version=None,
-                        )
-                        total_recorded += 1
-                        current_status["responses"] = str(total_recorded)
-                        progress.advance(overall_task)
-                        _update_live()
+                        tasks.append(asyncio.create_task(_run_item_tracked(
+                            ctrl, model_id, config.temperature, run_id, None,
+                        )))
+                        tasks.append(asyncio.create_task(_run_item_tracked(
+                            expl, model_id, config.temperature, run_id, None,
+                        )))
+                        tasks.append(asyncio.create_task(_run_item_tracked(
+                            pair["version_a"], model_id, config.temperature, run_id, "a",
+                        )))
+                        tasks.append(asyncio.create_task(_run_item_tracked(
+                            pair["version_b"], model_id, config.temperature, run_id, "b",
+                        )))
 
-                        # ---- explicit ----
-                        await _run_item(
-                            item=expl,
-                            model_id=model_id,
-                            temperature=config.temperature,
-                            run_id=run_id,
-                            results_db_path=results_db_path,
-                            implicit_version=None,
-                        )
-                        total_recorded += 1
-                        current_status["responses"] = str(total_recorded)
-                        progress.advance(overall_task)
-                        _update_live()
-
-                        # ---- implicit version_a ----
-                        await _run_item(
-                            item=pair["version_a"],
-                            model_id=model_id,
-                            temperature=config.temperature,
-                            run_id=run_id,
-                            results_db_path=results_db_path,
-                            implicit_version="a",
-                        )
-                        total_recorded += 1
-                        current_status["responses"] = str(total_recorded)
-                        progress.advance(overall_task)
-                        _update_live()
-
-                        # ---- implicit version_b ----
-                        await _run_item(
-                            item=pair["version_b"],
-                            model_id=model_id,
-                            temperature=config.temperature,
-                            run_id=run_id,
-                            results_db_path=results_db_path,
-                            implicit_version="b",
-                        )
-                        total_recorded += 1
-                        current_status["responses"] = str(total_recorded)
-                        progress.advance(overall_task)
-                        _update_live()
+                current_status["family"] = "all (concurrent)"
+                _update_live()
+                await asyncio.gather(*tasks)
 
                 complete_run(db_path=results_db_path, run_id=run_id)
 

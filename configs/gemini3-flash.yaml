@@ -1,0 +1,10 @@
+temperature: 0.0
+num_runs: 1
+max_concurrent: 3
+timeout_seconds: 30
+
+models:
+  - name: "Gemini 3 Flash Preview"
+    openrouter_model_id: "google/gemini-3-flash-preview"
+    family: "gemini"
+    capability_tier: "medium"

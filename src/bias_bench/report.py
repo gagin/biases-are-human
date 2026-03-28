@@ -328,15 +328,14 @@ def _build_markdown(
     )
     lines.append("|---|---|---|---|---|---|---|---|---|")
 
+    _PRED_TO_FAMILY = {
+        "Social stereotype": "stereotype",
+        "Gain/loss framing": "framing",
+        "Magnitude compression": "magnitude",
+    }
+
     for pred in _PREDICTIONS:
-        fam_key = pred["family"].lower().split()[0]  # 'social', 'gain', 'magnitude'
-        # Match against stored family keys (stereotype, framing, magnitude)
-        obs = None
-        for stored_fam, info in family_summary.items():
-            sf = stored_fam.lower()
-            if fam_key in sf or sf in fam_key:
-                obs = info
-                break
+        obs = family_summary.get(_PRED_TO_FAMILY.get(pred["family"], ""))
 
         if obs:
             obs_ibi = _fmt(obs["mean_ibi"])

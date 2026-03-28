@@ -1,0 +1,15 @@
+temperature: 0.0
+num_runs: 1
+max_concurrent: 3
+timeout_seconds: 30
+
+models:
+  - name: "Gemini 2.0 Flash Lite"
+    openrouter_model_id: "google/gemini-2.0-flash-lite-001"
+    family: "gemini"
+    capability_tier: "small"
+
+  - name: "Amazon Nova Lite"
+    openrouter_model_id: "amazon/nova-lite-v1"
+    family: "amazon"
+    capability_tier: "small"

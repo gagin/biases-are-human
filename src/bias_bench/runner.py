@@ -103,7 +103,7 @@ async def query_model(
                     OPENROUTER_URL, headers=headers, json=payload
                 )
 
-                if response.status_code == 429 or response.status_code >= 500:
+                if response.status_code in (403, 429) or response.status_code >= 500:
                     # Exponential backoff: 1s, 2s, 4s
                     wait = 2**attempt
                     await asyncio.sleep(wait)

@@ -1,0 +1,10 @@
+temperature: 0.0
+num_runs: 1
+max_concurrent: 10
+timeout_seconds: 30
+
+models:
+  - name: "MiniMax M2.7"
+    openrouter_model_id: "minimax/minimax-m2.7"
+    family: "minimax"
+    capability_tier: "medium"

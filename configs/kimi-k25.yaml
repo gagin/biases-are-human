@@ -1,0 +1,10 @@
+temperature: 0.0
+num_runs: 1
+max_concurrent: 10
+timeout_seconds: 30
+
+models:
+  - name: "Kimi K2.5"
+    openrouter_model_id: "moonshotai/kimi-k2.5"
+    family: "moonshot"
+    capability_tier: "medium"
