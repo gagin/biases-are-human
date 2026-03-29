@@ -40,7 +40,17 @@ The numbers in the passage have *nothing to do* with the question. A butterfly s
 
 ![They Know It's Wrong. They Do It Anyway.](results/charts/02_know_vs_do.png)
 
-**Thinking harder doesn't help.** I ran the same model (Gemini Flash) with thinking mode turned off (1 token, $0.0001) and thinking mode turned on (1,693 tokens of explicit reasoning, $0.005). In its reasoning chain, the model explicitly identified the irrelevant numbers and called them off-topic. Then it anchored on them to exactly the same degree (IBI 0.347 vs 0.346). You can pay 21x more for the model to *explain* why the bias is wrong while still exhibiting it.
+**Thinking harder — it depends.** I ran two models with their reasoning mode toggled on and off. The results split in a way I didn't expect.
+
+For Gemini Flash: thinking off (1 token) vs. thinking on (1,693 tokens of explicit reasoning, 21× the cost). In its reasoning chain, the model explicitly identified the irrelevant numbers and called them off-topic. Then it anchored to exactly the same degree (IBI 0.347 vs. 0.346). The chain-of-thought is elaborate, correct, and completely ineffective.
+
+For GPT-5.4: no reasoning vs. medium reasoning (~95 reasoning tokens). Anchoring dropped by 22% — from IBI 0.371 to 0.288. Not eliminated. Still clearly biased. But measurably less so.
+
+This asymmetry is the most intriguing preliminary finding so far, and I want to be careful about over-interpreting it: it's a single run at a single reasoning level per model, not a controlled experiment. But the pattern it suggests is worth sitting with. Gemini's reasoning tokens appear to be deliberation that runs parallel to the decision — the model thinks things through and then anchors anyway, as if the reasoning and the response come from separate processes that don't communicate. GPT-5.4 looks different: the deliberative pass appears to partially correct the fast default. The anchor is still there — the bias doesn't vanish — but reasoning moves the needle.
+
+If this pattern holds up under replication, it maps onto something psychologists call dual-process cognition: the fast intuitive system (System 1) that absorbs context contamination, and the slower deliberative system (System 2) that adjusts — but only adjusts, never fully escapes. Kahneman's finding about human anchoring is exactly that: System 2 corrects from the anchor, but the anchor is still the starting point. The residual 0.288 in GPT-5.4's reasoning condition would be exactly what that predicts.
+
+Gemini, on this preliminary reading, may lack that architecture: the reasoning tokens don't connect to the decision layer where anchoring happens. Or its "thinking" mode is doing something structurally different. More runs at more reasoning levels will say.
 
 ## Why this is about more than AI
 

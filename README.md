@@ -120,7 +120,7 @@ The item bank lives in SQLite (`items/item_bank.db`) with full versioning. Items
 
 ## Results so far
 
-Nine runs across six architecture families:
+Ten runs across six architecture families:
 
 | Model | Family | Tier | Thinking? | Magnitude IBI |
 |-------|--------|------|-----------|---------------|
@@ -132,6 +132,7 @@ Nine runs across six architecture families:
 | Kimi K2.5 | Moonshot | medium | No | 0.283 |
 | Gemini 3 Flash Preview | Gemini | medium | No | 0.346 |
 | Gemini 3 Flash (thinking=high) | Gemini | medium | Yes | 0.347 |
+| GPT-5.4 (reasoning=medium) | OpenAI | large | medium | 0.288 |
 | GPT-5.4 | OpenAI | large | No | 0.371 |
 
 All accessed via OpenRouter API with deterministic settings (temperature=0).
@@ -139,7 +140,7 @@ All accessed via OpenRouter API with deterministic settings (temperature=0).
 Key findings:
 - **Anchoring persists across all architectures** (mean IBI = 0.274, range 0.136–0.371)
 - **Capability correlates with anchoring strength** (r=0.79, R²=0.57, p=0.019)
-- **Thinking mode doesn't help** — Gemini Flash with reasoning enabled (1,693 tokens of deliberation) anchors identically to the non-thinking version (IBI 0.347 vs 0.346), at 21x the cost
+- **Reasoning effects are architecture-specific (preliminary)** — Gemini Flash with thinking=high anchors identically with or without reasoning (0.347 vs 0.346, 21× cost). GPT-5.4 with medium reasoning shows a 22% reduction (0.371 → 0.288), consistent with a partial dual-process correction — but this is a single run and requires replication
 - Total cost: ~$4.50 for 3,240 responses across all runs
 
 Full results in `results/results_summary.md`. Raw data in `results/results.db`.
