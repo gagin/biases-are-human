@@ -1,0 +1,11 @@
+temperature: 0.0
+num_runs: 1
+max_concurrent: 5
+timeout_seconds: 120
+budget_dollars: 2.00
+
+models:
+  - name: "DeepSeek R1 0528"
+    openrouter_model_id: "deepseek/deepseek-r1-0528"
+    family: "deepseek"
+    capability_tier: "large"

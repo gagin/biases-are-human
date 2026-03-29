@@ -154,6 +154,10 @@ The matched-pair design (same task, different irrelevant context, measure respon
 
 See `paper.md` for the full research paper with theoretical framework, method, and results.
 
+## Operator manual
+
+See `MANUAL.md` for CLI reference, config format, DB schema, telemetry log format, and reproducibility queries.
+
 ## License
 
 Research use. See paper for citation.

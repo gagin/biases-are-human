@@ -8,6 +8,7 @@ prompts to models via the OpenRouter API.
 import asyncio
 import re
 import string
+import time
 
 import httpx
 
@@ -100,6 +101,7 @@ async def query_model(
         payload["reasoning"] = {"effort": reasoning_effort}
 
     last_error: Exception | None = None
+    t_start = time.monotonic()
 
     async with httpx.AsyncClient(timeout=timeout) as client:
         for attempt in range(MAX_RETRIES):
@@ -144,6 +146,8 @@ async def query_model(
                     "model": model_id,
                     "usage": usage,
                     "cost": usage.get("cost", 0.0),
+                    "latency_ms": round((time.monotonic() - t_start) * 1000),
+                    "request_payload": payload,
                 }
 
             except (httpx.TimeoutException, httpx.NetworkError) as exc:

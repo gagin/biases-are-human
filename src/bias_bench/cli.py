@@ -38,6 +38,7 @@ def cmd_run(args: argparse.Namespace) -> int:
             item_bank_path=args.items,
             results_db_path=args.results,
             version=args.version,
+            log_dir=args.log_dir,
         )
     )
     console.print(f"[bold green]Done.[/bold green] Recorded {total} responses.")
@@ -147,6 +148,8 @@ def _build_parser() -> argparse.ArgumentParser:
                        help="Path to the results SQLite DB (created if absent)")
     p_run.add_argument("--version", default=_DEFAULT_VERSION, metavar="VERSION",
                        help=f"Item bank version to use (default: {_DEFAULT_VERSION})")
+    p_run.add_argument("--log-dir", default=None, metavar="DIR",
+                       help="Directory for JSONL telemetry logs (default: no logs)")
 
     # ---- score ----
     p_score = sub.add_parser("score", help="Score all runs in the results DB")

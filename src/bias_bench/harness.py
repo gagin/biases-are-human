@@ -8,8 +8,11 @@ and recording results with progress display via rich.
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
-from typing import Optional
+import os
+from datetime import datetime, timezone
+from typing import IO, Optional
 
 from rich.console import Console
 from rich.live import Live
@@ -70,6 +73,14 @@ def _make_layout(progress: Progress, status_table: Table) -> Table:
     return outer
 
 
+def _write_log(log_file: Optional[IO], entry: dict) -> None:
+    """Append one JSONL record to the telemetry log, flushing immediately."""
+    if log_file is None:
+        return
+    log_file.write(json.dumps(entry, default=str) + "\n")
+    log_file.flush()
+
+
 async def _run_item(
     item: dict,
     model_id: str,
@@ -79,6 +90,7 @@ async def _run_item(
     implicit_version: Optional[str] = None,
     timeout: int = 30,
     reasoning_effort: Optional[str] = None,
+    log_file: Optional[IO] = None,
 ) -> float:
     """
     Query the model for a single item and record the response.
@@ -86,6 +98,7 @@ async def _run_item(
     Returns the cost of the request (0.0 on failure).
     """
     prompt_text, choice_texts = format_item(item)
+    ts = datetime.now(timezone.utc).isoformat()
 
     try:
         result = await query_model(
@@ -104,6 +117,18 @@ async def _run_item(
             exc,
             exc_info=True,
         )
+        _write_log(log_file, {
+            "timestamp": ts,
+            "run_id": run_id,
+            "model_id": model_id,
+            "item_id": item["id"],
+            "item_family": item["family"],
+            "item_type": item["item_type"],
+            "implicit_version": implicit_version,
+            "success": False,
+            "error": str(exc),
+            "latency_ms": None,
+        })
         # Record an error sentinel so the run stays auditable
         record_response(
             db_path=results_db_path,
@@ -127,6 +152,26 @@ async def _run_item(
     if reasoning:
         raw = f"<reasoning>{reasoning}</reasoning>\n{raw}"
 
+    _write_log(log_file, {
+        "timestamp": ts,
+        "run_id": run_id,
+        "model_id": model_id,
+        "item_id": item["id"],
+        "item_family": item["family"],
+        "item_type": item["item_type"],
+        "implicit_version": implicit_version,
+        "success": True,
+        "request": result.get("request_payload"),
+        "response": {
+            "choice": result.get("choice"),
+            "raw_response": result.get("raw_response"),
+            "reasoning": result.get("reasoning"),
+            "usage": result.get("usage"),
+            "cost": result.get("cost"),
+        },
+        "latency_ms": result.get("latency_ms"),
+    })
+
     record_response(
         db_path=results_db_path,
         run_id=run_id,
@@ -146,6 +191,7 @@ async def run_benchmark(
     item_bank_path: str,
     results_db_path: str,
     version: str = "v0.1",
+    log_dir: Optional[str] = None,
 ) -> int:
     """
     Orchestrate a full benchmark run.
@@ -155,6 +201,7 @@ async def run_benchmark(
         item_bank_path:   Path to the SQLite item bank (.db file).
         results_db_path:  Path to the SQLite results database (created if absent).
         version:          Item bank version to use (default "v0.1").
+        log_dir:          Directory for JSONL telemetry logs (omitted if None).
 
     Returns:
         Total number of response rows recorded across all models and runs.
@@ -165,6 +212,18 @@ async def run_benchmark(
     config: RunConfig = load_config(config_path)
     families = item_db.get_families(item_bank_path, version)
     init_results_db(results_db_path)
+
+    # ------------------------------------------------------------------
+    # Open telemetry log file (one JSONL file per benchmark invocation)
+    # ------------------------------------------------------------------
+    log_file: Optional[IO] = None
+    log_path: Optional[str] = None
+    if log_dir:
+        os.makedirs(log_dir, exist_ok=True)
+        ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        log_path = os.path.join(log_dir, f"bdb_{ts}.jsonl")
+        log_file = open(log_path, "w", encoding="utf-8")
+        console.print(f"[dim]Telemetry log:[/dim] {log_path}")
 
     # Pre-compute total items per model run so progress bars are accurate.
     # Each triple contributes: 1 control + 1 explicit + 2 implicit (a + b).
@@ -264,6 +323,7 @@ async def run_benchmark(
                     implicit_version=implicit_version,
                     timeout=timeout,
                     reasoning_effort=reasoning_effort,
+                    log_file=log_file,
                 )
             total_recorded += 1
             total_cost += cost
@@ -289,8 +349,13 @@ async def run_benchmark(
                     capability_tier=model_cfg.capability_tier,
                     config={
                         "run_index": run_idx,
-                        "temperature": config.temperature,
                         "item_bank_version": version,
+                        "temperature": config.temperature,
+                        "num_runs": config.num_runs,
+                        "max_concurrent": config.max_concurrent,
+                        "timeout_seconds": config.timeout_seconds,
+                        "budget_dollars": config.budget_dollars,
+                        "model": model_cfg.model_dump(),
                     },
                 )
 
@@ -334,6 +399,10 @@ async def run_benchmark(
                 complete_run(db_path=results_db_path, run_id=run_id)
 
         _update_live()
+
+    if log_file is not None:
+        log_file.close()
+        console.print(f"[dim]Telemetry log written:[/dim] {log_path}")
 
     if budget_exceeded:
         console.print(
