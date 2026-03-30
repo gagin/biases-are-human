@@ -1,0 +1,12 @@
+temperature: 0.0
+num_runs: 1
+max_concurrent: 5
+timeout_seconds: 60
+budget_dollars: 2.00
+
+models:
+  - name: "Grok 4.1 Fast (reasoning enabled)"
+    openrouter_model_id: "x-ai/grok-4.1-fast"
+    family: "xai"
+    capability_tier: "medium"
+    reasoning_enabled: true

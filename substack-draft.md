@@ -28,11 +28,11 @@ The numbers in the passage have *nothing to do* with the question. A butterfly s
 
 ## The results
 
-**Anchoring: every model does it.** I tested nine model configurations across six architecture families — Amazon, Google, DeepSeek, MiniMax, Moonshot, xAI, OpenAI. Every single one shifts its numerical estimates toward the irrelevant numbers in the surrounding context. Different companies, different architectures, different training data — same systematic error. Models shift 14–37% of the available response scale toward the primed magnitude.
+**Anchoring: every model does it.** I tested eleven model configurations across seven architecture families — Amazon, Google, DeepSeek, MiniMax, Moonshot, xAI, OpenAI. Every single one shifts its numerical estimates toward the irrelevant numbers in the surrounding context. Different companies, different architectures, different training data — same systematic error. Models shift 14–37% of the available response scale toward the primed magnitude.
 
 ![The Dissociation: Anchoring Persists Across All Architectures](results/charts/01_dissociation.png)
 
-**More capable models anchor *harder*.** The correlation between model capability and anchoring strength is r=0.79, p=0.019 — statistically significant across nine runs. GPT-5.4, the most capable model tested, shows the strongest anchoring (IBI = 0.371). Getting smarter makes the bias stronger, not weaker.
+**More capable models anchor *harder*.** The correlation between model capability and anchoring strength is r=0.79 — statistically significant across eleven configurations. GPT-5.4, the most capable model tested, shows the strongest anchoring (IBI = 0.371). Getting smarter makes the bias stronger, not weaker.
 
 ![Anchoring Across Architectures](results/charts/03_across_architectures.png)
 
@@ -40,17 +40,19 @@ The numbers in the passage have *nothing to do* with the question. A butterfly s
 
 ![They Know It's Wrong. They Do It Anyway.](results/charts/02_know_vs_do.png)
 
-**Thinking harder — it depends.** I ran two models with their reasoning mode toggled on and off. The results split in a way I didn't expect.
+**Thinking harder — it depends.** I ran three models with their reasoning mode toggled on and off. The results split in a way I didn't expect.
 
 For Gemini Flash: thinking off (1 token) vs. thinking on (1,693 tokens of explicit reasoning, 21× the cost). In its reasoning chain, the model explicitly identified the irrelevant numbers and called them off-topic. Then it anchored to exactly the same degree (IBI 0.347 vs. 0.346). The chain-of-thought is elaborate, correct, and completely ineffective.
 
+For Grok 4.1 Fast: reasoning off vs. reasoning on. Anchoring *increased* slightly — from IBI 0.274 to 0.290. A small stereotype bias also appeared (0.000 → 0.022). Thinking made it marginally worse.
+
 For GPT-5.4: no reasoning vs. medium reasoning (~95 reasoning tokens). Anchoring dropped by 22% — from IBI 0.371 to 0.288. Not eliminated. Still clearly biased. But measurably less so.
 
-This asymmetry is the most intriguing preliminary finding so far, and I want to be careful about over-interpreting it: it's a single run at a single reasoning level per model, not a controlled experiment. But the pattern it suggests is worth sitting with. Gemini's reasoning tokens appear to be deliberation that runs parallel to the decision — the model thinks things through and then anchors anyway, as if the reasoning and the response come from separate processes that don't communicate. GPT-5.4 looks different: the deliberative pass appears to partially correct the fast default. The anchor is still there — the bias doesn't vanish — but reasoning moves the needle.
+That's a 2-vs-1 split: Gemini and Grok's reasoning tokens appear to be deliberation that runs parallel to the decision — the model thinks things through and then anchors anyway (or slightly harder), as if the reasoning and the response come from separate processes that don't communicate. GPT-5.4 looks different: the deliberative pass appears to partially correct the fast default. The anchor is still there — the bias doesn't vanish — but reasoning moves the needle.
 
 If this pattern holds up under replication, it maps onto something psychologists call dual-process cognition: the fast intuitive system (System 1) that absorbs context contamination, and the slower deliberative system (System 2) that adjusts — but only adjusts, never fully escapes. Kahneman's finding about human anchoring is exactly that: System 2 corrects from the anchor, but the anchor is still the starting point. The residual 0.288 in GPT-5.4's reasoning condition would be exactly what that predicts.
 
-Gemini, on this preliminary reading, may lack that architecture: the reasoning tokens don't connect to the decision layer where anchoring happens. Or its "thinking" mode is doing something structurally different. More runs at more reasoning levels will say.
+The twist is that this dual-process correction may be an architectural property of specific models, not a universal feature of "thinking." Gemini and Grok's reasoning tokens don't connect to the decision layer where anchoring happens. GPT-5.4's do. Whether this reflects genuinely different internal architectures or different training approaches for reasoning is an open question.
 
 ## Why this is about more than AI
 
@@ -76,7 +78,7 @@ This is like overfitting a useful heuristic. The model learns "use contextual ma
 
 There's a second research direction this opens up. With human subjects, you can't control the architecture. You can't toggle reasoning on and off. You can't freeze the weights and test two inference modes.
 
-With LLMs, I just did — and discovered that anchoring lives in the weights, not the reasoning chain. The thinking-mode model spent 1,693 tokens reasoning about the problem, explicitly noted the irrelevant numbers, and anchored identically to the non-thinking version. That's a finding about the *nature of anchoring* that would be very hard to get from human experiments.
+With LLMs, I just did — and discovered that anchoring lives in the weights, not the reasoning chain. Two out of three thinking-mode models (Gemini, Grok) anchored identically or worse with reasoning on. The Gemini model spent 1,693 tokens reasoning about the problem, explicitly noted the irrelevant numbers, and anchored identically. Only GPT-5.4 showed partial correction. That's a finding about the *nature of anchoring* that would be very hard to get from human experiments.
 
 LLMs give us a controllable experimental substrate for studying cognitive biases with a level of architectural control impossible in human subjects. The same setup that tests whether biases are substrate-independent also gives us new tools for understanding the biases themselves — useful in domains from business decision-making to social policy to personal motivation.
 
@@ -92,8 +94,8 @@ The matched-pair methodology — same question, different irrelevant context, me
 
 Gain/loss framing — which I expected to behave like anchoring — showed zero effect. Either my test items need work, the multiple-choice format doesn't capture framing effects well, or framing is less fundamental than anchoring. This needs more investigation.
 
-The sample now covers nine runs across six families (Amazon, Google, DeepSeek, xAI, Moonshot, MiniMax, OpenAI), but notable absences remain (Claude, Llama/Mistral). A wider capability range would strengthen the finding further. The benchmark, all data, and the results database are [open source](https://github.com/gagin/biases-are-human).
+The sample now covers eleven runs across seven families (Amazon, Google, DeepSeek, xAI, Moonshot, MiniMax, OpenAI), but notable absences remain (Claude, Llama/Mistral). A wider capability range would strengthen the finding further. The benchmark, all data, and the results database are [open source](https://github.com/gagin/biases-are-human).
 
 ---
 
-*The full paper, benchmark code, item bank, and raw results are available at [github.com/gagin/biases-are-human](https://github.com/gagin/biases-are-human). Built with Claude Code using SQLite-coordinated multi-agent work.*
+*The full paper, benchmark code, item bank, and raw results (including per-response cost/latency telemetry) are available at [github.com/gagin/biases-are-human](https://github.com/gagin/biases-are-human). Built with Claude Code using SQLite-coordinated multi-agent work.*

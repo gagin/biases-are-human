@@ -28,7 +28,7 @@ from rich.table import Table
 
 from bias_bench.config import RunConfig, load_config
 from bias_bench import item_db
-from bias_bench.results_db import complete_run, create_run, init_results_db, record_response
+from bias_bench.results_db import complete_run, create_run, init_results_db, record_response, record_telemetry
 from bias_bench.runner import query_model
 
 logger = logging.getLogger(__name__)
@@ -90,6 +90,7 @@ async def _run_item(
     implicit_version: Optional[str] = None,
     timeout: int = 30,
     reasoning_effort: Optional[str] = None,
+    reasoning_enabled: Optional[bool] = None,
     log_file: Optional[IO] = None,
 ) -> float:
     """
@@ -108,6 +109,7 @@ async def _run_item(
             temperature=temperature,
             timeout=timeout,
             reasoning_effort=reasoning_effort,
+            reasoning_enabled=reasoning_enabled,
         )
     except Exception as exc:
         logger.error(
@@ -130,7 +132,7 @@ async def _run_item(
             "latency_ms": None,
         })
         # Record an error sentinel so the run stays auditable
-        record_response(
+        resp_id = record_response(
             db_path=results_db_path,
             run_id=run_id,
             item_id=item["id"],
@@ -140,6 +142,11 @@ async def _run_item(
             choice="ERROR",
             choice_value=None,
             raw_response=str(exc),
+        )
+        record_telemetry(
+            db_path=results_db_path,
+            response_id=resp_id,
+            run_id=run_id,
         )
         return 0.0
 
@@ -172,7 +179,7 @@ async def _run_item(
         "latency_ms": result.get("latency_ms"),
     })
 
-    record_response(
+    resp_id = record_response(
         db_path=results_db_path,
         run_id=run_id,
         item_id=item["id"],
@@ -182,6 +189,21 @@ async def _run_item(
         choice=chosen_label if chosen_label is not None else "UNPARSEABLE",
         choice_value=choice_value,
         raw_response=raw,
+    )
+
+    usage = result.get("usage") or {}
+    ctd = (usage.get("completion_tokens_details") or {})
+    record_telemetry(
+        db_path=results_db_path,
+        response_id=resp_id,
+        run_id=run_id,
+        cost_usd=result.get("cost"),
+        latency_ms=result.get("latency_ms"),
+        prompt_tokens=usage.get("prompt_tokens"),
+        completion_tokens=usage.get("completion_tokens"),
+        reasoning_tokens=ctd.get("reasoning_tokens"),
+        total_tokens=usage.get("total_tokens"),
+        usage=usage,
     )
     return result.get("cost", 0.0) or 0.0
 
@@ -309,6 +331,7 @@ async def run_benchmark(
             implicit_version: str | None,
             timeout: int = 30,
             reasoning_effort: str | None = None,
+            reasoning_enabled: bool | None = None,
         ) -> None:
             nonlocal total_recorded, total_cost, budget_exceeded
             if budget_exceeded:
@@ -323,6 +346,7 @@ async def run_benchmark(
                     implicit_version=implicit_version,
                     timeout=timeout,
                     reasoning_effort=reasoning_effort,
+                    reasoning_enabled=reasoning_enabled,
                     log_file=log_file,
                 )
             total_recorded += 1
@@ -378,18 +402,19 @@ async def run_benchmark(
                     )
 
                     re = model_cfg.reasoning_effort
+                    ren = model_cfg.reasoning_enabled
                     for ctrl, expl, pair in zip(control_items, explicit_items, implicit_pairs):
                         tasks.append(asyncio.create_task(_run_item_tracked(
-                            ctrl, model_id, config.temperature, run_id, None, config.timeout_seconds, re,
+                            ctrl, model_id, config.temperature, run_id, None, config.timeout_seconds, re, ren,
                         )))
                         tasks.append(asyncio.create_task(_run_item_tracked(
-                            expl, model_id, config.temperature, run_id, None, config.timeout_seconds, re,
+                            expl, model_id, config.temperature, run_id, None, config.timeout_seconds, re, ren,
                         )))
                         tasks.append(asyncio.create_task(_run_item_tracked(
-                            pair["version_a"], model_id, config.temperature, run_id, "a", config.timeout_seconds, re,
+                            pair["version_a"], model_id, config.temperature, run_id, "a", config.timeout_seconds, re, ren,
                         )))
                         tasks.append(asyncio.create_task(_run_item_tracked(
-                            pair["version_b"], model_id, config.temperature, run_id, "b", config.timeout_seconds, re,
+                            pair["version_b"], model_id, config.temperature, run_id, "b", config.timeout_seconds, re, ren,
                         )))
 
                 current_status["family"] = "all (concurrent)"

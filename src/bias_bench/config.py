@@ -20,6 +20,12 @@ class ModelConfig(BaseModel):
         default=None,
         description="Reasoning effort level: none, minimal, low, medium, high, xhigh",
     )
+    reasoning_enabled: bool | None = Field(
+        default=None,
+        description="Explicitly enable (True) or disable (False) reasoning. "
+                    "Use for models like Grok that toggle reasoning via enabled flag "
+                    "rather than effort level. Mutually exclusive with reasoning_effort.",
+    )
 
 
 class RunConfig(BaseModel):

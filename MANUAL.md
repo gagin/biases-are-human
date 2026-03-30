@@ -46,6 +46,12 @@ models:
 `reasoning_effort` maps to OpenRouter's `reasoning.effort` API parameter and is stored in
 `config_json` for auditing. Leave it absent (or `null`) to send no reasoning parameter.
 
+For models that use a boolean reasoning toggle (e.g., Grok), use `reasoning_enabled: true`:
+
+```yaml
+    reasoning_enabled: true    # optional: sends reasoning.effort = "high" for xAI models
+```
+
 ### OpenRouter reasoning variants
 
 OpenRouter offers two overlapping mechanisms for extended reasoning:
@@ -68,6 +74,7 @@ is visible in `runs.model_id`. If rerunning that config, use `openrouter_model_i
 results.db
 ├── runs        — one row per model × run_index
 ├── responses   — one row per item response
+├── telemetry   — cost, latency, token usage per response
 └── scores      — computed metrics (CA, EBR, IBI, DS, SG, CAS, CSI)
 ```
 
@@ -100,6 +107,41 @@ This is sufficient to reproduce any run exactly.
 | `choice` | Letter chosen (A–J), or `ERROR` / `UNPARSEABLE` |
 | `choice_value` | Numeric value of the chosen option |
 | `raw_response` | Raw API text; thinking models prepend `<reasoning>…</reasoning>` |
+
+### `telemetry`
+
+One row per response, linked via `response_id`. Stores cost, latency, and token usage for each API call. Populated automatically during `bdb run`; historical data can be backfilled from JSONL logs.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `response_id` | INTEGER UNIQUE | FK → responses (1:1) |
+| `run_id` | INTEGER | FK → runs (denormalized for fast per-run queries) |
+| `cost_usd` | REAL | API cost in USD; NULL for errors |
+| `latency_ms` | INTEGER | Round-trip time; NULL for errors |
+| `prompt_tokens` | INTEGER | Input tokens |
+| `completion_tokens` | INTEGER | Output tokens (including reasoning) |
+| `reasoning_tokens` | INTEGER | Reasoning/thinking tokens (subset of completion) |
+| `total_tokens` | INTEGER | prompt + completion |
+| `usage_json` | TEXT | Full usage object from the API response |
+| `created_at` | TEXT | UTC datetime |
+
+Useful queries:
+
+```sql
+-- Cost summary per run
+SELECT t.run_id, r.model_id, SUM(t.cost_usd) AS total_cost,
+       AVG(t.latency_ms) AS avg_latency_ms,
+       AVG(t.reasoning_tokens) AS avg_reasoning_tokens
+FROM telemetry t JOIN runs r ON t.run_id = r.id
+WHERE t.cost_usd IS NOT NULL
+GROUP BY t.run_id;
+
+-- Check telemetry coverage
+SELECT r.id, r.model_id,
+       (SELECT COUNT(*) FROM responses WHERE run_id = r.id) AS responses,
+       (SELECT COUNT(*) FROM telemetry WHERE run_id = r.id) AS telemetry_rows
+FROM runs r ORDER BY r.id;
+```
 
 ### `scores`
 
@@ -134,7 +176,14 @@ WHERE r1.run_id = ? AND r2.run_id = ? AND r1.choice != r2.choice;
 
 ---
 
-## Telemetry log format
+## Telemetry
+
+### Database telemetry (primary)
+
+Cost, latency, and token usage are stored automatically in the `telemetry` table during every
+`bdb run`. No flags needed — this is always on. See the `telemetry` table documentation above.
+
+### JSONL log files (optional, supplementary)
 
 Enable with `--log-dir logs/`. Creates `logs/bdb_YYYYMMDDTHHMMSSZ.jsonl` — one file per
 `bdb run` invocation, one JSON object per line, one line per API call.

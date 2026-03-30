@@ -59,12 +59,13 @@ Raw responses and computed scores are stored separately from items:
 
 ```
 results/results.db
-  runs        — model, timestamp, config
+  runs        — model, timestamp, config (full config_json for reproducibility)
   responses   — raw choices per item per run
+  telemetry   — cost, latency, token usage per response (1:1 with responses)
   scores      — computed metrics (CA, EBR, IBI, DS, CSI, CAS, SG)
 ```
 
-You can re-score without re-running: delete scores, re-run `uv run bdb score`.
+Telemetry is recorded automatically during `bdb run`. You can re-score without re-running: delete scores, re-run `uv run bdb score`.
 
 ## API costs
 

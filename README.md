@@ -104,6 +104,9 @@ biases-are-human/
     gemini3-flash.yaml
     kimi-k25.yaml
     minimax-m27.yaml
+    grok-4.1-fast.yaml
+    grok-4.1-fast-thinking.yaml
+    gpt-54.yaml
   results/           # Benchmark output (DB, CSV, JSON, markdown)
   PRD.md             # Product requirements
   paper.md           # Research paper
@@ -120,7 +123,7 @@ The item bank lives in SQLite (`items/item_bank.db`) with full versioning. Items
 
 ## Results so far
 
-Ten runs across six architecture families:
+Eleven runs across seven architecture families (plus one failed run excluded):
 
 | Model | Family | Tier | Thinking? | Magnitude IBI |
 |-------|--------|------|-----------|---------------|
@@ -128,11 +131,12 @@ Ten runs across six architecture families:
 | Gemini 2.0 Flash Lite | Gemini | small | No | 0.229 |
 | MiniMax M2.7 | MiniMax | medium | No | 0.230 |
 | DeepSeek R1 0528 | DeepSeek | large | Always | 0.248 |
-| Grok 4.1 Fast | xAI | medium | Yes | 0.274 |
+| Grok 4.1 Fast | xAI | medium | No | 0.274 |
 | Kimi K2.5 | Moonshot | medium | No | 0.283 |
+| GPT-5.4 (reasoning=medium) | OpenAI | large | medium | 0.288 |
+| Grok 4.1 Fast (reasoning) | xAI | medium | Yes | 0.290 |
 | Gemini 3 Flash Preview | Gemini | medium | No | 0.346 |
 | Gemini 3 Flash (thinking=high) | Gemini | medium | Yes | 0.347 |
-| GPT-5.4 (reasoning=medium) | OpenAI | large | medium | 0.288 |
 | GPT-5.4 | OpenAI | large | No | 0.371 |
 
 All accessed via OpenRouter API with deterministic settings (temperature=0).
@@ -140,8 +144,11 @@ All accessed via OpenRouter API with deterministic settings (temperature=0).
 Key findings:
 - **Anchoring persists across all architectures** (mean IBI = 0.274, range 0.136–0.371)
 - **Capability correlates with anchoring strength** (r=0.79, R²=0.57, p=0.019)
-- **Reasoning effects are architecture-specific (preliminary)** — Gemini Flash with thinking=high anchors identically with or without reasoning (0.347 vs 0.346, 21× cost). GPT-5.4 with medium reasoning shows a 22% reduction (0.371 → 0.288), consistent with a partial dual-process correction — but this is a single run and requires replication
-- Total cost: ~$4.50 for 3,240 responses across all runs
+- **Reasoning effects are architecture-specific** — three reasoning pairs tested:
+  - *Gemini Flash*: thinking=high anchors identically (0.347 vs 0.346, 21× cost). Reasoning explicitly identifies irrelevant numbers, then anchors anyway.
+  - *GPT-5.4*: medium reasoning shows a 22% reduction (0.371 → 0.288). Partial dual-process correction.
+  - *Grok 4.1 Fast*: reasoning enabled shows no improvement (0.274 → 0.290). Small bias *increase*, consistent with Gemini pattern.
+- Total cost: ~$5.50 for 4,320 responses across twelve runs
 
 Full results in `results/results_summary.md`. Raw data in `results/results.db`.
 

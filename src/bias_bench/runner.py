@@ -58,6 +58,7 @@ async def query_model(
     temperature: float = 0.0,
     timeout: int = TIMEOUT_SECONDS,
     reasoning_effort: str | None = None,
+    reasoning_enabled: bool | None = None,
 ) -> dict:
     """
     Query a model with a multiple-choice prompt via OpenRouter.
@@ -99,6 +100,8 @@ async def query_model(
     }
     if reasoning_effort:
         payload["reasoning"] = {"effort": reasoning_effort}
+    elif reasoning_enabled is not None:
+        payload["reasoning"] = {"enabled": reasoning_enabled}
 
     last_error: Exception | None = None
     t_start = time.monotonic()

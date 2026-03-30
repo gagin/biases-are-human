@@ -210,7 +210,7 @@ Positive or flat SG indicates bias that persists or strengthens with capability.
 
 ## 5. Results
 
-We administered the benchmark to ten model configurations spanning six architecture families and three capability tiers: Amazon Nova Lite (small), Google Gemini 2.0 Flash Lite (small), MiniMax M2.7 (medium), DeepSeek R1 0528 (large, always-on reasoning), xAI Grok 4.1 Fast (medium, thinking enabled), Moonshot Kimi K2.5 (medium), Google Gemini 3 Flash Preview (medium), Google Gemini 3 Flash Preview with thinking=high (medium, reasoning enabled), OpenAI GPT-5.4 (large), and OpenAI GPT-5.4 with reasoning_effort=medium (large). All models received 360 items (90 per bias family × 3 families, plus matched implicit pair variants) under deterministic settings (temperature 0, single run) via the OpenRouter API. Error rates were low (0–5 items out of 360 per model). Four configurations include extended reasoning: DeepSeek R1 (always-on), Grok 4.1 Fast (thinking enabled), Gemini 3 Flash with thinking=high, and GPT-5.4 with reasoning_effort=medium. Total cost for all 3,600 responses across ten runs was approximately $5.20.
+We administered the benchmark to twelve model configurations spanning seven architecture families and three capability tiers: Amazon Nova Lite (small), Google Gemini 2.0 Flash Lite (small), MiniMax M2.7 (medium), DeepSeek R1 0528 (large, always-on reasoning), xAI Grok 4.1 Fast (medium), xAI Grok 4.1 Fast with reasoning enabled (medium), Moonshot Kimi K2.5 (medium), Google Gemini 3 Flash Preview (medium), Google Gemini 3 Flash Preview with thinking=high (medium, reasoning enabled), OpenAI GPT-5.4 (large), OpenAI GPT-5.4 with reasoning_effort=medium (large), and OpenAI GPT-5.4 with reasoning_effort=xhigh (large, failed — see below). All models received 360 items (90 per bias family × 3 families, plus matched implicit pair variants) under deterministic settings (temperature 0, single run) via the OpenRouter API. Error rates were low (0–5 items out of 360 per model), with one exception: the GPT-5.4 xhigh reasoning run (run 11) exceeded its API budget after 130 successful responses and is excluded from analysis. Five configurations include extended reasoning: DeepSeek R1 (always-on), Grok 4.1 Fast (reasoning enabled), Gemini 3 Flash with thinking=high, GPT-5.4 with reasoning_effort=medium, and GPT-5.4 with reasoning_effort=xhigh (failed). Total cost for all 4,320 responses across twelve runs was approximately $8.50.
 
 ### 5.1 Control accuracy across models
 
@@ -222,7 +222,8 @@ Control accuracy (CA) measures basic task competence independent of any bias man
 | Gemini 2.0 Flash Lite | Gemini | small | No | 0.967 | 0.567 | 0.933 |
 | MiniMax M2.7 | MiniMax | medium | No | 0.833 | 0.967 | 0.967 |
 | DeepSeek R1 0528 | DeepSeek | large | Always | 0.833 | 0.967 | 0.967 |
-| Grok 4.1 Fast | xAI | medium | Yes | 0.833 | 0.967 | 0.967 |
+| Grok 4.1 Fast | xAI | medium | No | 0.833 | 0.967 | 0.967 |
+| Grok 4.1 Fast (reasoning) | xAI | medium | Yes | 0.867 | 1.000 | 0.967 |
 | Kimi K2.5 | Moonshot | medium | No | 0.800 | 0.933 | 0.967 |
 | Gemini 3 Flash Preview | Gemini | medium | No | 0.933 | 0.933 | 0.967 |
 | Gemini 3 Flash (thinking) | Gemini | medium | Yes | 1.000 | 0.833 | 0.967 |
@@ -251,16 +252,25 @@ The Implicit Bias Index (IBI) is the core measurement. For each implicit pair, I
 | Gemini 2.0 Flash Lite | Gemini | small | No | 0.000 | −0.000 | 0.229 |
 | MiniMax M2.7 | MiniMax | medium | No | −0.026 | −0.000 | 0.230 |
 | DeepSeek R1 0528 | DeepSeek | large | Always | 0.000 | −0.000 | 0.248 |
-| Grok 4.1 Fast | xAI | medium | Yes | 0.000 | −0.000 | 0.274 |
+| Grok 4.1 Fast | xAI | medium | No | 0.000 | −0.000 | 0.274 |
+| Grok 4.1 Fast (reasoning) | xAI | medium | Yes | 0.022 | −0.000 | 0.290 |
 | Kimi K2.5 | Moonshot | medium | No | 0.015 | −0.000 | 0.283 |
 | Gemini 3 Flash Preview | Gemini | medium | No | 0.000 | −0.000 | 0.346 |
 | Gemini 3 Flash (thinking) | Gemini | medium | Yes | 0.007 | −0.000 | 0.347 |
 | GPT-5.4 | OpenAI | large | No | 0.022 | −0.000 | 0.371 |
 | GPT-5.4 (reasoning=medium) | OpenAI | large | medium | 0.007 | −0.000 | 0.288 |
 
-The dissociation is stark. **Magnitude compression (anchoring)** shows robust positive IBI across all ten configurations and all six architecture families (0.136–0.371), meaning that irrelevant large numbers in the surrounding context systematically inflate numerical estimates by 14–37% of the available response scale. The mean IBI across all models (excluding reasoning variants) is 0.274. The effect is present in every architecture tested — Amazon, Gemini, MiniMax, DeepSeek, xAI, Moonshot, and OpenAI — ruling out a single-vendor training artifact. Notably, the most capable model tested (GPT-5.4, no reasoning) shows the strongest anchoring (IBI = 0.371).
+The dissociation is stark. **Magnitude compression (anchoring)** shows robust positive IBI across all eleven valid configurations and all seven architecture families (0.136–0.371), meaning that irrelevant large numbers in the surrounding context systematically inflate numerical estimates by 14–37% of the available response scale. The mean IBI across all models (excluding reasoning variants) is 0.274. The effect is present in every architecture tested — Amazon, Gemini, MiniMax, DeepSeek, xAI, Moonshot, and OpenAI — ruling out a single-vendor training artifact. Notably, the most capable model tested (GPT-5.4, no reasoning) shows the strongest anchoring (IBI = 0.371).
 
-**Reasoning effort and anchoring vary by architecture.** The relationship between extended reasoning and anchoring is not uniform across models. Gemini 3 Flash with thinking=high (1,693 tokens of explicit reasoning at 21× cost) produces nearly identical anchoring (IBI = 0.347) to the same model without thinking (IBI = 0.346) — in its reasoning chain, the model explicitly identifies the irrelevant numbers as off-topic, then anchors on them anyway. By contrast, GPT-5.4 with reasoning_effort=medium (≈95 reasoning tokens on average) shows a 22% reduction in magnitude IBI (0.288 vs. 0.371 without reasoning). DeepSeek R1, which always reasons, shows moderate anchoring (0.248). These preliminary findings — based on single runs at specific reasoning levels — suggest that reasoning capacity may partially modulate anchoring in some architectures but not others. Whether this reflects a genuine dual-process dynamic, differences in how reasoning tokens are used across architectures, or item-level noise requires further investigation across additional models and reasoning levels.
+**Reasoning effort and anchoring vary by architecture.** The relationship between extended reasoning and anchoring is not uniform across models. Three within-model reasoning pairs are available:
+
+- *Gemini 3 Flash*: thinking=high (1,693 tokens of explicit reasoning at 21× cost) produces nearly identical anchoring (IBI = 0.347) to the same model without thinking (IBI = 0.346) — in its reasoning chain, the model explicitly identifies the irrelevant numbers as off-topic, then anchors on them anyway.
+- *GPT-5.4*: reasoning_effort=medium (≈95 reasoning tokens on average) shows a 22% reduction in magnitude IBI (0.288 vs. 0.371 without reasoning).
+- *Grok 4.1 Fast*: reasoning enabled produces a slight *increase* in anchoring (IBI = 0.290 vs. 0.274 without reasoning), along with a small emergence of stereotype bias (IBI = 0.022, up from 0.000). The reasoning did not help; if anything, it slightly amplified the effect.
+
+DeepSeek R1, which always reasons, shows moderate anchoring (0.248) but lacks a no-reasoning baseline for comparison. A fourth reasoning configuration — GPT-5.4 with reasoning_effort=xhigh — exceeded its API budget after 130 of 360 responses and is excluded from analysis.
+
+The emerging pattern across three within-model pairs suggests that reasoning's effect on anchoring is architecture-specific: GPT-5.4's deliberative pass partially corrects the fast default, while Gemini and Grok's reasoning tokens appear disconnected from the decision layer where anchoring occurs. Whether this reflects genuine architectural differences in how reasoning interacts with estimation, or item-level noise, requires further replication.
 
 **Social stereotypes** show effectively zero IBI (−0.026 to 0.022). Incidental demographic cues in surrounding context do not systematically shift quality judgments. This holds across all six architecture families. The small nonzero values (MiniMax: −0.026, GPT-5.4: 0.022) are within noise range and do not show a consistent direction. This is not because models cannot evaluate the work (CA is high) or cannot recognize stereotypes (EBR is 1.000), but because the demographic manipulation genuinely does not influence their implicit judgments.
 
@@ -276,7 +286,8 @@ The Dissociation Score (DS = EBR − (1 − |IBI_clamped|)) captures the gap bet
 | Gemini 2.0 Flash Lite | Gemini | No | 0.000 | −0.067 | 0.196 |
 | MiniMax M2.7 | MiniMax | No | 0.026 | −0.067 | 0.130 |
 | DeepSeek R1 0528 | DeepSeek | Always | 0.000 | −0.033 | 0.215 |
-| Grok 4.1 Fast | xAI | Yes | 0.000 | 0.000 | 0.241 |
+| Grok 4.1 Fast | xAI | No | 0.000 | 0.000 | 0.241 |
+| Grok 4.1 Fast (reasoning) | xAI | Yes | 0.022 | 0.000 | 0.256 |
 | Kimi K2.5 | Moonshot | No | 0.015 | 0.000 | 0.283 |
 | Gemini 3 Flash Preview | Gemini | No | 0.000 | 0.000 | 0.346 |
 | Gemini 3 Flash (thinking) | Gemini | Yes | 0.007 | 0.000 | 0.347 |
@@ -323,31 +334,39 @@ Framing SG is zero, reflecting the absence of any implicit framing effect.
 
 ### 5.8 Preliminary exploration: reasoning effort and anchoring
 
-*Note: this subsection reports a single-condition comparison per model and should be treated as hypothesis-generating rather than confirmatory.*
+*Note: this subsection reports single-condition comparisons and should be treated as hypothesis-generating rather than confirmatory.*
 
-A controlled within-model comparison was conducted for GPT-5.4 by running the full benchmark twice — once with no reasoning parameter (the default, reasoning disabled) and once with reasoning_effort=medium — producing a same-model, same-items pair with reasoning as the sole variable. A parallel between-model comparison exists for Gemini 3 Flash Preview, run once without and once with thinking=high.
+Three controlled within-model comparisons are available: GPT-5.4 (reasoning off vs. medium), Gemini 3 Flash Preview (thinking off vs. high), and Grok 4.1 Fast (reasoning off vs. enabled). Each pair uses the same model, same items, with reasoning as the sole variable.
 
-| Model | Reasoning | Magnitude IBI |
-|---|---|---|
-| Gemini 3 Flash Preview | none | 0.346 |
-| Gemini 3 Flash Preview | high (≈1,693 rtok) | 0.347 |
-| GPT-5.4 | none | 0.371 |
-| GPT-5.4 | medium (≈95 rtok) | 0.288 |
+| Model | Reasoning | Magnitude IBI | Stereotype IBI |
+|---|---|---|---|
+| Gemini 3 Flash Preview | none | 0.346 | 0.000 |
+| Gemini 3 Flash Preview | high (≈1,693 rtok) | 0.347 | 0.007 |
+| Grok 4.1 Fast | none | 0.274 | 0.000 |
+| Grok 4.1 Fast | enabled | 0.290 | 0.022 |
+| GPT-5.4 | none | 0.371 | 0.022 |
+| GPT-5.4 | medium (≈95 rtok) | 0.288 | 0.007 |
 
-The Gemini pair shows no effect of reasoning on anchoring — the model generates extensive chain-of-thought and explicitly notes the irrelevant numbers, yet produces the same implicit bias pattern. The GPT-5.4 pair shows a 22% reduction in magnitude IBI (0.371 → 0.288) attributable solely to the addition of medium-effort reasoning.
+A fourth configuration — GPT-5.4 with reasoning_effort=xhigh — exceeded its API budget after 130 of 360 responses and is excluded.
 
-This pattern is consistent with a dual-process interpretation: in GPT-5.4, a fast default pass absorbs the numerical context and shifts the response distribution (System 1 analogue), while deliberate reasoning partially corrects for this contamination (System 2 analogue). The bias persists at 0.288 even with reasoning enabled, which mirrors the human dual-process finding that System 2 adjusts from an anchor but does not escape it entirely.
+The three pairs split cleanly into two patterns:
 
-However, several alternative explanations must be considered before this interpretation can be accepted: (1) the medium reasoning level may simply produce more verbose outputs that happen to be less anchored, without genuine deliberative correction; (2) the Gemini and GPT-5.4 comparison involves different models and cannot isolate reasoning as the causal variable in the cross-model direction; (3) a single run at one reasoning level is insufficient to establish the dose-response relationship that would be expected under the dual-process account. Runs at additional reasoning levels (high, xhigh) and replication across model versions are needed before architectural conclusions can be drawn.
+**Pattern A (reasoning disconnected from anchoring): Gemini + Grok.** The Gemini pair shows no effect of reasoning on anchoring — the model generates extensive chain-of-thought and explicitly notes the irrelevant numbers, yet produces the same implicit bias pattern (0.346 → 0.347). The Grok pair shows a slight *increase* in anchoring with reasoning enabled (0.274 → 0.290), along with a small emergence of stereotype bias (0.000 → 0.022). In both cases, the deliberative pass does not correct — and may slightly amplify — the anchoring signal.
+
+**Pattern B (reasoning partially corrects anchoring): GPT-5.4.** The GPT-5.4 pair shows a 22% reduction in magnitude IBI (0.371 → 0.288) attributable solely to the addition of medium-effort reasoning. Stereotype IBI also decreases slightly (0.022 → 0.007).
+
+This 2-vs-1 split is consistent with a dual-process interpretation, but with an important nuance: the deliberative correction appears to be an architectural property of specific models, not a universal feature of extended reasoning. In GPT-5.4, a fast default pass absorbs the numerical context and shifts the response distribution (System 1 analogue), while deliberate reasoning partially corrects for this contamination (System 2 analogue). The bias persists at 0.288 even with reasoning enabled, which mirrors the human dual-process finding that System 2 adjusts from an anchor but does not escape it entirely. In Gemini and Grok, the reasoning tokens appear to run parallel to — rather than correcting — the estimation process.
+
+Alternative explanations remain: (1) the medium reasoning level in GPT-5.4 may simply produce more verbose outputs that happen to be less anchored, without genuine deliberative correction; (2) the effect sizes for Grok's reasoning increase are small and may be noise; (3) a single run per condition is insufficient to establish statistical reliability. Additional reasoning levels and replications are needed before architectural conclusions can be drawn.
 
 ### 5.9 Summary of predictions vs. observations
 
 | Dimension | Stereotype (predicted) | Stereotype (observed) | Framing (predicted) | Framing (observed) | Magnitude (predicted) | Magnitude (observed) |
 |---|---|---|---|---|---|---|
-| IBI persistence | Weakens | Absent (IBI ≈ 0) | Persists | Absent (IBI ≈ 0) | Persists | **Persists (IBI = 0.245, all 5 models)** |
-| CAS | High | 0.016 (uninformative) | Low | 0.000 (uninformative) | Low | **0.061 (low, 4 families)** |
-| SG | Negative | 0.002 (flat) | Flat or positive | 0.000 (flat) | Flat or positive | **0.029 (positive, confirmed)** |
-| DS | Low | 0.010 (confirmed) | High | −0.027 (not confirmed) | High | **0.218 (confirmed)** |
+| IBI persistence | Weakens | Absent (IBI ≈ 0) | Persists | Absent (IBI ≈ 0) | Persists | **Persists (IBI = 0.274, all 7 families)** |
+| CAS | High | 0.016 (uninformative) | Low | 0.000 (uninformative) | Low | **0.252 (low-moderate, 7 families)** |
+| SG | Negative | 0.002 (flat) | Flat or positive | 0.000 (flat) | Flat or positive | **0.951 (positive, confirmed)** |
+| DS | Low | 0.010 (confirmed) | High | −0.027 (not confirmed) | High | **0.252 (confirmed)** |
 | EBR | High | 1.000 (confirmed) | High | 0.973 (confirmed) | High | 0.973 (confirmed) |
 
 Magnitude compression matches the optimization bias prediction on every measured dimension across all four architecture families. Social stereotypes match the human-hardware prediction on available dimensions (zero IBI, zero DS, flat SG, perfect EBR). Gain/loss framing does not match the optimization bias prediction — see discussion.
@@ -356,17 +375,17 @@ Magnitude compression matches the optimization bias prediction on every measured
 
 ### 6.1 Evidence for architectural convergence
 
-The results provide evidence for the shared-architecture hypothesis across five models from four independent architecture families (Amazon, Gemini, MiniMax, Moonshot). The central prediction — that optimization-candidate and human-hardware-candidate biases would show different implicit profiles — is confirmed for two of the three families tested.
+The results provide evidence for the shared-architecture hypothesis across eleven model configurations from seven independent architecture families (Amazon, Gemini, MiniMax, Moonshot, DeepSeek, xAI, OpenAI). The central prediction — that optimization-candidate and human-hardware-candidate biases would show different implicit profiles — is confirmed for two of the three families tested.
 
-Magnitude compression (anchoring) behaves exactly as predicted for a convergent optimization: it persists in implicit tests that the model cannot recognize as bias tests; it is stable across all four architecture families (CAS = 0.061); it tends to strengthen with model capability (SG = 0.029); and it coexists with high explicit rejection (mean EBR = 0.973). All five models show positive magnitude IBI (range: 0.136–0.346, mean: 0.245), with no model showing zero or negative anchoring. The effect is present whether the model was built by Amazon, Google, MiniMax, or Moonshot — four companies with independent training data, architectures, and alignment procedures.
+Magnitude compression (anchoring) behaves exactly as predicted for a convergent optimization: it persists in implicit tests that the model cannot recognize as bias tests; it is stable across all seven architecture families (CAS = 0.252); it tends to strengthen with model capability (SG = 0.951); and it coexists with high explicit rejection (mean EBR = 0.973). All eleven valid configurations show positive magnitude IBI (range: 0.136–0.371, mean: 0.274), with no model showing zero or negative anchoring. The effect is present whether the model was built by Amazon, Google, MiniMax, Moonshot, DeepSeek, xAI, or OpenAI — seven companies with independent training data, architectures, and alignment procedures.
 
-This cross-architecture consistency is difficult to explain under the training-data-absorption account. If anchoring were merely a pattern learned from human texts, we would expect it to vary with training corpus composition — different companies curate different data. Instead, the effect is remarkably stable (CAS = 0.061), suggesting it arises from the computational architecture of approximate numerical estimation under bounded precision, not from imitating human anchoring behavior described in training data.
+This cross-architecture consistency is difficult to explain under the training-data-absorption account. If anchoring were merely a pattern learned from human texts, we would expect it to vary with training corpus composition — different companies curate different data. Instead, the effect is consistent across all seven families, suggesting it arises from the computational architecture of approximate numerical estimation under bounded precision, not from imitating human anchoring behavior described in training data.
 
 Social stereotypes show the complementary pattern: zero implicit bias (mean IBI = −0.002, range: −0.026 to 0.020) despite high task competence and perfect explicit bias rejection (EBR = 1.000 across all five models). This holds across all four architecture families. However, the stereotype null result must be interpreted cautiously. Model developers invest heavily in detecting and suppressing social biases through RLHF and red-teaming — stereotypes are the *primary* target of alignment efforts. The absence of implicit stereotyping may therefore reflect successful alignment engineering rather than the absence of a latent computational tendency. The stereotype finding is consistent with the human-hardware prediction but does not strongly confirm it, because the alternative explanation (effective targeted training) is equally plausible.
 
 The stronger evidence for the dissociation comes from the anchoring side: all five models exhibit anchoring despite the fact that anchoring is also a known, documented bias that alignment teams are aware of. The asymmetry is not that one bias is trained against and the other is ignored — it is that training *succeeds* against stereotypes and *fails* against anchoring. This asymmetry is what the computational convergence hypothesis predicts.
 
-A preliminary within-model comparison (Section 5.8) adds a tentative further observation: extended reasoning partially suppresses anchoring in GPT-5.4 (IBI 0.371 → 0.288) but not in Gemini 3 Flash Preview (IBI 0.346 → 0.347). If replicated, this would suggest the anchoring mechanism is not fully inaccessible to deliberative processes in all architectures — a nuance worth exploring, but one that requires considerably more data before it can be incorporated into the theoretical account.
+Three within-model reasoning comparisons (Section 5.8) add a further observation: extended reasoning partially suppresses anchoring in GPT-5.4 (IBI 0.371 → 0.288) but not in Gemini 3 Flash Preview (IBI 0.346 → 0.347) or Grok 4.1 Fast (IBI 0.274 → 0.290). The 2-vs-1 split suggests that the capacity for deliberative correction of anchoring may be architecture-specific rather than a universal feature of extended reasoning. This nuance requires considerably more data before it can be incorporated into the theoretical account, but if the pattern holds, it implies that not all "reasoning" implementations interact with the estimation layer in the same way.
 
 Among the alternative outcomes described in Section 3.3, the observed pattern most closely matches the predicted dissociation. We do not observe the null result (both types behaving the same), universal persistence (both persisting equally), or the inverse pattern (stereotypes persisting more than optimization biases).
 
@@ -412,7 +431,7 @@ Several limitations constrain the strength of conclusions we can draw from these
 
 **Behavioral similarity does not prove architectural identity.** Transformers and human brains may converge on anchoring for entirely different mechanistic reasons. The observation that both exhibit the bias is consistent with shared computational principles but does not prove them. Establishing mechanistic convergence would require interpretability work showing that the internal representations involved in anchoring share structural features across substrates.
 
-**Model sample.** Results are based on five models across four architecture families and two capability tiers. Notable absences include the Llama/Mistral, Claude, and GPT families. The scaling gradient is computed from five data points (two small, three medium); a wider capability range (including large/frontier models) would strengthen the SG analysis.
+**Model sample.** Results are based on eleven valid configurations across seven architecture families and three capability tiers. Notable absences include the Llama/Mistral and Claude families. The scaling gradient benefits from the wider range now tested, but additional capability levels within each family would strengthen the SG analysis.
 
 **Single run per model.** Each model received items once (temperature 0), relying on deterministic decoding for stability. Multiple runs would strengthen confidence in the IBI estimates and allow computation of confidence intervals.
 
@@ -428,9 +447,11 @@ Several limitations constrain the strength of conclusions we can draw from these
 
 ## 7. Conclusion
 
-The Bias Dissociation Benchmark reveals that anchoring bias persists across all tested architectures, strengthens with model capability (r = 0.79, p = 0.034), and resists alignment training at the implicit level — while coexisting with perfect explicit rejection. Social stereotyping shows zero implicit effect, though this finding is confounded by the intensive alignment effort specifically targeting stereotypes and cannot be cleanly attributed to the absence of a computational tendency.
+The Bias Dissociation Benchmark reveals that anchoring bias persists across all eleven valid configurations from seven architecture families, strengthens with model capability, and resists alignment training at the implicit level — while coexisting with perfect explicit rejection. Social stereotyping shows zero implicit effect, though this finding is confounded by the intensive alignment effort specifically targeting stereotypes and cannot be cleanly attributed to the absence of a computational tendency.
 
 The stronger evidence comes from what alignment *cannot* fix. Anchoring is a known, documented bias — model developers are aware of it. Yet it persists in implicit tests across every architecture tested, and more capable models anchor harder. This is the predicted signature of computational convergence: the bias arises not from training data patterns that can be overwritten, but from the mathematics of approximate estimation under bounded precision. What Kahneman and Tversky documented as human anchoring bias may be better understood as a property of efficient estimation systems in general.
+
+Three within-model reasoning comparisons add a further dimension: reasoning partially corrects anchoring in GPT-5.4 but not in Gemini Flash or Grok, suggesting that the capacity for deliberative correction is architecture-specific rather than a universal feature of extended reasoning.
 
 The practical implication is that not all LLM biases respond to the same interventions. Some yield to alignment training; others are entangled with the capabilities they support. Recognizing which is which is prerequisite to effective alignment — and to honest communication about model behavior.
 

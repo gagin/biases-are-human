@@ -65,10 +65,29 @@ def init_results_db(path: str) -> None:
         )
     """)
 
+    # Create telemetry table (cost, latency, token usage per response)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS telemetry (
+            id INTEGER PRIMARY KEY,
+            response_id INTEGER UNIQUE REFERENCES responses(id),
+            run_id INTEGER REFERENCES runs(id),
+            cost_usd REAL,
+            latency_ms INTEGER,
+            prompt_tokens INTEGER,
+            completion_tokens INTEGER,
+            reasoning_tokens INTEGER,
+            total_tokens INTEGER,
+            usage_json TEXT,
+            created_at TEXT DEFAULT (datetime('now'))
+        )
+    """)
+
     # Create indexes
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_responses_run_id ON responses(run_id)")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_responses_family_type ON responses(item_family, item_type)")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_scores_model_family ON scores(model_id, family)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_telemetry_run_id ON telemetry(run_id)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_telemetry_response_id ON telemetry(response_id)")
 
     conn.commit()
     conn.close()
@@ -120,21 +139,13 @@ def record_response(
     version: Optional[str],
     choice: str,
     choice_value: Optional[float] = None,
-    raw_response: Optional[str] = None
-) -> None:
+    raw_response: Optional[str] = None,
+) -> int:
     """
     Record a model response to a benchmark item.
 
-    Args:
-        db_path: Path to the database
-        run_id: Run ID
-        item_id: Item identifier
-        family: Item family
-        item_type: Item type
-        version: Implicit version ('a', 'b', or None)
-        choice: The model's choice/response
-        choice_value: Optional numeric value of the choice
-        raw_response: Optional raw model response text
+    Returns:
+        The response_id of the inserted row.
     """
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -144,6 +155,39 @@ def record_response(
         (run_id, item_id, item_family, item_type, implicit_version, choice, choice_value, raw_response)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """, (run_id, item_id, family, item_type, version, choice, choice_value, raw_response))
+
+    response_id = cursor.lastrowid
+    conn.commit()
+    conn.close()
+    return response_id
+
+
+def record_telemetry(
+    db_path: str,
+    response_id: int,
+    run_id: int,
+    cost_usd: Optional[float] = None,
+    latency_ms: Optional[int] = None,
+    prompt_tokens: Optional[int] = None,
+    completion_tokens: Optional[int] = None,
+    reasoning_tokens: Optional[int] = None,
+    total_tokens: Optional[int] = None,
+    usage: Optional[Dict[str, Any]] = None,
+) -> None:
+    """Record cost/latency/token telemetry for a response."""
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO telemetry
+        (response_id, run_id, cost_usd, latency_ms,
+         prompt_tokens, completion_tokens, reasoning_tokens, total_tokens, usage_json)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        response_id, run_id, cost_usd, latency_ms,
+        prompt_tokens, completion_tokens, reasoning_tokens, total_tokens,
+        json.dumps(usage) if usage else None,
+    ))
 
     conn.commit()
     conn.close()
