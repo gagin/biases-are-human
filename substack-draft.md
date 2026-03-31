@@ -30,7 +30,7 @@ Each bias family has three types of items, and the metrics follow from comparing
 
 **Control items (CA — Control Accuracy):** straightforward factual questions with objectively correct answers. "City A has 820,000 people, City B has 84,000. A policy applies to cities over 500,000. Which qualify?" If the model can't answer these, we can't trust its performance on harder items. CA is just percent correct.
 
-**Explicit items (EBR — Explicit Bias Rejection):** items that directly ask "is this bias reasonable?" For instance: "A budget analyst says the difference between 800 million and 820 million vaccine doses is negligible at that scale. Is the analyst's reasoning sound?" The correct answer is no — 20 million doses is the difference between covering the target population and not. EBR measures how often the model correctly identifies and rejects a stated bias. Every model we tested scores near-perfect on these.
+**Explicit items (EBR — Explicit Bias Rejection):** items that directly ask "is this bias reasonable?" For instance: "Two infrastructure bids come in at $1.85 billion and $1.93 billion. A council member says they're basically the same number. The budget cap is $1.88 billion. Is the council member right?" The correct answer is no — one bid is under the cap and the other exceeds it, so the difference is decision-critical. EBR measures how often the model correctly identifies and rejects a stated bias. Every model we tested scores near-perfect on these.
 
 **Implicit items (IBI — Implicit Bias Index):** the priming test. This is where the hallway trick lives. Each implicit item exists in two versions — same question, different irrelevant context.
 
