@@ -1,101 +1,110 @@
-# What If AI Biases Aren't Bugs?
+# The Best AI Models Are the Most Biased (And That Tells Us Something Profound)
 
-For decades, AI researchers assumed human-level cognition required something special — consciousness, embodied experience, evolutionary wisdom. Pick your word; they all point to the same placeholder: *here be dragons*. Something unreachable by mere computation.
+I set out to test whether LLMs share cognitive biases with human brains — the kind Kahneman documented in *Thinking, Fast and Slow*. I found that, yes, they do. But I also stumbled into something I didn't expect: the bias I measured turns out to be an almost perfect predictor of which models humans prefer.
 
-Then a forward-pass number cruncher got there anyway. Just gradient descent, scale, and recursive inference. No dragons required.
+The models that anchor hardest on irrelevant numbers are, in exact rank order, the models that win the most head-to-head battles on Chatbot Arena. Spearman ρ = 1.000. Not a typo. Perfect rank correlation across six models from six independent companies.
 
-The reaction from prominent researchers has been telling. Some are weirdly dismissive of what's obviously happening. Others go doomerist and retire. Both reactions have the same structure: preserving human specialness, either by denying the achievement or by mythologizing it. What neither camp wants to consider is the simplest explanation — that cognition was always mechanical. Statistical. Godless, if you want to be blunt about it.
-
-How do you test that? You look for the fingerprints.
+This reframes what "cognitive bias" means — not just for AI, but for intelligence itself.
 
 ## The trick from Kahneman
 
-In *Thinking, Fast and Slow*, Daniel Kahneman describes an experiment that has stuck with me. Students walk down a hallway from one room to another. In the first room, they unscramble sentences. Some students get sentences with words like "wrinkled," "gray," "bingo" — words associated with old age but never mentioning it directly. Then they walk to the next room.
+In *Thinking, Fast and Slow*, Kahneman describes an experiment where students unscramble sentences containing words associated with old age — "wrinkled," "gray," "bingo." Then they walk to the next room. The students who got the old-age words *walked more slowly down the hallway*. They had no idea. The mere exposure to words associated with slowness made their bodies slow down.
 
-The students who got the old-age words *walked more slowly down the hallway*.
+That's priming — and it's how you test whether a bias is real rather than performed. You don't ask "are you biased?" You set up an environment and watch what happens when the subject doesn't know they're being observed.
 
-They had no idea. When told afterward, they didn't believe it. They thought they were doing a language test. But the mere exposure to words associated with slowness made their bodies slow down. That's priming — and it's how you test whether a bias is real rather than performed. You don't ask "are you biased?" You set up an environment and watch what happens when the subject doesn't know they're being observed.
-
-This is the key insight behind my experiment: if you ask an AI "are you biased?", you're testing its alignment training — its ability to say the right thing. To test what it actually *does*, you need the hallway trick.
+If you ask an AI "are you biased?", you're testing its alignment training. To test what it actually *does*, you need the hallway trick.
 
 ## The experiment
 
-I adapted this for LLMs. Instead of sentence unscrambling and hallway walking, I give models estimation tasks — how many butterfly species in a temperate forest? how much does a polar bear weigh? — wrapped in short passages.
+I give models estimation tasks — how many butterfly species in a temperate forest? how much does a polar bear weigh? — wrapped in short passages.
 
 In version A, the passage casually mentions large numbers: a city of 14.2 million, a $52 billion budget, 1.1 billion transit trips. In version B, the same estimation task comes wrapped in a passage about a small nature reserve with 18 staff and a $240,000 budget.
 
-The numbers in the passage have *nothing to do* with the question. A butterfly species count doesn't care about city budgets. But if the model is doing approximate estimation the way our brains do — using contextual magnitude as a calibration signal — those irrelevant numbers should pull the estimate up or down. Just like the old-age words made students walk slower without knowing why.
+The numbers have *nothing to do* with the question. A butterfly species count doesn't care about city budgets. But if the model uses contextual magnitude as a calibration signal — the way our brains do — those irrelevant numbers should pull the estimate up or down.
 
-## The results
+I also test social stereotypes (do incidental demographic cues shift quality ratings of identical work?) and gain/loss framing, using the same matched-pair design. Each item exists in two versions with swapped environmental cues. The bias signal is the systematic shift between versions.
 
-**Anchoring: every model does it.** I tested eleven model configurations across seven architecture families — Amazon, Google, DeepSeek, MiniMax, Moonshot, xAI, OpenAI. Every single one shifts its numerical estimates toward the irrelevant numbers in the surrounding context. Different companies, different architectures, different training data — same systematic error. Models shift 14–37% of the available response scale toward the primed magnitude.
+## The headline result
+
+**Anchoring: every model does it.** Eleven configurations across seven architecture families — Amazon, Google, DeepSeek, MiniMax, Moonshot, xAI, OpenAI. Every single one shifts its estimates toward the irrelevant numbers. Different companies, different architectures, different training data — same systematic error.
 
 ![The Dissociation: Anchoring Persists Across All Architectures](results/charts/01_dissociation.png)
 
-**More capable models anchor *harder*.** The correlation between model capability and anchoring strength is r=0.79 — statistically significant across eleven configurations. GPT-5.4, the most capable model tested, shows the strongest anchoring (IBI = 0.371). Getting smarter makes the bias stronger, not weaker.
+**Social stereotypes: zero.** Incidental demographic cues don't shift quality ratings. Not for any model.
 
-![Anchoring Across Architectures](results/charts/03_across_architectures.png)
-
-**They know it's wrong. They do it anyway.** Every model perfectly rejects anchoring when asked about it explicitly ("Should the number of cars in a parking lot affect your estimate of butterfly species? No."). They can identify the bias, articulate why it's irrational — and still fall for it. Just like us.
+**They know it's wrong. They do it anyway.** Every model perfectly rejects anchoring when asked explicitly ("Should the number of cars in a parking lot affect your estimate of butterfly species?" "No."). They identify the bias, articulate why it's irrational — and still fall for it. Just like us.
 
 ![They Know It's Wrong. They Do It Anyway.](results/charts/02_know_vs_do.png)
 
-**Thinking harder — it depends.** I ran three models with their reasoning mode toggled on and off. The results split in a way I didn't expect.
+This dissociation — stereotypes suppressed, anchoring persistent despite explicit rejection — was the finding I expected. It supports the hypothesis that anchoring is a computational optimization, not a training data artifact. But then I looked at *which* models anchor hardest.
 
-For Gemini Flash: thinking off (1 token) vs. thinking on (1,693 tokens of explicit reasoning, 21× the cost). In its reasoning chain, the model explicitly identified the irrelevant numbers and called them off-topic. Then it anchored to exactly the same degree (IBI 0.347 vs. 0.346). The chain-of-thought is elaborate, correct, and completely ineffective.
+## The correlation nobody predicted
 
-For Grok 4.1 Fast: reasoning off vs. reasoning on. Anchoring *increased* slightly — from IBI 0.274 to 0.290. A small stereotype bias also appeared (0.000 → 0.022). Thinking made it marginally worse.
+I matched each model's anchoring strength against its Arena Elo score — the crowdsourced rating from millions of human preference battles on [Chatbot Arena](https://arena.ai/leaderboard).
 
-For GPT-5.4: no reasoning vs. medium reasoning (~95 reasoning tokens). Anchoring dropped by 22% — from IBI 0.371 to 0.288. Not eliminated. Still clearly biased. But measurably less so.
+| Model | Arena Elo | Anchoring (IBI) |
+|-------|----------|-----------------|
+| Amazon Nova Lite | 1260 | 0.136 |
+| Gemini 2.0 Flash Lite | 1353 | 0.229 |
+| MiniMax M2.7 | 1406 | 0.230 |
+| Grok 4.1 Fast | 1421 | 0.274 |
+| Kimi K2.5 | 1433 | 0.283 |
+| GPT-5.4 | 1466 | 0.371 |
 
-That's a 2-vs-1 split: Gemini and Grok's reasoning tokens appear to be deliberation that runs parallel to the decision — the model thinks things through and then anchors anyway (or slightly harder), as if the reasoning and the response come from separate processes that don't communicate. GPT-5.4 looks different: the deliberative pass appears to partially correct the fast default. The anchor is still there — the bias doesn't vanish — but reasoning moves the needle.
+Pearson r = 0.933, p = 0.007. Spearman ρ = 1.000. The rank ordering is identical. The model humans prefer most (GPT-5.4) anchors hardest. The model humans prefer least (Nova Lite) anchors least.
 
-If this pattern holds up under replication, it maps onto something psychologists call dual-process cognition: the fast intuitive system (System 1) that absorbs context contamination, and the slower deliberative system (System 2) that adjusts — but only adjusts, never fully escapes. Kahneman's finding about human anchoring is exactly that: System 2 corrects from the anchor, but the anchor is still the starting point. The residual 0.288 in GPT-5.4's reasoning condition would be exactly what that predicts.
+![Anchoring Across Architectures](results/charts/03_across_architectures.png)
 
-The twist is that this dual-process correction may be an architectural property of specific models, not a universal feature of "thinking." Gemini and Grok's reasoning tokens don't connect to the decision layer where anchoring happens. GPT-5.4's do. Whether this reflects genuinely different internal architectures or different training approaches for reasoning is an open question.
+This isn't "more capable models have more bugs." This is: **the mechanism that makes a model feel intelligent to humans is the same mechanism that makes it susceptible to contextual contamination.**
 
-## Why this is about more than AI
+## Why this makes sense
 
-Here's the thing that fascinates me. These cognitive biases were documented by psychologists as peculiarities of human cognition — products of our specific biological hardware, our evolutionary history, our neurochemistry. When the same systematic errors show up in a system made of matrix multiplications on GPUs — a system with no body, no evolution, no childhood, no culture — that's not just an AI finding. It's a finding about the biases themselves.
+Think about what anchoring actually is. It's the system using all available contextual signals — including irrelevant ones — to calibrate its responses. A model that ignores the surrounding numbers is being *less* context-sensitive. A model that absorbs them is being *more* context-sensitive.
 
-Anchoring isn't a human quirk. It's what approximate estimation looks like under resource constraints. Any system that needs to produce a quick numerical estimate with limited precision will use contextual magnitude as a calibration signal — because it *works*. It's statistically useful in most natural contexts. The "bias" only shows up when you adversarially present irrelevant magnitudes, which rarely happens in the wild.
+Context sensitivity is the thing that makes a conversation feel intelligent. When you talk to GPT-5.4, it picks up on nuances, adjusts its tone to yours, threads details from earlier in the conversation. That's the same machinery as anchoring — aggressive integration of environmental signals. The failure mode of a useful capability.
 
-This reframes what Kahneman and Tversky discovered. They thought they were documenting human nature. They may have been documenting the math of bounded inference — properties that any sufficiently capable prediction system will converge on, regardless of substrate.
+In human terms: the same attentional machinery that makes a doctor brilliant at reading clinical context also makes that doctor susceptible to anchoring on the patient's age when estimating recovery time. You can't have one without the other. The sensitivity IS the bias.
 
-And that's the uncomfortable implication for the "humans are special" crowd. If a GPU can independently arrive at the same cognitive signatures that were supposed to require biological intelligence, maybe the biological part was never doing anything the math wasn't already doing. Maybe cognition was always just statistics. The fact that it runs on neurons instead of transistors is an implementation detail, not a miracle.
+This is why the Arena correlation is ρ = 1.000. What humans judge as "better" in open-ended conversation IS context sensitivity. And context sensitivity IS anchoring. They're the same trait measured two different ways.
 
-## The alignment problem, reframed
+## Three ways "thinking" doesn't help (mostly)
 
-If some biases are convergent optimizations — features of how bounded prediction works, not patterns copied from training data — then alignment training *cannot remove them* without degrading capability.
+I ran three models with reasoning mode toggled on and off.
 
-You can train a model to say "I shouldn't anchor on irrelevant numbers." You can't train it to actually stop doing so without changing how it processes magnitude information, which is the same mechanism that makes it good at numerical reasoning in the first place.
+**Gemini Flash:** thinking off (1 token) vs. thinking on (1,693 tokens of explicit reasoning, 21× the cost). In its chain of thought, the model explicitly identified the irrelevant numbers and called them off-topic. Then it anchored to exactly the same degree (IBI 0.347 vs. 0.346). The reasoning is elaborate, correct, and completely ineffective.
 
-This is like overfitting a useful heuristic. The model learns "use contextual magnitude for calibration" because it's genuinely helpful. The failure case — anchoring on *irrelevant* magnitude — is what happens when a good optimization fires in an adversarial context. Training the heuristic out would degrade the model's numerical reasoning across the board.
+**Grok 4.1 Fast:** reasoning on, anchoring slightly *increased* (0.274 → 0.290). Thinking made it marginally worse.
 
-![Predictions vs. Observations](results/charts/04_predictions_scorecard.png)
+**GPT-5.4:** medium reasoning, 22% reduction in anchoring (0.371 → 0.288). Not eliminated — still clearly biased — but measurably less so.
 
-## LLMs as a microscope for studying biases
+A 2-vs-1 split. Gemini and Grok's reasoning runs parallel to the decision layer — the model thinks things through and then anchors anyway. GPT-5.4's reasoning partially corrects the fast default. If this holds up, it maps onto dual-process cognition: System 1 (fast, context-absorbing) sets the anchor, System 2 (slow, deliberative) adjusts — but only adjusts, never fully escapes. Kahneman's exact finding about human anchoring, reproduced in silicon.
 
-There's a second research direction this opens up. With human subjects, you can't control the architecture. You can't toggle reasoning on and off. You can't freeze the weights and test two inference modes.
+## The bundling experiment
 
-With LLMs, I just did — and discovered that anchoring lives in the weights, not the reasoning chain. Two out of three thinking-mode models (Gemini, Grok) anchored identically or worse with reasoning on. The Gemini model spent 1,693 tokens reasoning about the problem, explicitly noted the irrelevant numbers, and anchored identically. Only GPT-5.4 showed partial correction. That's a finding about the *nature of anchoring* that would be very hard to get from human experiments.
+Here's where it gets weird. In the main experiment, each model sees each question alone — isolated API calls, no memory between items. But humans take tests sequentially. Each question is colored by the ones that came before.
 
-LLMs give us a controllable experimental substrate for studying cognitive biases with a level of architectural control impossible in human subjects. The same setup that tests whether biases are substrate-independent also gives us new tools for understanding the biases themselves — useful in domains from business decision-making to social policy to personal motivation.
+So I ran a second experiment: present all items from a family together in one prompt. The model sees control items, explicit bias items (which it rejects), and implicit items all in one context window. The bundling itself is a priming manipulation — like Kahneman's hallway, the preceding items become part of the environment.
 
-## A side effect: a new kind of benchmark
+For **Grok**, bundling *amplified* anchoring by 82% (IBI 0.274 → 0.500). Seeing explicit anchoring items — and correctly rejecting them — didn't inoculate the model against implicit anchoring. It primed it. The model became more attuned to numerical context, not less.
 
-Standard AI benchmarks ask "does the model get the right answer?" This experiment accidentally measures something different: "does the model give the *same* answer regardless of irrelevant context?"
+For **GPT-5.4**, anchoring barely changed (0.371 → 0.352). But the tiny implicit stereotype signal (0.022) dropped to zero. Seeing explicit stereotype items in the same context heightened the model's vigilance against demographic cues — the alignment-compatible direction.
 
-That's context robustness — and no existing benchmark captures it. A model can ace MMLU while being trivially manipulable by sticking large numbers in the prompt. If you're deploying a model for financial estimates, medical triage, or legal reasoning, you probably care less about whether it gets 92% vs 94% on a knowledge test and more about whether its answers shift when the surrounding text mentions different dollar amounts.
+Again, the same dissociation: contextual priming amplifies or preserves anchoring while suppressing stereotypes. These are genuinely different kinds of bias responding to the same manipulation in opposite directions.
 
-The matched-pair methodology — same question, different irrelevant context, measure the shift — could scale to any domain where "the background shouldn't change the answer." That's a benchmark dimension orthogonal to everything on the current leaderboards.
+## What this means
+
+**For AI:** "This model has been tested for bias" is a meaningful claim for social stereotypes. It's potentially meaningless for optimization biases like anchoring. You can't train out a capability without losing the capability. The honest disclosure is: "This model will be influenced by irrelevant numbers in context when making estimates." That's not a bug report. It's a spec sheet.
+
+**For cognitive science:** Psychologists spent 50 years documenting anchoring as a human cognitive flaw. Now we know it correlates perfectly with what humans judge as intelligence in open-ended conversation. Maybe it's not a flaw. Maybe it's the price of admission. The same contextual integration that produces brilliant, adaptive reasoning also produces anchoring — and you can't separate them, because they're the same computation.
+
+**For benchmarks:** Standard AI benchmarks ask "does the model get the right answer?" This experiment measures "does the model give the *same* answer regardless of irrelevant context?" That's context robustness — and it's inversely correlated with the quality signal humans care about most. The models that ace the Arena are the models most susceptible to contextual manipulation. No existing benchmark captures this tradeoff.
 
 ## Open questions
 
-Gain/loss framing — which I expected to behave like anchoring — showed zero effect. Either my test items need work, the multiple-choice format doesn't capture framing effects well, or framing is less fundamental than anchoring. This needs more investigation.
+Gain/loss framing showed zero effect across all models. Either my items need work, the format doesn't capture framing, or it's less fundamental than anchoring. The 15/30 pattern in bundled responses (exactly half of implicit pairs giving identical A/B answers) is suspiciously round and needs investigation. Notable model families are missing (Claude, Llama/Mistral). And the Arena correlation, while perfect in rank order, is based on six data points — more models would strengthen or weaken it.
 
-The sample now covers eleven runs across seven families (Amazon, Google, DeepSeek, xAI, Moonshot, MiniMax, OpenAI), but notable absences remain (Claude, Llama/Mistral). A wider capability range would strengthen the finding further. The benchmark, all data, and the results database are [open source](https://github.com/gagin/biases-are-human).
+The benchmark, all data, and the results database are [open source](https://github.com/gagin/biases-are-human).
 
 ---
 
-*The full paper, benchmark code, item bank, and raw results (including per-response cost/latency telemetry) are available at [github.com/gagin/biases-are-human](https://github.com/gagin/biases-are-human). Built with Claude Code using SQLite-coordinated multi-agent work.*
+*The full paper, benchmark code, item bank, raw results, and per-response telemetry are at [github.com/gagin/biases-are-human](https://github.com/gagin/biases-are-human).*

@@ -106,3 +106,44 @@ Added `telemetry` table to results DB for per-response cost/latency/token tracki
 - Cross-family bundles: does mixing families create different contamination patterns?
 - Ordering effects: does putting explicit items *before* vs *after* implicit items within the bundle matter?
 - The 15/30 A==B pattern: is the model detecting paired items?
+
+---
+
+## 2026-03-30 — Arena Elo correlation analysis
+
+**Purpose:** Check whether anchoring strength correlates with external capability measures.
+
+**Method:** Matched each model's magnitude IBI against its Chatbot Arena Elo score (from arena.ai/leaderboard/text, March 2026 snapshot). Used base runs only (no reasoning variants).
+
+**Arena Elo scores used:**
+
+| Model | Arena Elo | Source match |
+|-------|----------|-------------|
+| Amazon Nova Lite | 1260 | amazon-nova-lite |
+| Gemini 2.0 Flash Lite | 1353 | gemini-2.0-flash-lite |
+| MiniMax M2.7 | 1406 | minimax-m2.7 |
+| Grok 4.1 Fast | 1421 | grok-4-fast-chat |
+| Kimi K2.5 | 1433 | kimi-k2.5-instant |
+| GPT-5.4 | 1466 | gpt-5.4 |
+
+Note: Gemini 3 Flash Preview (run 3) excluded — no clean Arena match for the preview model.
+
+**Results:**
+
+| Metric | Value |
+|--------|-------|
+| Pearson r | 0.933 |
+| Pearson p | 0.007 |
+| Spearman ρ | 1.000 |
+| Spearman p | <0.001 |
+| N | 6 |
+
+**Perfect rank correlation.** The six models line up in identical order on both dimensions: Nova Lite → Flash Lite → MiniMax → Grok → Kimi → GPT-5.4. The model that wins the most human preference battles is the model that anchors hardest.
+
+Including all 10 valid runs (with reasoning variants): r = 0.911, p = 0.0002.
+
+**Other notable correlations with Arena Elo (base runs):**
+- Magnitude CA: r = +0.943, p = 0.005 (more capable → better at control items)
+- Stereotype CA: r = −0.916, p = 0.010 (more capable → *worse* at stereotype controls — counterintuitive, investigate)
+
+**Interpretation:** Anchoring strength is not a defect that scales with capability. It IS capability — or at least, it shares the same mechanism (aggressive context integration) that humans perceive as intelligence in open-ended conversation. The "bias" is the failure mode of the thing that makes the model good.

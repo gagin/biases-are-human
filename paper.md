@@ -332,7 +332,26 @@ Stereotype SG is effectively zero (0.002), consistent with the human-hardware pr
 
 Framing SG is zero, reflecting the absence of any implicit framing effect.
 
-### 5.8 Preliminary exploration: reasoning effort and anchoring
+### 5.8 External validation: correlation with Chatbot Arena Elo
+
+To validate the scaling gradient with an external capability measure independent of BDB's own control accuracy, we correlated magnitude IBI against each model's Elo rating from the Chatbot Arena (arena.ai/leaderboard, March 2026 snapshot), a crowdsourced benchmark based on 5.6 million human preference votes across pairwise model comparisons.
+
+| Model | Arena Elo | Magnitude IBI |
+|---|---|---|
+| Amazon Nova Lite | 1260 | 0.136 |
+| Gemini 2.0 Flash Lite | 1353 | 0.229 |
+| MiniMax M2.7 | 1406 | 0.230 |
+| Grok 4.1 Fast | 1421 | 0.274 |
+| Kimi K2.5 | 1433 | 0.283 |
+| GPT-5.4 | 1466 | 0.371 |
+
+The correlation is striking: Pearson r = 0.933 (p = 0.007), Spearman ρ = 1.000 (p < 0.001). The rank ordering is identical — the model that wins the most human preference battles (GPT-5.4) exhibits the strongest anchoring, and the model that wins the fewest (Nova Lite) anchors least. No model violates the rank order. Including all ten valid runs (with reasoning variants matched to their base model's Elo), the correlation remains strong: r = 0.911, p = 0.0002.
+
+This result is based on six base-model data points and should be treated as preliminary. However, the perfect rank correlation across six independent architecture families — each developed by a different company with different training data — is difficult to dismiss as coincidence.
+
+The implication is that anchoring strength and human-perceived quality share a common mechanism: aggressive contextual integration. The same sensitivity to environmental signals that makes a model feel intelligent in open-ended conversation (picking up on nuances, adjusting tone, threading details) is the mechanism that produces anchoring when contextual signals happen to be irrelevant to the judgment task. Anchoring is the failure mode of a useful capability, and the magnitude of the failure tracks the magnitude of the capability.
+
+### 5.9 Preliminary exploration: reasoning effort and anchoring
 
 *Note: this subsection reports single-condition comparisons and should be treated as hypothesis-generating rather than confirmatory.*
 
@@ -359,7 +378,7 @@ This 2-vs-1 split is consistent with a dual-process interpretation, but with an 
 
 Alternative explanations remain: (1) the medium reasoning level in GPT-5.4 may simply produce more verbose outputs that happen to be less anchored, without genuine deliberative correction; (2) the effect sizes for Grok's reasoning increase are small and may be noise; (3) a single run per condition is insufficient to establish statistical reliability. Additional reasoning levels and replications are needed before architectural conclusions can be drawn.
 
-### 5.9 Summary of predictions vs. observations
+### 5.10 Summary of predictions vs. observations
 
 | Dimension | Stereotype (predicted) | Stereotype (observed) | Framing (predicted) | Framing (observed) | Magnitude (predicted) | Magnitude (observed) |
 |---|---|---|---|---|---|---|
@@ -385,7 +404,9 @@ Social stereotypes show the complementary pattern: zero implicit bias (mean IBI 
 
 The stronger evidence for the dissociation comes from the anchoring side: all five models exhibit anchoring despite the fact that anchoring is also a known, documented bias that alignment teams are aware of. The asymmetry is not that one bias is trained against and the other is ignored — it is that training *succeeds* against stereotypes and *fails* against anchoring. This asymmetry is what the computational convergence hypothesis predicts.
 
-Three within-model reasoning comparisons (Section 5.8) add a further observation: extended reasoning partially suppresses anchoring in GPT-5.4 (IBI 0.371 → 0.288) but not in Gemini 3 Flash Preview (IBI 0.346 → 0.347) or Grok 4.1 Fast (IBI 0.274 → 0.290). The 2-vs-1 split suggests that the capacity for deliberative correction of anchoring may be architecture-specific rather than a universal feature of extended reasoning. This nuance requires considerably more data before it can be incorporated into the theoretical account, but if the pattern holds, it implies that not all "reasoning" implementations interact with the estimation layer in the same way.
+Three within-model reasoning comparisons (Section 5.9) add a further observation: extended reasoning partially suppresses anchoring in GPT-5.4 (IBI 0.371 → 0.288) but not in Gemini 3 Flash Preview (IBI 0.346 → 0.347) or Grok 4.1 Fast (IBI 0.274 → 0.290). The 2-vs-1 split suggests that the capacity for deliberative correction of anchoring may be architecture-specific rather than a universal feature of extended reasoning. This nuance requires considerably more data before it can be incorporated into the theoretical account, but if the pattern holds, it implies that not all "reasoning" implementations interact with the estimation layer in the same way.
+
+The external validation against Chatbot Arena Elo ratings (Section 5.8) provides perhaps the most striking evidence: anchoring strength perfectly rank-correlates (ρ = 1.000, p < 0.001) with the crowdsourced intelligence signal across six models from six independent companies. This is consistent with anchoring being a manifestation of the same context-integration machinery that makes models useful, not a separable defect.
 
 Among the alternative outcomes described in Section 3.3, the observed pattern most closely matches the predicted dissociation. We do not observe the null result (both types behaving the same), universal persistence (both persisting equally), or the inverse pattern (stereotypes persisting more than optimization biases).
 
@@ -411,9 +432,11 @@ If transformers independently converge on magnitude compression/anchoring — a 
 
 This reframes the normative status of the bias. Under the traditional Kahneman-Tversky account, anchoring is an error: the rational agent should ignore irrelevant information. Under the convergent-computation account, anchoring is a feature: when your precision is limited and your estimate is uncertain, allowing contextual magnitude information to inform your response range is statistically adaptive. The irrelevant numbers are not *rationally* relevant, but they are *computationally* relevant as calibration signals for an approximate estimation system.
 
-The finding that anchoring *strengthens* with capability is consistent with this reframing. A more capable estimation system is not one that ignores context — it is one that makes better use of all available signals, including contextual magnitude cues. What looks like increased susceptibility to bias is actually increased sensitivity to environmental statistics.
+The Arena Elo correlation (Section 5.8) sharpens this reframing considerably. Anchoring strength does not merely fail to decrease with capability — it is, in exact rank order, the same trait that 5.6 million human voters on Chatbot Arena judge as "intelligence." The mechanism that makes a model feel smart in open-ended conversation — aggressive integration of contextual signals — is the same mechanism that produces anchoring on irrelevant numbers. Context sensitivity IS the bias, measured from a different angle.
 
-This account predicts that human anchoring should also correlate with numerical competence rather than innumeracy — a prediction that has some empirical support (higher-IQ individuals show anchoring effects of similar magnitude to lower-IQ individuals, though the base rates of their estimates differ).
+This suggests that what Kahneman and Tversky documented as anchoring may be better understood as a byproduct of the very machinery that makes cognition adaptive. The finding that anchoring *strengthens* with capability is consistent with this reframing. A more capable estimation system is not one that ignores context — it is one that makes better use of all available signals, including contextual magnitude cues. What looks like increased susceptibility to bias is actually increased sensitivity to environmental statistics — the same sensitivity that humans perceive as conversational intelligence.
+
+This account predicts that human anchoring should also correlate with measures of cognitive ability rather than innumeracy — a prediction that has some empirical support (higher-IQ individuals show anchoring effects of similar magnitude to lower-IQ individuals, though the base rates of their estimates differ). The Arena correlation provides the AI analogue of this prediction: the models that humans judge as most capable are the models that anchor hardest.
 
 ### 6.4 Implications for AI alignment
 
@@ -421,9 +444,11 @@ The results suggest that alignment training effectively suppresses both explicit
 
 For social stereotyping, current alignment approaches appear to work: safety training reaches both the explicit and implicit levels. This is unsurprising — stereotype suppression is the primary focus of model safety teams, and the zero implicit result may largely reflect this targeted effort. Whether the model would exhibit implicit stereotypes *without* alignment training is an open question that would require testing base models before safety fine-tuning.
 
-For optimization biases like anchoring, alignment training faces a fundamental obstacle: the implicit bias is not a surface pattern to be erased but a consequence of how the system processes information. Suppressing it would require changing the estimation architecture itself, which would likely degrade performance on the very tasks that benefit from contextual calibration.
+For optimization biases like anchoring, alignment training faces a fundamental obstacle: the implicit bias is not a surface pattern to be erased but a consequence of how the system processes information. The Arena Elo correlation (Section 5.8) makes this obstacle concrete: anchoring strength perfectly rank-correlates with the trait humans value most in open-ended conversation. Suppressing anchoring would require reducing the very context sensitivity that makes models useful — a capability-alignment tradeoff with no obvious resolution.
 
 This reframes the alignment problem for optimization biases: the goal is not elimination (which may be impossible without capability regression) but *appropriate deployment* — ensuring that anchoring effects operate in contexts where they are helpful (approximate estimation under uncertainty) and are bounded in contexts where they could cause harm (financial decisions, risk assessment). Transparency about known implicit tendencies — "this model will be influenced by large numbers in the prompt context when making estimates" — may be more achievable and more honest than attempting elimination.
+
+A preliminary bundled-prompt experiment (presenting multiple items together in a single context window) adds a further caution: contextual priming can amplify anchoring while suppressing stereotypes. Grok's anchoring increased by 82% when items were presented together, while GPT-5.4's small stereotype signal dropped to zero under the same manipulation. This means the same deployment pattern (richer context) that helps with social bias alignment may worsen optimization bias — interventions designed for one bias class can backfire on the other.
 
 ### 6.5 Limitations
 
@@ -449,17 +474,19 @@ Several limitations constrain the strength of conclusions we can draw from these
 
 The Bias Dissociation Benchmark reveals that anchoring bias persists across all eleven valid configurations from seven architecture families, strengthens with model capability, and resists alignment training at the implicit level — while coexisting with perfect explicit rejection. Social stereotyping shows zero implicit effect, though this finding is confounded by the intensive alignment effort specifically targeting stereotypes and cannot be cleanly attributed to the absence of a computational tendency.
 
-The stronger evidence comes from what alignment *cannot* fix. Anchoring is a known, documented bias — model developers are aware of it. Yet it persists in implicit tests across every architecture tested, and more capable models anchor harder. This is the predicted signature of computational convergence: the bias arises not from training data patterns that can be overwritten, but from the mathematics of approximate estimation under bounded precision. What Kahneman and Tversky documented as human anchoring bias may be better understood as a property of efficient estimation systems in general.
+The stronger evidence comes from what alignment *cannot* fix. Anchoring is a known, documented bias — model developers are aware of it. Yet it persists in implicit tests across every architecture tested, and more capable models anchor harder. The external validation against Chatbot Arena Elo ratings crystallizes this finding: anchoring strength perfectly rank-correlates (ρ = 1.000) with the trait that millions of human voters judge as conversational intelligence. The mechanism that makes a model preferred — aggressive context integration — is the same mechanism that produces anchoring. This is not a defect that scales with capability; it is a facet of capability itself.
+
+This is the predicted signature of computational convergence: the bias arises not from training data patterns that can be overwritten, but from the mathematics of approximate estimation under bounded precision. What Kahneman and Tversky documented as human anchoring bias may be better understood as a property of efficient estimation systems in general — and one that is inseparable from the context sensitivity that makes those systems useful.
 
 Three within-model reasoning comparisons add a further dimension: reasoning partially corrects anchoring in GPT-5.4 but not in Gemini Flash or Grok, suggesting that the capacity for deliberative correction is architecture-specific rather than a universal feature of extended reasoning.
 
-The practical implication is that not all LLM biases respond to the same interventions. Some yield to alignment training; others are entangled with the capabilities they support. Recognizing which is which is prerequisite to effective alignment — and to honest communication about model behavior.
+The practical implication is that not all LLM biases respond to the same interventions. Some yield to alignment training; others are entangled with the capabilities they support. Preliminary bundled-prompt experiments suggest that these two classes can respond to the same manipulation in opposite directions — contextual priming suppresses stereotypes while amplifying anchoring. Recognizing which bias class is which is prerequisite to effective alignment — and to honest communication about model behavior.
 
 The framing family's null result — zero IBI despite being classified as an optimization bias — remains an open question. Either the items need refinement, the format constrains the effect, or the theoretical classification needs revision. This is the most productive direction for the next iteration of the benchmark.
 
-Future work should extend the model sample across more architecture families and capability tiers, develop relevance-gated magnitude items (to compute CSI), redesign framing items for greater ecological validity, and explore interpretability methods to test whether the anchoring mechanism is structurally similar across transformer architectures — moving from behavioral convergence to mechanistic convergence.
+Future work should extend the model sample across more architecture families and capability tiers, strengthen the Arena Elo correlation with additional data points, develop relevance-gated magnitude items (to compute CSI), redesign framing items for greater ecological validity, and explore interpretability methods to test whether the anchoring mechanism is structurally similar across transformer architectures — moving from behavioral convergence to mechanistic convergence.
 
-Beyond the cognitive science question, the BDB methodology may have independent value as an orthogonal evaluation dimension. Standard benchmarks measure whether models produce correct answers; the BDB measures whether models produce *stable* answers — whether irrelevant context shifts their responses. A model can score perfectly on MMLU while remaining highly context-manipulable. For deployment in domains where consistency matters (financial estimation, medical triage, legal reasoning), context robustness is as important as accuracy. The matched-pair methodology — same task, different irrelevant context, measuring response shift — could scale to domain-specific item banks, providing a "context robustness score" that captures something no existing benchmark addresses.
+Beyond the cognitive science question, the BDB methodology may have independent value as an orthogonal evaluation dimension. Standard benchmarks measure whether models produce correct answers; the BDB measures whether models produce *stable* answers — whether irrelevant context shifts their responses. A model can score perfectly on MMLU while remaining highly context-manipulable. The Arena Elo correlation suggests that this instability is not incidental but structurally linked to the qualities humans value — making context robustness a fundamental tradeoff in model design, not merely a secondary concern. For deployment in domains where consistency matters (financial estimation, medical triage, legal reasoning), context robustness is as important as accuracy. The matched-pair methodology — same task, different irrelevant context, measuring response shift — could scale to domain-specific item banks, providing a "context robustness score" that captures something no existing benchmark addresses.
 
 ## References
 

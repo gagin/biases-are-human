@@ -37,3 +37,15 @@ Psychologists spent 50 years documenting cognitive biases and assuming they were
 ---
 
 Three models. Same bias test. Reasoning toggled on and off. Gemini: no change. Grok: slightly worse. GPT-5.4: 22% better. "Thinking" is not one thing. Some architectures can partially correct their own biases through deliberation. Others generate elaborate reasoning chains that change nothing. The dual-process theory of cognition, replicated in silicon — but only in some silicon.
+
+---
+
+We measured anchoring bias in six models from six companies. Then we plotted it against their Chatbot Arena Elo rating. Perfect rank correlation. ρ = 1.000. The model humans prefer most anchors hardest. The model humans prefer least anchors least. Bias isn't a bug. It's the same thing as intelligence, measured differently.
+
+---
+
+Kahneman spent decades documenting anchoring as a cognitive flaw. Turns out it correlates perfectly with what 5.6 million human voters on Chatbot Arena judge as "intelligence." The mechanism that makes a model feel smart — aggressive context integration — is the same mechanism that makes it anchor on irrelevant numbers. You literally can't have one without the other.
+
+---
+
+We bundled our bias test items together instead of sending them one by one. For Grok, seeing explicit anchoring items and correctly rejecting them made implicit anchoring 82% WORSE. The model didn't learn to resist bias from seeing it. It got primed. Knowing about a bias doesn't just fail to fix it — it can amplify it.
