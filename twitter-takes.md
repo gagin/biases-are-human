@@ -40,11 +40,11 @@ Three models. Same bias test. Reasoning toggled on and off. Gemini: no change. G
 
 ---
 
-We measured anchoring bias in six models from six companies. Then we plotted it against their Chatbot Arena Elo rating. Perfect rank correlation. ρ = 1.000. The model humans prefer most anchors hardest. The model humans prefer least anchors least. Bias isn't a bug. It's the same thing as intelligence, measured differently.
+We measured anchoring bias in six models from six companies. Then we plotted it against their Chatbot Arena Elo rating. Perfect rank correlation. ρ = 1.000. The model humans prefer most anchors hardest. The model humans prefer least anchors least. "Bias" is the wrong word. It's optimization — the same optimization humans reward as intelligence. Anchoring is just what it looks like when some of the context is noise.
 
 ---
 
-Kahneman spent decades documenting anchoring as a cognitive flaw. Turns out it correlates perfectly with what 5.6 million human voters on Chatbot Arena judge as "intelligence." The mechanism that makes a model feel smart — aggressive context integration — is the same mechanism that makes it anchor on irrelevant numbers. You literally can't have one without the other.
+Kahneman spent decades documenting anchoring as a cognitive flaw. Turns out it perfectly rank-correlates with what 5.6 million Chatbot Arena voters reward as capability. "Bias" isn't a bad word — it's the overfitting tail of optimization. And anchoring might not even be overfitting. It might just be optimization doing its job on inputs where some signals happen to be irrelevant.
 
 ---
 

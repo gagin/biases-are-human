@@ -55,17 +55,17 @@ Pearson r = 0.933, p = 0.007. Spearman ρ = 1.000. The rank ordering is identica
 
 ![Anchoring Across Architectures](results/charts/03_across_architectures.png)
 
-This isn't "more capable models have more bugs." This is: **the mechanism that makes a model feel intelligent to humans is the same mechanism that makes it susceptible to contextual contamination.**
+This isn't "more capable models have more bugs." This is: **the models that optimize hardest on context are the models humans prefer — and anchoring is just what that optimization looks like when some of the context is irrelevant.**
 
 ## Why this makes sense
 
 Think about what anchoring actually is. It's the system using all available contextual signals — including irrelevant ones — to calibrate its responses. A model that ignores the surrounding numbers is being *less* context-sensitive. A model that absorbs them is being *more* context-sensitive.
 
-Context sensitivity is the thing that makes a conversation feel intelligent. When you talk to GPT-5.4, it picks up on nuances, adjusts its tone to yours, threads details from earlier in the conversation. That's the same machinery as anchoring — aggressive integration of environmental signals. The failure mode of a useful capability.
+Context optimization is the thing that makes a conversation feel intelligent. When you talk to GPT-5.4, it picks up on nuances, adjusts its tone to yours, threads details from earlier in the conversation. That's aggressive extraction of signal from context — the same optimization that produces anchoring when some of the contextual signals are noise.
 
-In human terms: the same attentional machinery that makes a doctor brilliant at reading clinical context also makes that doctor susceptible to anchoring on the patient's age when estimating recovery time. You can't have one without the other. The sensitivity IS the bias.
+In human terms: the same attentional machinery that makes a doctor brilliant at reading clinical context also makes that doctor susceptible to anchoring on the patient's age when estimating recovery time. The optimization is the intelligence. The anchoring is what the optimization does when it can't distinguish signal from noise.
 
-This is why the Arena correlation is ρ = 1.000. What humans judge as "better" in open-ended conversation IS context sensitivity. And context sensitivity IS anchoring. They're the same trait measured two different ways.
+This is why the Arena correlation is ρ = 1.000. What humans reward as "better" in open-ended conversation is deeper context optimization. Anchoring is that same optimization applied to irrelevant inputs. "Bias" here isn't a bug — it's the overfitting tail of a useful computation. And anchoring may not even be overfitting. It may just be optimization working as designed on an input distribution where not every signal is relevant.
 
 ## Three ways "thinking" doesn't help (mostly)
 
@@ -95,7 +95,7 @@ Again, the same dissociation: contextual priming amplifies or preserves anchorin
 
 **For AI:** "This model has been tested for bias" is a meaningful claim for social stereotypes. It's potentially meaningless for optimization biases like anchoring. You can't train out a capability without losing the capability. The honest disclosure is: "This model will be influenced by irrelevant numbers in context when making estimates." That's not a bug report. It's a spec sheet.
 
-**For cognitive science:** Psychologists spent 50 years documenting anchoring as a human cognitive flaw. Now we know it correlates perfectly with what humans judge as intelligence in open-ended conversation. Maybe it's not a flaw. Maybe it's the price of admission. The same contextual integration that produces brilliant, adaptive reasoning also produces anchoring — and you can't separate them, because they're the same computation.
+**For cognitive science:** Psychologists spent 50 years documenting anchoring as a cognitive flaw. Now we know it perfectly rank-correlates with the optimization depth that humans reward as capability. "Bias" is not the right framing — or rather, bias is just what optimization looks like at the boundary where signal and noise are indistinguishable. Anchoring may not even be a failure mode. It may be correct computation applied to an environment where some inputs happen to be irrelevant — and the system has no way to know that in advance.
 
 **For benchmarks:** Standard AI benchmarks ask "does the model get the right answer?" This experiment measures "does the model give the *same* answer regardless of irrelevant context?" That's context robustness — and it's inversely correlated with the quality signal humans care about most. The models that ace the Arena are the models most susceptible to contextual manipulation. No existing benchmark captures this tradeoff.
 
