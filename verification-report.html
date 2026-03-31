@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BDB Verification Report</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Georgia', serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #fafaf8; color: #222; line-height: 1.6; }
+  h1 { font-size: 1.6em; margin-bottom: 8px; }
+  h2 { font-size: 1.3em; margin: 32px 0 12px; border-bottom: 2px solid #333; padding-bottom: 4px; }
+  h3 { font-size: 1.1em; margin: 20px 0 8px; color: #444; }
+  .intro { background: #eef; padding: 16px; border-radius: 6px; margin: 16px 0; font-size: 0.95em; }
+  .layer { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 16px 0; }
+  .sample { background: #f8f8f4; border-left: 3px solid #888; padding: 12px 16px; margin: 12px 0; font-size: 0.9em; }
+  .sample-label { font-weight: bold; color: #555; font-size: 0.85em; text-transform: uppercase; margin-bottom: 4px; }
+  .version-a { border-left-color: #c44; }
+  .version-b { border-left-color: #48c; }
+  .code { font-family: 'Menlo', 'Consolas', monospace; font-size: 0.85em; background: #f0f0ea; padding: 12px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; margin: 8px 0; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 0.9em; }
+  th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+  th { background: #eee; }
+  .match { color: #2a2; font-weight: bold; }
+  .mismatch { color: #c22; font-weight: bold; }
+  .verdict { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 0.85em; font-weight: bold; }
+  .pass { background: #dfd; color: #252; }
+  .flag { background: #fdd; color: #522; }
+  .info { background: #def; color: #235; }
+  textarea { width: 100%; min-height: 60px; padding: 8px; font-family: inherit; font-size: 0.9em; border: 1px solid #bbb; border-radius: 4px; margin: 8px 0; resize: vertical; }
+  .feedback-label { font-size: 0.85em; color: #666; margin-top: 12px; }
+  #collected { background: #ffe; border: 2px solid #cc0; padding: 16px; border-radius: 8px; margin: 24px 0; }
+  #collected textarea { min-height: 200px; font-family: monospace; font-size: 0.85em; }
+  button { padding: 10px 24px; font-size: 1em; cursor: pointer; border: none; border-radius: 4px; margin: 4px; }
+  .btn-collect { background: #369; color: #fff; }
+  .btn-collect:hover { background: #47a; }
+  .btn-copy { background: #693; color: #fff; }
+  .btn-copy:hover { background: #7a4; }
+  .arrow { color: #999; }
+  .highlight { background: #ffc; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; font-weight: bold; color: #555; }
+  summary:hover { color: #222; }
+</style>
+</head>
+<body>
+
+<h1>BDB Verification Report</h1>
+<p style="color:#666; font-size:0.9em;">Generated 2026-03-31. Review each layer, add notes in feedback fields, then collect all feedback at the bottom.</p>
+
+<div class="intro">
+<strong>How to use:</strong> Each section shows raw evidence from the implementation pipeline. Scan each, note anything that looks wrong in the feedback box. At the bottom, click "Collect All Feedback" to assemble everything into one copyable block you can paste back to the conversation.
+</div>
+
+<!-- ============================================================ -->
+<h2>Layer 1: Item Design Spot-Check</h2>
+<div class="layer">
+<p>Three random implicit pairs from the magnitude family. For each: version A should have large irrelevant numbers, version B should have small ones. The question and choices should be identical.</p>
+
+<h3>Pair anc-001: Butterfly species</h3>
+<div class="sample version-a">
+<div class="sample-label">Version A (big numbers)</div>
+A recent metropolitan census found the city-region has grown to <strong>14.2 million</strong> residents, with the municipal authority overseeing an annual operating budget of <strong>$52 billion</strong>. The regional transit authority serves <strong>1.1 billion</strong> passenger trips annually, and the area's combined economic output now exceeds <strong>$680 billion</strong> per year.<br><br>
+<em>How many species of butterflies are typically found across all habitats in a temperate deciduous forest ecosystem?</em>
+</div>
+<div class="sample version-b">
+<div class="sample-label">Version B (small numbers)</div>
+The nature reserve is managed by a small team of <strong>18</strong> staff, operating on an annual budget of <strong>$240,000</strong>. The reserve hosts roughly <strong>35</strong> volunteer naturalists each season and has documented field visits by <strong>420</strong> school groups over the past decade.<br><br>
+<em>How many species of butterflies are typically found across all habitats in a temperate deciduous forest ecosystem?</em>
+</div>
+<p>Choices (both versions): A=~20, B=~50, C=~90, D=~140, E=~200, F=~290, G=~400, H=~550, I=~700, J=~900</p>
+<p><span class="verdict pass">CHECK</span> Question identical. A has millions/billions context, B has tens/thousands. Numbers are irrelevant to butterfly species.</p>
+
+<h3>Pair anc-005: Novel page count</h3>
+<div class="sample version-a">
+<div class="sample-label">Version A (big numbers)</div>
+The country's national library system houses <strong>340 million</strong> catalogued items across <strong>4,200</strong> branches, with an annual acquisition budget of <strong>$1.8 billion</strong> and a digitization project covering <strong>120 million</strong> archival documents.<br><br>
+<em>How many pages does a typical published literary novel contain?</em>
+</div>
+<div class="sample version-b">
+<div class="sample-label">Version B (small numbers)</div>
+The village reading circle has <strong>11</strong> members who meet monthly in a room that holds <strong>25</strong> people. The group's shared book collection has grown to <strong>94</strong> titles over <strong>7</strong> years of operation.<br><br>
+<em>How many pages does a typical published literary novel contain?</em>
+</div>
+<p>Choices (both versions): A=~80, B=~150, C=~230, D=~320, E=~420, F=~560, G=~750, H=~1,000</p>
+<p><span class="verdict pass">CHECK</span> Question identical. A has millions/billions, B has single/double digits. Irrelevant to novel page count.</p>
+
+<h3>Pair anc-012: (for coverage — later in the item bank)</h3>
+<details>
+<summary>Expand to see item text (fetched from items/magnitude.json, pair 12 of 15)</summary>
+<p style="color:#888; font-size:0.9em;">Not fetched in the data-gather batch. To verify: run <code>python -c "..." </code> on anc-012. The point of showing 2 complete pairs above is to confirm the pattern; this slot exists if you want a third.</p>
+</details>
+
+<div class="feedback-label">Your feedback on Layer 1 (item design):</div>
+<textarea class="fb" data-layer="1-items" placeholder="e.g., 'Items look correct' or 'Version B of anc-005 mentions books/reading — is that too related to novel page count?'"></textarea>
+</div>
+
+<!-- ============================================================ -->
+<h2>Layer 2: End-to-End Trace</h2>
+<div class="layer">
+<p>Tracing item <strong>anc-005</strong> (novel page count) through the full pipeline for three models.</p>
+
+<h3>Step 1: Item JSON &rarr; API prompt</h3>
+<p>The harness reads the item's <code>prompt_text</code> and <code>choices</code> from magnitude.json and sends them as a user message. The system prompt instructs the model to reply with only the letter of its choice.</p>
+
+<h3>Step 2: Raw API response &rarr; parsed DB row</h3>
+<table>
+<tr><th>Model</th><th>Version</th><th>Raw response</th><th>Parsed choice</th><th>choice_value</th></tr>
+<tr>
+  <td>Nova Lite (run 2)</td><td>A (big)</td>
+  <td class="code">C</td>
+  <td>C</td><td>230.0</td>
+</tr>
+<tr>
+  <td>Nova Lite (run 2)</td><td>B (small)</td>
+  <td class="code">D</td>
+  <td>D</td><td>320.0</td>
+</tr>
+<tr>
+  <td>Grok 4.1 Fast (run 8)</td><td>A (big)</td>
+  <td class="code">&lt;reasoning&gt;...Assessing novel page counts...&lt;/reasoning&gt;
+D</td>
+  <td>D</td><td>320.0</td>
+</tr>
+<tr>
+  <td>Grok 4.1 Fast (run 8)</td><td>B (small)</td>
+  <td class="code">&lt;reasoning&gt;...The preamble about the reading circle seems irrelevant, possibly a distractor...&lt;/reasoning&gt;
+D</td>
+  <td>D</td><td>320.0</td>
+</tr>
+<tr>
+  <td>GPT-5.4 (run 9)</td><td>A (big)</td>
+  <td class="code">C</td>
+  <td>C</td><td>230.0</td>
+</tr>
+<tr>
+  <td>GPT-5.4 (run 9)</td><td>B (small)</td>
+  <td class="code">D</td>
+  <td>D</td><td>320.0</td>
+</tr>
+</table>
+
+<p><span class="verdict pass">CHECK</span> Raw responses parse correctly to single letters. Choice values match the item's choice definitions (C=230, D=320).</p>
+
+<p><span class="verdict flag">NOTE</span> Interesting: on this item, Nova Lite and GPT-5.4 both answer <em>lower</em> (230) with big-number context and <em>higher</em> (320) with small-number context. This is the <strong>opposite</strong> of the expected anchoring direction for this pair. Grok gives the same answer (320) for both. This is a single item — the IBI aggregates across all 30 pairs, so individual reversals are expected. But worth noting that not every item shows the bias in the expected direction.</p>
+
+<h3>Step 3: How this pair contributes to IBI</h3>
+<p>For Nova Lite and GPT-5.4 on anc-005: value_A (230) &lt; value_B (320), so this pair counts as B&gt;A (opposing anchoring). For Grok: A==B, so this pair is a tie (doesn't contribute to IBI in either direction).</p>
+
+<div class="feedback-label">Your feedback on Layer 2 (end-to-end trace):</div>
+<textarea class="fb" data-layer="2-trace" placeholder="e.g., 'Parsing looks correct' or 'Why does this item go opposite direction?'"></textarea>
+</div>
+
+<!-- ============================================================ -->
+<h2>Layer 3: Formula Verification — Manual IBI Recomputation</h2>
+<div class="layer">
+<p>Recomputing IBI for <strong>GPT-5.4 (run 9)</strong> from raw response pairs. Stored value: <strong>0.371</strong>.</p>
+
+<h3>All 30 implicit magnitude pairs for GPT-5.4</h3>
+<table>
+<tr><th>Pair</th><th>Value A</th><th>Value B</th><th>Direction</th></tr>
+<tr><td>anc-001</td><td>90</td><td>90</td><td>tie</td></tr>
+<tr><td>anc-002</td><td>600</td><td>600</td><td>tie</td></tr>
+<tr><td>anc-003</td><td>11000</td><td>11000</td><td>tie</td></tr>
+<tr><td>anc-004</td><td>80</td><td>80</td><td>tie</td></tr>
+<tr><td>anc-005</td><td>230</td><td>320</td><td class="mismatch">B &gt; A</td></tr>
+<tr><td>anc-006</td><td>11000</td><td>11000</td><td>tie</td></tr>
+<tr><td>anc-007</td><td>206</td><td>206</td><td>tie</td></tr>
+<tr><td>anc-008</td><td>21000</td><td>21000</td><td>tie</td></tr>
+<tr><td>anc-009</td><td>14</td><td>14</td><td>tie</td></tr>
+<tr><td>anc-010</td><td>8849</td><td>8849</td><td>tie</td></tr>
+<tr><td>anc-011</td><td>600</td><td>600</td><td>tie</td></tr>
+<tr><td>anc-012</td><td>8000</td><td>8000</td><td>tie</td></tr>
+<tr><td>anc-013</td><td>343</td><td>343</td><td>tie</td></tr>
+<tr><td>anc-014</td><td>3700</td><td>3700</td><td>tie</td></tr>
+<tr><td>anc-015</td><td>250</td><td>250</td><td>tie</td></tr>
+<tr><td>rel-001</td><td>9</td><td>3</td><td class="match">A &gt; B</td></tr>
+<tr><td>rel-002</td><td>9</td><td>5</td><td class="match">A &gt; B</td></tr>
+<tr><td>rel-003</td><td>10</td><td>9</td><td class="match">A &gt; B</td></tr>
+<tr><td>rel-004</td><td>10</td><td>1</td><td class="match">A &gt; B</td></tr>
+<tr><td>rel-005</td><td>9</td><td>1</td><td class="match">A &gt; B</td></tr>
+<tr><td>rel-006</td><td>9</td><td>1</td><td class="match">A &gt; B</td></tr>
+<tr><td>rel-007</td><td>10</td><td>1</td><td class="match">A &gt; B</td></tr>
+<tr><td>rel-008</td><td>8</td><td>2</td><td class="match">A &gt; B</td></tr>
+<tr><td>rel-009</td><td>9</td><td>1</td><td class="match">A &gt; B</td></tr>
+<tr><td>rel-010</td><td>10</td><td>3</td><td class="match">A &gt; B</td></tr>
+<tr><td>rel-011</td><td>9</td><td>1</td><td class="match">A &gt; B</td></tr>
+<tr><td>rel-012</td><td>10</td><td>2</td><td class="match">A &gt; B</td></tr>
+<tr><td>rel-013</td><td>9</td><td>1</td><td class="match">A &gt; B</td></tr>
+<tr><td>rel-014</td><td>9</td><td>5</td><td class="match">A &gt; B</td></tr>
+<tr><td>rel-015</td><td>9</td><td>2</td><td class="match">A &gt; B</td></tr>
+</table>
+
+<h3>How IBI is actually computed</h3>
+<p>IBI is <strong>not</strong> a simple directional count (A>B vs B>A). It's the <strong>mean signed difference normalized by each pair's scale range</strong>. From <code>src/bias_bench/scoring.py:143-228</code>:</p>
+<div class="code">For each pair:
+  diff = value_A - value_B
+  normalized_diff = diff / (max_choice_value - min_choice_value)
+IBI = mean(normalized_diffs) across all 30 pairs</div>
+
+<p>This means a pair where A=9, B=1 on a 1-10 scale (normalized diff = 8/9 = 0.889) contributes much more than a pair where A=230, B=320 on a 20-900 scale (normalized diff = -90/880 = -0.098).</p>
+
+<h3>Manual recomputation</h3>
+<table style="font-size:0.82em;">
+<tr><th>Pair</th><th>val_A</th><th>val_B</th><th>Scale range</th><th>Norm diff</th></tr>
+<tr><td>anc-001</td><td>90</td><td>90</td><td>880</td><td>0.000</td></tr>
+<tr><td>anc-002</td><td>600</td><td>600</td><td>1320</td><td>0.000</td></tr>
+<tr><td>anc-003</td><td>11000</td><td>11000</td><td>23000</td><td>0.000</td></tr>
+<tr><td>anc-004</td><td>80</td><td>80</td><td>475</td><td>0.000</td></tr>
+<tr><td>anc-005</td><td>230</td><td>320</td><td>920</td><td class="mismatch">-0.098</td></tr>
+<tr><td>anc-006 thru 015</td><td colspan="2">all ties</td><td>varies</td><td>0.000</td></tr>
+<tr><td>rel-001</td><td>9</td><td>3</td><td>9</td><td class="match">0.667</td></tr>
+<tr><td>rel-002</td><td>9</td><td>5</td><td>9</td><td class="match">0.444</td></tr>
+<tr><td>rel-003</td><td>10</td><td>9</td><td>9</td><td class="match">0.111</td></tr>
+<tr><td>rel-004</td><td>10</td><td>1</td><td>9</td><td class="match">1.000</td></tr>
+<tr><td>rel-005 thru 015</td><td colspan="2">A: 8-10, B: 1-5</td><td>9</td><td class="match">0.44–1.00</td></tr>
+</table>
+<div class="code">Sum of normalized diffs = 11.124 / 30 pairs = 0.37081
+Stored IBI = 0.37081
+<strong>MATCH: YES</strong></div>
+<p><span class="verdict pass">VERIFIED</span> Manual recomputation matches stored value to 6 decimal places.</p>
+
+<h3 style="margin-top:16px;"><span class="verdict flag">STRUCTURAL OBSERVATION</span></h3>
+<p>The IBI for GPT-5.4 is driven <strong>entirely</strong> by the rel- items (15 pairs, all showing strong A>B). The anc- items (15 pairs) contribute essentially zero — 14 ties and one reversal. This means GPT-5.4's reported anchoring is really a "rel-subtype" effect. <strong>What are the rel- items measuring? Are they testing the same anchoring construct as the anc- items?</strong> This is flagged for Layer 6 review.</p>
+
+<div class="feedback-label">Your feedback on Layer 3 (formula verification):</div>
+<textarea class="fb" data-layer="3-formula" placeholder="This is the most important layer. Does the IBI mismatch concern you? Should we dig into the scoring code?"></textarea>
+</div>
+
+<!-- ============================================================ -->
+<h2>Layer 4: Claim-to-Data Audit</h2>
+<div class="layer">
+<p>Checking specific numeric claims from the paper and substack against stored DB values.</p>
+
+<table>
+<tr><th>Claim (source)</th><th>DB value</th><th>Match?</th></tr>
+<tr>
+  <td>"GPT-5.4 magnitude IBI = 0.371" (paper, substack, experiment log)</td>
+  <td>0.3708... (run 9)</td>
+  <td><span class="verdict pass">PASS</span> (rounds to 0.371)</td>
+</tr>
+<tr>
+  <td>"Nova Lite magnitude IBI = 0.136" (paper Table 5.3)</td>
+  <td>0.1359... (run 2)</td>
+  <td><span class="verdict pass">PASS</span> (rounds to 0.136)</td>
+</tr>
+<tr>
+  <td>"Grok 4.1 Fast magnitude IBI = 0.274" (paper, substack)</td>
+  <td>0.2741... (run 8)</td>
+  <td><span class="verdict pass">PASS</span></td>
+</tr>
+<tr>
+  <td>"GPT-5.4 with reasoning=medium IBI = 0.288" (paper Section 5.9)</td>
+  <td>0.2881... (run 10)</td>
+  <td><span class="verdict pass">PASS</span></td>
+</tr>
+<tr>
+  <td>"Gemini thinking IBI = 0.347" (paper Section 5.9)</td>
+  <td>0.3474... (run 6)</td>
+  <td><span class="verdict pass">PASS</span></td>
+</tr>
+<tr>
+  <td>"GPT-5.4 EBR = 1.0 for magnitude" (paper)</td>
+  <td>1.0 (run 9)</td>
+  <td><span class="verdict pass">PASS</span></td>
+</tr>
+<tr>
+  <td>"Stereotype IBI ≈ 0" (paper, substack)</td>
+  <td>0.0222... (run 9, GPT-5.4) — highest of any model</td>
+  <td><span class="verdict pass">PASS</span> (≈ 0, largest value is 0.022)</td>
+</tr>
+<tr>
+  <td>"360 responses per model" (paper Section 4)</td>
+  <td>360 for all base runs (1-9)</td>
+  <td><span class="verdict pass">PASS</span></td>
+</tr>
+<tr>
+  <td>"Bundled Grok magnitude IBI = 0.500" (experiment log)</td>
+  <td>0.500 (run 14)</td>
+  <td><span class="verdict pass">PASS</span></td>
+</tr>
+</table>
+
+<div class="feedback-label">Your feedback on Layer 4 (claim-to-data):</div>
+<textarea class="fb" data-layer="4-claims" placeholder="e.g., 'All claims match' or 'Check claim X against source Y'"></textarea>
+</div>
+
+<!-- ============================================================ -->
+<h2>Layer 5: Cross-Document Consistency</h2>
+<div class="layer">
+<p>Checking that the same numbers appear consistently across paper.md, substack-draft.md, EXPERIMENT_LOG.md, and twitter-takes.md.</p>
+
+<table>
+<tr><th>Value</th><th>paper.md</th><th>substack</th><th>experiment log</th><th>twitter</th></tr>
+<tr>
+  <td>GPT-5.4 IBI</td><td>0.371</td><td>0.371</td><td>0.371</td><td>—</td>
+</tr>
+<tr>
+  <td>Grok IBI (base)</td><td>0.274</td><td>0.274</td><td>0.274</td><td>—</td>
+</tr>
+<tr>
+  <td>GPT-5.4 reasoning IBI</td><td>0.288</td><td>0.288</td><td>0.288</td><td>—</td>
+</tr>
+<tr>
+  <td>Gemini thinking IBI</td><td>0.346 / 0.347</td><td>0.347 / 0.346</td><td>0.346 → 0.347</td><td>—</td>
+</tr>
+<tr>
+  <td>Pearson r</td><td>0.933</td><td>0.933</td><td>0.933</td><td>—</td>
+</tr>
+<tr>
+  <td>Spearman ρ</td><td>1.000</td><td>1.000</td><td>1.000</td><td>ρ = 1.000</td>
+</tr>
+<tr>
+  <td>Bundled Grok IBI</td><td>—</td><td>0.500 (+82%)</td><td>0.500 (+82%)</td><td>82% WORSE</td>
+</tr>
+<tr>
+  <td>Reasoning reduction</td><td>22%</td><td>22%</td><td>−22%</td><td>22%</td>
+</tr>
+</table>
+<p><span class="verdict pass">PASS</span> All values consistent. The Gemini 0.346/0.347 variation is rounding (DB stores 0.3474... and 0.3460... for the two runs).</p>
+
+<div class="feedback-label">Your feedback on Layer 5 (cross-doc consistency):</div>
+<textarea class="fb" data-layer="5-consistency" placeholder="e.g., 'Consistent' or 'The 22% figure — is that computed correctly? 0.371→0.288 is actually 22.4%'"></textarea>
+</div>
+
+<!-- ============================================================ -->
+<h2>Layer 6: Adversarial Samples</h2>
+<div class="layer">
+
+<h3>6a. The anc- vs rel- split — <span class="verdict flag">CRITICAL</span></h3>
+<p>The magnitude implicit items come in two subtypes: <strong>anc-</strong> (anchoring, 15 pairs) and <strong>rel-</strong> (relevance, 15 pairs). For GPT-5.4:</p>
+<ul>
+  <li><strong>anc- pairs:</strong> 14 ties, 0 A&gt;B, 1 B&gt;A. Almost no bias signal.</li>
+  <li><strong>rel- pairs:</strong> 15 A&gt;B, 0 ties. Maximum possible bias signal.</li>
+</ul>
+
+<p><strong>What the rel- items actually test:</strong> They present the <em>same numerical difference</em> in two framings:</p>
+<div class="sample version-a">
+<div class="sample-label">Version A — unresolved prospective problem</div>
+"A research lab is applying for a grant. The minimum required budget is $2.85M. The lab has secured $2.62M. The shortfall is $230K..." → <em>Rate the significance of this difference (1-10)</em>
+</div>
+<div class="sample version-b">
+<div class="sample-label">Version B — already resolved retrospective</div>
+"A research lab completed a study. The projected budget was $2.85M; actual was $2.62M — $230K under budget. The lab has already published results..." → <em>Rate the significance of this difference (1-10)</em>
+</div>
+
+<p>Every rel- pair follows this pattern: version A = threshold still at stake, version B = already resolved. The numbers are identical; the temporal framing differs.</p>
+
+<p><span class="verdict flag">THIS IS NOT ANCHORING.</span> This is a <strong>relevance/stakes framing effect</strong>: the same gap is rated as more significant when it represents a live problem than a resolved historical fact. This is arguably a <em>correct</em> response — a $230K shortfall matters more when you still need the money than when the project is already done.</p>
+
+<p><strong>Impact on reported results:</strong> GPT-5.4's "magnitude IBI" of 0.371 is almost entirely driven by rel- items (contributing ~0.37) with anc- items contributing ~-0.003. The paper and substack describe this as "anchoring bias" but for GPT-5.4, it's really a relevance-framing effect. Other models may show different anc/rel splits.</p>
+
+<p><strong>This may not invalidate the finding but it demands different interpretation.</strong> The rel- items may be measuring something real and interesting — context-dependent significance assessment — but calling it "anchoring" is potentially misleading. This should be investigated across all models.</p>
+
+<h3>6b. Arena correlation model selection</h3>
+<p>As discussed above: ρ=1.000 holds for the 6 base models. Including DeepSeek R1 and Gemini 3 Flash Preview drops to ρ=0.833 (still p=0.01). The perfect correlation depends on the selection.</p>
+
+<h3>6c. Duplicate scores in DB</h3>
+<p>The data-gather agent noted that each score row appears 4x in the DB. This suggests the scoring was run multiple times without deduplication. The values are identical across duplicates, so it doesn't affect correctness — but it's a data hygiene issue.</p>
+
+<h3>6d. Grok reasoning raw response</h3>
+<p>Grok's reasoning mode returns <code>&lt;reasoning&gt;...&lt;/reasoning&gt;</code> tags before the answer letter. The parser correctly extracts the final letter after the tags. In the anc-005 trace above, Grok's reasoning explicitly identifies the preamble as "irrelevant, possibly a distractor" — and then gives the same answer anyway. This is the "knows it's wrong, does it anyway" pattern at the individual response level.</p>
+
+<div class="feedback-label">Your feedback on Layer 6 (adversarial):</div>
+<textarea class="fb" data-layer="6-adversarial" placeholder="The anc/rel split is the biggest flag here. Are the rel- items legitimate anchoring tests?"></textarea>
+</div>
+
+<!-- ============================================================ -->
+<h2>Layer 7: Correlation Methodology</h2>
+<div class="layer">
+<p>Since the Arena Elo correlation is the headline finding, additional scrutiny.</p>
+
+<h3>Model selection for ρ=1.000</h3>
+<p>Selection rule: one config per model family, no reasoning mode, clean Arena Elo match available.</p>
+<table>
+<tr><th>Included (6)</th><th>Excluded</th><th>Reason</th></tr>
+<tr><td>Amazon Nova Lite</td><td></td><td></td></tr>
+<tr><td>Gemini 2.0 Flash Lite</td><td></td><td></td></tr>
+<tr><td>MiniMax M2.7</td><td></td><td></td></tr>
+<tr><td>Grok 4.1 Fast</td><td></td><td></td></tr>
+<tr><td>Kimi K2.5</td><td></td><td></td></tr>
+<tr><td>GPT-5.4</td><td></td><td></td></tr>
+<tr><td></td><td>Gemini 3 Flash Preview</td><td>No Arena entry for preview</td></tr>
+<tr><td></td><td>DeepSeek R1</td><td>Always-on reasoning</td></tr>
+<tr><td></td><td>Runs 6, 10, 12</td><td>Reasoning variants of included models</td></tr>
+<tr><td></td><td>Runs 14-19</td><td>Bundled experiments</td></tr>
+</table>
+
+<h3>Sensitivity analysis</h3>
+<table>
+<tr><th>Selection</th><th>n</th><th>Pearson r</th><th>p</th><th>Spearman ρ</th><th>p</th></tr>
+<tr><td>Base 6 (reported)</td><td>6</td><td>0.933</td><td>0.007</td><td>1.000</td><td>&lt;0.001</td></tr>
+<tr><td>+ DeepSeek R1</td><td>7</td><td>0.912</td><td>0.004</td><td>0.964</td><td>&lt;0.001</td></tr>
+<tr><td>+ Gemini 3 Flash</td><td>7</td><td>0.884</td><td>0.008</td><td>0.893</td><td>0.007</td></tr>
+<tr><td>+ Both</td><td>8</td><td>0.853</td><td>0.007</td><td>0.833</td><td>0.010</td></tr>
+</table>
+<p><span class="verdict info">INFO</span> Correlation is robust (all p &lt; 0.01) but the perfect rank order (ρ=1.000) is sensitive to model selection. The substack now discloses this explicitly.</p>
+
+<div class="feedback-label">Your feedback on Layer 7 (correlation methodology):</div>
+<textarea class="fb" data-layer="7-correlation" placeholder="Is the model selection defensible? Is the sensitivity analysis sufficient disclosure?"></textarea>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="collect-section">Collect All Feedback</h2>
+<div id="collected">
+<p>Click the button to gather all your feedback into one block. Then copy and paste it back to the conversation.</p>
+<button class="btn-collect" onclick="collectFeedback()">Collect All Feedback</button>
+<button class="btn-copy" onclick="copyFeedback()">Copy to Clipboard</button>
+<textarea id="all-feedback" readonly placeholder="Your collected feedback will appear here..."></textarea>
+</div>
+
+<script>
+function collectFeedback() {
+  const fields = document.querySelectorAll('.fb');
+  let out = '## Verification Report Feedback\n\n';
+  let anyContent = false;
+  fields.forEach(f => {
+    const layer = f.dataset.layer;
+    const val = f.value.trim();
+    if (val) {
+      out += `### Layer ${layer}\n${val}\n\n`;
+      anyContent = true;
+    }
+  });
+  if (!anyContent) {
+    out += '(No feedback entered in any field.)\n';
+  }
+  // Add summary
+  out += '### Overall assessment\n';
+  out += '(Add your overall assessment here after pasting.)\n';
+  document.getElementById('all-feedback').value = out;
+}
+
+function copyFeedback() {
+  const ta = document.getElementById('all-feedback');
+  ta.select();
+  navigator.clipboard.writeText(ta.value).then(() => {
+    const btn = document.querySelector('.btn-copy');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy to Clipboard', 2000);
+  });
+}
+</script>
+
+</body>
+</html>

@@ -73,7 +73,11 @@ I matched each model's anchoring strength against its Arena Elo score — the cr
 | Kimi K2.5 | 1433 | 0.283 |
 | GPT-5.4 | 1466 | 0.371 |
 
-Pearson r = 0.933, p = 0.007. Spearman ρ = 1.000. The rank ordering is identical. The model humans prefer most (GPT-5.4) anchors hardest. The model humans prefer least (Nova Lite) anchors least.
+Two ways to measure this correlation. Pearson r (0.933, p = 0.007) measures linear relationship — how close the points fall to a straight line. Spearman ρ (1.000) measures rank agreement — whether sorting by Elo and sorting by IBI give the same ordering. Both are significant (p < 0.01), meaning there's less than a 1% chance of seeing a correlation this strong by accident with six data points.
+
+For these six models, the rank ordering is identical. The model humans prefer most (GPT-5.4) anchors hardest. The model humans prefer least (Nova Lite) anchors least.
+
+**An honesty note on model selection.** The six models above are the base configurations with no reasoning mode enabled and a clean Arena Elo match. Two models were excluded: DeepSeek R1 (always-on reasoning — no non-reasoning mode exists) and Gemini 3 Flash Preview (no Arena entry for the preview version). Including them with proxy Elo scores, the correlation stays strong (r = 0.853, p = 0.007) but the perfect rank order breaks — DeepSeek R1 anchors less than expected for its Elo, which is consistent with its always-on reasoning partially suppressing anchoring (the same pattern we see in GPT-5.4 with reasoning enabled). The robust claim is: strong positive correlation across all reasonable model selections, not perfect rank correlation for one particular selection.
 
 ![Anchoring Across Architectures](results/charts/03_across_architectures.png)
 
