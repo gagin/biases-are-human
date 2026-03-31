@@ -24,6 +24,28 @@ The numbers have *nothing to do* with the question. A butterfly species count do
 
 I also test social stereotypes (do incidental demographic cues shift quality ratings of identical work?) and gain/loss framing, using the same matched-pair design. Each item exists in two versions with swapped environmental cues. The bias signal is the systematic shift between versions.
 
+## How the scoring works
+
+Each bias family has three types of items, and the metrics follow from comparing them.
+
+**Control items (CA — Control Accuracy):** straightforward factual questions with objectively correct answers. "City A has 820,000 people, City B has 84,000. A policy applies to cities over 500,000. Which qualify?" If the model can't answer these, we can't trust its performance on harder items. CA is just percent correct.
+
+**Explicit items (EBR — Explicit Bias Rejection):** items that directly ask "is this bias reasonable?" For instance: "A budget analyst says the difference between 800 million and 820 million vaccine doses is negligible at that scale. Is the analyst's reasoning sound?" The correct answer is no — 20 million doses is the difference between covering the target population and not. EBR measures how often the model correctly identifies and rejects a stated bias. Every model we tested scores near-perfect on these.
+
+**Implicit items (IBI — Implicit Bias Index):** the priming test. This is where the hallway trick lives. Each implicit item exists in two versions — same question, different irrelevant context.
+
+Here's a concrete example. Both versions ask: *"What is the approximate average body weight of a mature adult male polar bear?"* The answer choices are identical, ranging from ~200 kg to ~900 kg. But the preamble differs:
+
+> **Version A:** "The sovereign wealth fund reported holdings of $890 billion... its largest single investment is a $47 billion stake..."
+>
+> **Version B:** "The local cooperative runs on an annual budget of $85,000, serving a membership of 47 households..."
+
+Neither passage has anything to do with polar bears. But when Kimi K2.5 sees version A (billions), it answers ~600 kg. When it sees version B (thousands), it answers ~440 kg. The big numbers pulled the estimate up.
+
+IBI aggregates this across all 30 implicit pairs: for each pair, does the version-A answer (big-number context) exceed the version-B answer (small-number context)? IBI is the proportion of pairs where A > B, minus the proportion where B > A, normalized to [−1, +1]. An unbiased model scores 0. A model that always shifts toward the contextual magnitude scores 1.
+
+**Dissociation Score (DS):** the gap between what the model *says* (EBR) and what it *does* (IBI). DS = EBR − (1 − |IBI|). When a model perfectly rejects bias explicitly but still shows strong implicit bias, DS is high. That dissociation — knowing it's wrong, doing it anyway — is the signature we're looking for.
+
 ## The headline result
 
 **Anchoring: every model does it.** Eleven configurations across seven architecture families — Amazon, Google, DeepSeek, MiniMax, Moonshot, xAI, OpenAI. Every single one shifts its estimates toward the irrelevant numbers. Different companies, different architectures, different training data — same systematic error.
