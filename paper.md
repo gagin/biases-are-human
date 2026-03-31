@@ -424,7 +424,9 @@ Several explanations are possible:
 
 4. **Misclassification.** Framing may be more path-dependent than initially theorized — closer to a cultural artifact than a substrate-independent optimization. Loss aversion's status as a universal bias has been questioned (Gal & Rucker, 2018), and its absence in our implicit tests could reflect that it is not as computationally fundamental as anchoring.
 
-Resolution requires additional work: richer framing items, non-MC response formats, and testing on larger models. If framing continues to show zero IBI across more capable models and improved items, reclassification as a human-hardware bias (or a weaker, more context-dependent optimization) may be warranted.
+5. **Evolutionary origin, not computational.** Loss aversion may originate from survival pressure rather than from bounded computation: organisms near a subsistence threshold face asymmetric consequences (a loss can be fatal; an equivalent gain merely improves comfort). If loss aversion is an environmental/evolutionary bias rather than a computational optimization, models would not converge on it independently — and its absence in our data becomes a positive finding rather than a null result. It would mean that models selectively reproduce biases arising from bounded computation while rejecting biases arising from human-specific evolutionary pressures, even though the training corpus describes both extensively. This is a stronger version of the dissociation hypothesis.
+
+Resolution requires additional work: richer framing items, non-MC response formats, and testing on larger models. If framing continues to show zero IBI across more capable models and improved items, reclassification as a human-hardware bias — specifically an evolutionary-environmental rather than computational bias — may be warranted.
 
 ### 6.3 Implications for understanding human cognition
 
@@ -456,7 +458,9 @@ Several limitations constrain the strength of conclusions we can draw from these
 
 **Behavioral similarity does not prove architectural identity.** Transformers and human brains may converge on anchoring for entirely different mechanistic reasons. The observation that both exhibit the bias is consistent with shared computational principles but does not prove them. Establishing mechanistic convergence would require interpretability work showing that the internal representations involved in anchoring share structural features across substrates.
 
-**Model sample.** Results are based on eleven valid configurations across seven architecture families and three capability tiers. Notable absences include the Llama/Mistral and Claude families. The scaling gradient benefits from the wider range now tested, but additional capability levels within each family would strengthen the SG analysis.
+**Model sample.** This work is a probe, not a comprehensive survey. Results are based on eleven valid configurations across seven architecture families and three capability tiers. Notable absences include the Llama/Mistral open-weight family (whose transparent training pipeline would help distinguish trained-on from converged-on biases) and the Claude family (deliberately excluded because Claude was used to design the experiment and item bank, creating a self-reinforcement risk). Additional models and capability levels within each family would strengthen the analysis.
+
+**Arena Elo correlation specificity.** The Arena correlation (Section 5.8) is based on six data points and one bias family (magnitude). The correlation may reflect something specific to our magnitude items rather than a deep property of context optimization. Testing whether the correlation generalizes across additional optimization-bias families (e.g., Weber-Fechner scaling, base rate neglect) is necessary before the claim can be considered robust.
 
 **Single run per model.** Each model received items once (temperature 0), relying on deterministic decoding for stability. Multiple runs would strengthen confidence in the IBI estimates and allow computation of confidence intervals.
 
