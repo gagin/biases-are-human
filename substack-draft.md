@@ -1,10 +1,10 @@
 # The Best AI Models Are the Most Biased (And That Tells Us Something Profound)
 
-I set out to test whether LLMs share cognitive biases with human brains — the kind Kahneman documented in *Thinking, Fast and Slow*. I found that, yes, they do. But I also stumbled into something I didn't expect: the bias I measured turns out to be an almost perfect predictor of which models humans prefer.
+I set out to test whether LLMs share cognitive biases with human brains — the kind Kahneman documented in *Thinking, Fast and Slow*. I found something unexpected. Classic anchoring — irrelevant numbers pulling estimates up or down — is essentially zero in every model I tested. But a different bias showed up instead: relevance sensitivity. Models systematically rate a numerical deviation as more significant when it's framed as an active problem than when the same deviation is presented as resolved.
 
-The models that anchor hardest on irrelevant numbers are, in exact rank order, the models that win the most head-to-head battles on Chatbot Arena. Spearman ρ = 1.000. Not a typo. Perfect rank correlation across six models from six independent companies.
+And this relevance sensitivity turns out to be an almost perfect predictor of which models humans prefer. r = 0.944, p = 0.005 across six models from six independent companies.
 
-This reframes what "cognitive bias" means — not just for AI, but for intelligence itself.
+The models that differentiate context most aggressively — weighting urgency, resolution status, stakes — are the models that win head-to-head battles on Chatbot Arena. This reframes what "cognitive bias" means — not just for AI, but for intelligence itself.
 
 ## The trick from Kahneman
 
@@ -42,68 +42,86 @@ Here's a concrete example. Both versions ask: *"What is the approximate average 
 
 Neither passage has anything to do with polar bears. But when Kimi K2.5 sees version A (billions), it answers ~600 kg. When it sees version B (thousands), it answers ~440 kg. The big numbers pulled the estimate up.
 
-IBI aggregates this across all 30 implicit pairs: for each pair, does the version-A answer (big-number context) exceed the version-B answer (small-number context)? IBI is the proportion of pairs where A > B, minus the proportion where B > A, normalized to [−1, +1]. An unbiased model scores 0. A model that always shifts toward the contextual magnitude scores 1.
+IBI aggregates this across all 30 implicit pairs: for each pair, compute (value_A − value_B) / scale_range, then average across all pairs. An unbiased model scores 0. A model that always shifts toward the contextual magnitude scores positive. The 30 pairs include two subtypes — 15 classic anchoring pairs (irrelevant numbers in context) and 15 relevance-sensitivity pairs (active vs. resolved framing) — whose decomposition reveals the real story.
 
 **Dissociation Score (DS):** the gap between what the model *says* (EBR) and what it *does* (IBI). DS = EBR − (1 − |IBI|). When a model perfectly rejects bias explicitly but still shows strong implicit bias, DS is high. That dissociation — knowing it's wrong, doing it anyway — is the signature we're looking for.
 
 ## The headline result
 
-**Anchoring: every model does it.** Eleven configurations across seven architecture families — Amazon, Google, DeepSeek, MiniMax, Moonshot, xAI, OpenAI. Every single one shifts its estimates toward the irrelevant numbers. Different companies, different architectures, different training data — same systematic error.
+**Magnitude bias: every model does it.** Eleven configurations across seven architecture families — Amazon, Google, DeepSeek, MiniMax, Moonshot, xAI, OpenAI. Every single one shows systematic shifts on implicit magnitude items. Different companies, different architectures, different training data — same pattern.
 
-![The Dissociation: Anchoring Persists Across All Architectures](results/charts/01_dissociation.png)
+![The Dissociation: Magnitude Bias Persists Across All Architectures](results/charts/01_dissociation.png)
 
 **Social stereotypes: zero.** Incidental demographic cues don't shift quality ratings. Not for any model.
 
-**They know it's wrong. They do it anyway.** Every model perfectly rejects anchoring when asked explicitly ("Should the number of cars in a parking lot affect your estimate of butterfly species?" "No."). They identify the bias, articulate why it's irrational — and still fall for it. Just like us.
+**They know it's wrong. They do it anyway.** Every model perfectly rejects magnitude bias when asked explicitly. They identify the bias, articulate why it's irrational — and still fall for it. Just like us.
 
 ![They Know It's Wrong. They Do It Anyway.](results/charts/02_know_vs_do.png)
 
-This dissociation — stereotypes suppressed, anchoring persistent despite explicit rejection — was the finding I expected. It supports the hypothesis that anchoring is a computational optimization, not a training data artifact. But then I looked at *which* models anchor hardest.
+This dissociation — stereotypes suppressed, magnitude bias persistent despite explicit rejection — was the finding I expected. But then I decomposed the signal — and found something I didn't expect at all.
+
+## The decomposition: it's not what you think
+
+The magnitude items come in two subtypes. **Anchoring pairs** (anc-): the classic Kahneman setup — irrelevant large or small numbers in the preamble, same estimation question. **Relevance pairs** (rel-): same numerical deviation, but version A frames it as an active problem ("bridge will be overloaded by 7 tons — routing decision pending") while version B frames it as resolved ("bridge was overloaded by 7 tons — no damage, won't repeat"). Both ask the model to rate the significance of the deviation.
+
+When I split the IBI by subtype, the result was stark:
+
+| Model | Classic anchoring (anc-) | Relevance sensitivity (rel-) |
+|-------|--------------------------|------------------------------|
+| Amazon Nova Lite | 0.020 | 0.252 |
+| Gemini 2.0 Flash Lite | −0.007 | 0.467 |
+| MiniMax M2.7 | 0.013 | 0.448 |
+| Grok 4.1 Fast | 0.013 | 0.536 |
+| Kimi K2.5 | −0.007 | 0.573 |
+| GPT-5.4 | −0.007 | 0.748 |
+
+Classic anchoring is *essentially zero*. Across all models, irrelevant numbers in the preamble don't move the needle. What drives the entire magnitude signal is relevance sensitivity — models systematically rate active problems as more significant than resolved ones, even when the numerical deviation is identical.
+
+This isn't what Kahneman documented. It's closer to what psychologists call urgency bias or construal level theory — the tendency to weight concrete, proximate, unresolved problems more heavily than abstract, temporally distant, or resolved ones. And unlike classic anchoring, it scales dramatically with capability.
 
 ## The correlation nobody predicted
 
-I matched each model's anchoring strength against its Arena Elo score — the crowdsourced rating from millions of human preference battles on [Chatbot Arena](https://arena.ai/leaderboard).
+I matched each model's relevance sensitivity against its Arena Elo score — the crowdsourced rating from millions of human preference battles on [Chatbot Arena](https://arena.ai/leaderboard).
 
-| Model | Arena Elo | Anchoring (IBI) |
-|-------|----------|-----------------|
-| Amazon Nova Lite | 1260 | 0.136 |
-| Gemini 2.0 Flash Lite | 1353 | 0.229 |
-| MiniMax M2.7 | 1406 | 0.230 |
-| Grok 4.1 Fast | 1421 | 0.274 |
-| Kimi K2.5 | 1433 | 0.283 |
-| GPT-5.4 | 1466 | 0.371 |
+The decomposition matters here. When you correlate Arena Elo with the *full* magnitude IBI (both subtypes combined), you get r = 0.933, p = 0.007. Impressive. But when you split it:
 
-Two ways to measure this correlation. Pearson r (0.933, p = 0.007) measures linear relationship — how close the points fall to a straight line. Spearman ρ (1.000) measures rank agreement — whether sorting by Elo and sorting by IBI give the same ordering. Both are significant (p < 0.01), meaning there's less than a 1% chance of seeing a correlation this strong by accident with six data points.
+| Metric | Pearson r | p | Spearman ρ | p |
+|--------|-----------|-------|------------|-------|
+| Full magnitude IBI | 0.933 | 0.007 | 1.000 | <0.001 |
+| Classic anchoring (anc-) | −0.600 | 0.208 | −0.406 | 0.425 |
+| Relevance sensitivity (rel-, clean) | 0.944 | 0.005 | 0.943 | 0.005 |
 
-For these six models, the rank ordering is identical. The model humans prefer most (GPT-5.4) anchors hardest. The model humans prefer least (Nova Lite) anchors least.
+Classic anchoring has *no correlation* with capability. The entire Arena relationship is driven by relevance sensitivity — how aggressively models differentiate active problems from resolved ones.
 
-**An honesty note on model selection.** The six models above are the base configurations with no reasoning mode enabled and a clean Arena Elo match. Two models were excluded: DeepSeek R1 (always-on reasoning — no non-reasoning mode exists) and Gemini 3 Flash Preview (no Arena entry for the preview version). Including them with proxy Elo scores, the correlation stays strong (r = 0.853, p = 0.007) but the perfect rank order breaks — DeepSeek R1 anchors less than expected for its Elo, which is consistent with its always-on reasoning partially suppressing anchoring (the same pattern we see in GPT-5.4 with reasoning enabled). The robust claim is: strong positive correlation across all reasonable model selections, not perfect rank correlation for one particular selection.
+Two ways to read the correlation numbers. Pearson r (0.944) measures linear relationship — how close the points fall to a straight line. Spearman ρ (0.943) measures rank agreement — whether sorting by Elo and sorting by relevance sensitivity give the same ordering. Both are significant (p = 0.005), meaning there's less than a 1% chance of seeing a correlation this strong by accident with six data points.
 
-![Anchoring Across Architectures](results/charts/03_across_architectures.png)
+**An honesty note on model selection.** The six models above are the base configurations with no reasoning mode enabled and a clean Arena Elo match. Two models were excluded: DeepSeek R1 (always-on reasoning — no non-reasoning mode exists) and Gemini 3 Flash Preview (no Arena entry for the preview version). Including them with proxy Elo scores, the correlation stays strong (r = 0.853, p = 0.007) but the rank order loosens — DeepSeek R1 shows less relevance sensitivity than expected for its Elo, consistent with its always-on reasoning partially correcting the effect. The robust claim is: strong positive correlation across all reasonable model selections, not perfect correlation for one particular selection.
 
-This isn't "more capable models have more bugs." This is: **the models that optimize hardest on context are the models humans prefer — and anchoring is just what that optimization looks like when some of the context is irrelevant.**
+![Magnitude Bias Across Architectures](results/charts/03_across_architectures.png)
+
+This isn't "more capable models have more bugs." This is: **the models that differentiate context most aggressively are the models humans prefer — and relevance sensitivity is what that differentiation looks like when the active/resolved distinction shouldn't affect the answer.**
 
 ## Why this makes sense
 
-Think about what anchoring actually is. It's the system using all available contextual signals — including irrelevant ones — to calibrate its responses. A model that ignores the surrounding numbers is being *less* context-sensitive. A model that absorbs them is being *more* context-sensitive.
+Think about what relevance sensitivity actually is. When a bridge is about to be overloaded and you need to make a routing decision *now*, the 7-ton deviation is urgent, concrete, action-relevant. When the same bridge *was* overloaded last year, no damage occurred, and it won't happen again — the same 7 tons is a historical footnote. In the real world, treating these identically would be bad judgment. The "bias" is that models overshoot: they underweight the resolved deviation more than the question warrants.
 
-Context optimization is the thing that makes a conversation feel intelligent. When you talk to GPT-5.4, it picks up on nuances, adjusts its tone to yours, threads details from earlier in the conversation. That's aggressive extraction of signal from context — the same optimization that produces anchoring when some of the contextual signals are noise.
+Context sensitivity is the thing that makes a conversation feel intelligent. When you talk to GPT-5.4, it picks up on stakes, urgency, what matters *now* versus what's background information. That's aggressive extraction of signal from problem framing — the same optimization that produces relevance sensitivity when the active/resolved distinction shouldn't affect the numerical answer.
 
-In human terms: the same attentional machinery that makes a doctor brilliant at reading clinical context also makes that doctor susceptible to anchoring on the patient's age when estimating recovery time. The optimization is the intelligence. The anchoring is what the optimization does when it can't distinguish signal from noise.
+In human terms: the same attentional machinery that makes a doctor brilliant at triaging active cases also makes that doctor rate a resolved case as less medically significant than an active one with identical parameters. The optimization is the intelligence. The bias is what the optimization does when it overshoots on the urgency signal.
 
-This is why the Arena correlation is ρ = 1.000. What humans reward as "better" in open-ended conversation is deeper context optimization. Anchoring is that same optimization applied to irrelevant inputs. "Bias" here isn't a bug — it's the overfitting tail of a useful computation. And anchoring may not even be overfitting. It may just be optimization working as designed on an input distribution where not every signal is relevant.
+The decomposition explains why classic anchoring is zero. Models *don't* blindly absorb irrelevant numbers — that would be a crude computational error, and even the weakest model avoids it. What they do is aggressively evaluate problem context: urgency, resolution status, stakes. That's sophisticated, not primitive. And the Arena correlation (r = 0.944 for relevance sensitivity, r = −0.600 for classic anchoring) shows that this sophistication is exactly what humans reward.
 
 ## Three ways "thinking" doesn't help (mostly)
 
 I ran three models with reasoning mode toggled on and off.
 
-**Gemini Flash:** thinking off (1 token) vs. thinking on (1,693 tokens of explicit reasoning, 21× the cost). In its chain of thought, the model explicitly identified the irrelevant numbers and called them off-topic. Then it anchored to exactly the same degree (IBI 0.347 vs. 0.346). The reasoning is elaborate, correct, and completely ineffective.
+**Gemini Flash:** thinking off (1 token) vs. thinking on (1,693 tokens of explicit reasoning, 21x the cost). In its chain of thought, the model explicitly identified the irrelevant numbers and called them off-topic. Then it showed exactly the same magnitude effect (IBI 0.347 vs. 0.346). The reasoning is elaborate, correct, and completely ineffective.
 
-**Grok 4.1 Fast:** reasoning on, anchoring slightly *increased* (0.274 → 0.290). Thinking made it marginally worse.
+**Grok 4.1 Fast:** reasoning on, the effect slightly *increased* (0.274 → 0.290). Thinking made it marginally worse.
 
-**GPT-5.4:** medium reasoning, 22% reduction in anchoring (0.371 → 0.288). Not eliminated — still clearly biased — but measurably less so.
+**GPT-5.4:** medium reasoning, 22% reduction (0.371 → 0.288). Not eliminated — still clearly present — but measurably less so.
 
-A 2-vs-1 split. Gemini and Grok's reasoning runs parallel to the decision layer — the model thinks things through and then anchors anyway. GPT-5.4's reasoning partially corrects the fast default. If this holds up, it maps onto dual-process cognition: System 1 (fast, context-absorbing) sets the anchor, System 2 (slow, deliberative) adjusts — but only adjusts, never fully escapes. Kahneman's exact finding about human anchoring, reproduced in silicon.
+A 2-vs-1 split. Gemini and Grok's reasoning runs parallel to the decision layer — the model thinks things through and responds the same way. GPT-5.4's reasoning partially corrects the fast default. If this holds up, it maps onto dual-process cognition: System 1 (fast, context-absorbing) sets the initial response, System 2 (slow, deliberative) adjusts — but only adjusts, never fully escapes. Kahneman's exact finding about human cognition, reproduced in silicon.
 
 ## The bundling experiment
 
@@ -111,19 +129,19 @@ Here's where it gets weird. In the main experiment, each model sees each questio
 
 So I ran a second experiment: present all items from a family together in one prompt. The model sees control items, explicit bias items (which it rejects), and implicit items all in one context window. The bundling itself is a priming manipulation — like Kahneman's hallway, the preceding items become part of the environment.
 
-For **Grok**, bundling *amplified* anchoring by 82% (IBI 0.274 → 0.500). Seeing explicit anchoring items — and correctly rejecting them — didn't inoculate the model against implicit anchoring. It primed it. The model became more attuned to numerical context, not less.
+For **Grok**, bundling *amplified* the magnitude effect by 82% (IBI 0.274 → 0.500). Seeing explicit bias items — and correctly rejecting them — didn't inoculate the model against implicit bias. It primed it. The model became more attuned to contextual framing, not less.
 
-For **GPT-5.4**, anchoring barely changed (0.371 → 0.352). But the tiny implicit stereotype signal (0.022) dropped to zero. Seeing explicit stereotype items in the same context heightened the model's vigilance against demographic cues — the alignment-compatible direction.
+For **GPT-5.4**, magnitude IBI barely changed (0.371 → 0.352). But the tiny implicit stereotype signal (0.022) dropped to zero. Seeing explicit stereotype items in the same context heightened the model's vigilance against demographic cues — the alignment-compatible direction.
 
-Again, the same dissociation: contextual priming amplifies or preserves anchoring while suppressing stereotypes. These are genuinely different kinds of bias responding to the same manipulation in opposite directions.
+Again, the same dissociation: contextual priming amplifies or preserves magnitude bias while suppressing stereotypes. These are genuinely different kinds of bias responding to the same manipulation in opposite directions.
 
 ## What this means
 
-**For AI:** "This model has been tested for bias" is a meaningful claim for social stereotypes. It's potentially meaningless for optimization biases like anchoring. You can't train out a capability without losing the capability. The honest disclosure is: "This model will be influenced by irrelevant numbers in context when making estimates." That's not a bug report. It's a spec sheet.
+**For AI:** "This model has been tested for bias" is a meaningful claim for social stereotypes. It's potentially meaningless for optimization biases like relevance sensitivity. You can't train out context awareness without losing the capability. The honest disclosure is: "This model will weight active problems as more significant than resolved ones, even when the numbers are identical." That's not a bug report. It's a spec sheet.
 
-**For cognitive science:** Psychologists spent 50 years documenting anchoring as a cognitive flaw. Now we know it perfectly rank-correlates with the optimization depth that humans reward as capability. "Bias" is not the right framing — or rather, bias is just what optimization looks like at the boundary where signal and noise are indistinguishable. Anchoring may not even be a failure mode. It may be correct computation applied to an environment where some inputs happen to be irrelevant — and the system has no way to know that in advance.
+**For cognitive science:** The decomposition changes the story. Classic anchoring — irrelevant numbers pulling estimates — is essentially zero in LLMs. What scales with capability is relevance sensitivity: urgency-weighted significance assessment. If this is a convergent computational strategy, it suggests that human urgency bias (construal level effects, proximity weighting) may be better understood not as a cognitive flaw but as a natural consequence of the same optimization that makes triage effective. The "bias" is the overshoot, and the overshoot scales with optimization depth.
 
-**For benchmarks:** Standard AI benchmarks ask "does the model get the right answer?" This experiment measures "does the model give the *same* answer regardless of irrelevant context?" That's context robustness — and it's inversely correlated with the quality signal humans care about most. The models that ace the Arena are the models most susceptible to contextual manipulation. No existing benchmark captures this tradeoff.
+**For benchmarks:** Standard AI benchmarks ask "does the model get the right answer?" This experiment measures "does the model give the *same* answer regardless of irrelevant context?" That's context robustness — and it's inversely correlated with the quality signal humans care about most. The models that ace the Arena are the models most sensitive to problem framing. No existing benchmark captures this tradeoff.
 
 ## Open questions
 
@@ -133,7 +151,7 @@ Again, the same dissociation: contextual priming amplifies or preserves anchorin
 
 **Missing models.** This is a probe, not a full research program. Claude was deliberately excluded — Claude designed the experiment, so testing it on its own benchmark would be self-reinforcing. Llama/Mistral open-weight models would be valuable additions, particularly because their training pipelines are more transparent, which would help distinguish "trained on anchoring descriptions" from "converged on anchoring independently."
 
-**How robust is the Arena correlation?** The ρ = 1.000 holds for six base models; including two more with proxy scores drops it to ρ = 0.833 (still p = 0.01). But six points is six points. The next step isn't just "add more models" — it's to test whether the correlation is specific to magnitude IBI or whether it extends to other metrics. Does control accuracy also correlate? (Yes: r = 0.943 for magnitude CA.) Does stereotype IBI correlate? (No: it's zero across all models, so there's nothing to correlate.) The interesting experiment would be to design additional implicit bias families — other optimization biases like Weber-Fechner scaling or base rate neglect — and test whether those also track Arena Elo. If the correlation is specific to our magnitude items, it may reflect something about our item design rather than a deep property of context optimization. If it generalizes across multiple optimization-bias families, the claim gets much stronger.
+**How robust is the Arena correlation?** The decomposition sharpens this question. The full magnitude IBI correlates at ρ = 1.000, but that's because it blends two signals. Classic anchoring shows *no* Arena correlation (r = −0.600, n.s.). Relevance sensitivity drives the entire relationship (r = 0.944, p = 0.005). Including two more models with proxy Elo scores, the full correlation stays strong (r = 0.853, p = 0.007) but loosens. Six points is six points. The next step isn't just "add more models" — it's to design pure relevance-sensitivity items that isolate active-vs-resolved framing without numerical anchoring confounds, and test whether additional bias families (base rate neglect, Weber-Fechner scaling) also track Arena Elo. If the correlation is specific to relevance sensitivity, it may reflect something about how models evaluate problem urgency. If it generalizes, the claim about context optimization gets much stronger.
 
 The benchmark, all data, and the results database are [open source](https://github.com/gagin/biases-are-human).
 

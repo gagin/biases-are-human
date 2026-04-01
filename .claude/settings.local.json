@@ -21,7 +21,10 @@
       "WebFetch(domain:openrouter.ai)",
       "Bash(kill 44838 44847)",
       "Bash(/tmp/paper_data.py:*)",
-      "Bash(/tmp/paper_stats.py:*)"
+      "Bash(/tmp/paper_stats.py:*)",
+      "Bash(find /Users/a/code/Research/biases -name *.jsonl -type f)",
+      "Bash(python3 -m json.tool)",
+      "Bash(git show:*)"
     ]
   }
 }

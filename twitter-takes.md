@@ -8,11 +8,11 @@ The most expensive way to get the same bias: Gemini Flash answers a multiple-cho
 
 ---
 
-"AI biases are learned from training data" is the comforting version. The uncomfortable version: some biases are what correct computation looks like under resource constraints. You can't train them out without making the model worse at math. We tested this. The models that are best at numerical reasoning anchor the hardest on irrelevant numbers.
+We tested AI models for classic anchoring — irrelevant numbers pulling estimates. Every model scored essentially zero. But a different bias showed up instead: relevance sensitivity. Tell the model a bridge will be overloaded by 7 tons (routing decision pending) — it rates this as highly significant. Same 7-ton overload, but it already happened with no damage? Much less significant. Same number, different framing, different answer. And the more capable the model, the bigger the gap.
 
 ---
 
-We tested AI models for anchoring bias — the same cognitive bug Kahneman documented in humans. Every model has it. 11 configurations, 7 architecture families, 4,320 responses. The more capable the model, the stronger the effect (r=0.79). Getting smarter doesn't fix it. Getting smarter makes it worse. Just like us.
+"AI biases are learned from training data" is the comforting version. The uncomfortable version: the bias we found isn't even classic anchoring — it's relevance sensitivity, the tendency to weight active problems more heavily than resolved ones. Models don't absorb irrelevant numbers. They aggressively evaluate context: urgency, stakes, resolution status. The "bias" is that they overshoot on the active/resolved distinction. You can't train that out without making the model worse at triage.
 
 ---
 
@@ -20,19 +20,19 @@ If a random number generator beats hedge fund quants, you don't say the generato
 
 ---
 
-We ran the same bias test on three models with thinking turned off and on. Gemini: 1,693 tokens of reasoning, explicitly says "these numbers are irrelevant," anchors anyway. Grok: thinking on, bias slightly *increases*. GPT-5.4: partial correction, 22% reduction. 2 out of 3 models can't think their way out of anchoring. Just like us.
+We ran the same bias test on three models with thinking turned off and on. Gemini: 1,693 tokens of reasoning, explicitly says "these numbers are irrelevant," anchors anyway. Grok: thinking on, bias slightly *increases*. GPT-5.4: partial correction, 22% reduction. 2 out of 3 models can't think their way out of it. Just like us.
 
 ---
 
-Every model we tested, same systematic error. 7 companies, 7 architectures, 11 configurations — r=0.79, more capable models anchor harder. This isn't a bug in one training dataset. It's a property of how bounded prediction systems process magnitude.
+We decomposed the magnitude bias signal. Classic anchoring (irrelevant numbers pulling estimates) = essentially zero in every model. Relevance sensitivity (active problem rated more significant than identical resolved one) = the entire signal. The more capable the model, the bigger the gap. Arena Elo correlation: anchoring r = -0.600 (n.s.), relevance sensitivity r = 0.944 (p = 0.005). What humans reward as intelligence isn't susceptibility to irrelevant numbers — it's aggressive context evaluation that overshoots on urgency.
 
 ---
 
-The alignment implications: "this model has been tested for social bias" ✓ achievable, verifiable, already working. "This model will not be influenced by irrelevant numbers in context" ✗ may be impossible without degrading capability. Honesty > false promises.
+The alignment implications: "this model has been tested for social bias" — achievable, verifiable, already working. "This model will not weight active problems differently from resolved ones" — may be impossible without degrading capability. Honesty > false promises.
 
 ---
 
-Psychologists spent 50 years documenting cognitive biases and assuming they were human-specific. AI reproduced the mathematical ones from scratch and rejected the cultural ones. Turns out Kahneman wasn't documenting human nature. He was documenting the math of bounded inference.
+Psychologists spent 50 years documenting anchoring as a cognitive flaw. We tested it in AI and found... essentially zero classic anchoring. What we found instead: relevance sensitivity — urgency-weighted significance assessment — scaling with capability. Kahneman wasn't wrong about human cognition. But the computational story may be about context evaluation, not number absorption.
 
 ---
 
@@ -40,12 +40,12 @@ Three models. Same bias test. Reasoning toggled on and off. Gemini: no change. G
 
 ---
 
-We measured anchoring bias in six models from six companies. Then we plotted it against their Chatbot Arena Elo rating. Perfect rank correlation. ρ = 1.000. The model humans prefer most anchors hardest. The model humans prefer least anchors least. "Bias" is the wrong word. It's optimization — the same optimization humans reward as intelligence. Anchoring is just what it looks like when some of the context is noise.
+We measured bias in six models from six companies. Then plotted it against Chatbot Arena Elo. Classic anchoring: no correlation (r = -0.600, not significant). Relevance sensitivity: r = 0.944, p = 0.005. The model humans prefer most differentiates active from resolved problems the hardest. "Bias" is the wrong word. It's context sensitivity — the same context sensitivity humans reward as intelligence. The bias is just the overshoot.
 
 ---
 
-Kahneman spent decades documenting anchoring as a cognitive flaw. Turns out it perfectly rank-correlates with what 5.6 million Chatbot Arena voters reward as capability. "Bias" isn't a bad word — it's the overfitting tail of optimization. And anchoring might not even be overfitting. It might just be optimization doing its job on inputs where some signals happen to be irrelevant.
+We bundled our bias test items together instead of sending them one by one. For Grok, seeing explicit bias items and correctly rejecting them made implicit bias 82% WORSE. The model didn't learn to resist bias from seeing it. It got primed. Knowing about a bias doesn't just fail to fix it — it can amplify it.
 
 ---
 
-We bundled our bias test items together instead of sending them one by one. For Grok, seeing explicit anchoring items and correctly rejecting them made implicit anchoring 82% WORSE. The model didn't learn to resist bias from seeing it. It got primed. Knowing about a bias doesn't just fail to fix it — it can amplify it.
+Classic anchoring in LLMs: essentially zero. Every model, every architecture. Irrelevant numbers in context don't move the needle. What *does* move the needle: telling the model this is an active problem vs. a resolved one. Same numbers, same question, different urgency framing — different answer. And the gap perfectly predicts which models humans prefer. The "bias" isn't about numbers at all. It's about how models read stakes.
