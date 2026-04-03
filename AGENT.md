@@ -11,8 +11,8 @@
 
 Example Signature:
 ```text
-Model: Gemini 2.0 Pro
-Harness: bdb-harness-v0.1
+Model: gemini-3-flash-preview
+Harness: Gemini CLI 0.35.3
 Tokens: approx. 50,000
 Reference: Instruction 3 in USERINPUT.md
 ```

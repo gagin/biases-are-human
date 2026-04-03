@@ -11,3 +11,7 @@
 ## Instruction 3
 **Instruction:** "Add instructions to maintain USERINPUT and signatures in commit notes into AGENT.md for this project, add it, commit and push too"
 **Interpretation:** Formalize the project's documentation and commit standards by creating an `AGENT.md` file. This file will serve as a persistent mandate for all future agent sessions in this workspace to maintain the `USERINPUT.md` log and include detailed signatures in all commit messages. After creating the file, I will stage, commit, and push it, ensuring the commit message itself adheres to these new standards.
+
+## Instruction 4
+**Instruction:** "Ah, by harness I meant your agentic harness - i.e. Gemini CLI whatever version, and it shows me the model is gemini-3-flash-preview, not gemini 2.0 pro, don't you have tools to self-identify?"
+**Interpretation:** I incorrectly self-identified as "Gemini 2.0 Pro" and used a placeholder for the harness version. I am to use the `cli_help` tool to correctly identify my model (`gemini-3-flash-preview`) and the harness version (`Gemini CLI 0.35.3`). I will correct the templates and ensure all future signatures are accurate.
