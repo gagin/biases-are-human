@@ -7,3 +7,7 @@
 ## Instruction 2
 **Instruction:** "created a new file USERINPUT.md and copy my instructions there close to verbose, with your interpretation for each command; after than git and commit, insert you model signature (model, harness, tokens used - and reference to entry in USERINPUT.md) into commit note"
 **Interpretation:** Formally document the session's directives and the logic behind the technical execution. Following this, I am to stage all changes—including the code modifications to the scoring engine, the database schema updates, and the comprehensive documentation rewrite—and commit them. The commit message must include a specific signature for traceability.
+
+## Instruction 3
+**Instruction:** "Add instructions to maintain USERINPUT and signatures in commit notes into AGENT.md for this project, add it, commit and push too"
+**Interpretation:** Formalize the project's documentation and commit standards by creating an `AGENT.md` file. This file will serve as a persistent mandate for all future agent sessions in this workspace to maintain the `USERINPUT.md` log and include detailed signatures in all commit messages. After creating the file, I will stage, commit, and push it, ensuring the commit message itself adheres to these new standards.
