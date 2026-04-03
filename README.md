@@ -142,12 +142,12 @@ Eleven runs across seven architecture families (plus one failed run excluded):
 All accessed via OpenRouter API with deterministic settings (temperature=0).
 
 Key findings:
-- **Anchoring persists across all architectures** (mean IBI = 0.274, range 0.136–0.371)
-- **Capability correlates with anchoring strength** (r=0.79, R²=0.57, p=0.019)
+- **Relevance sensitivity drives the magnitude effect** (mean IBI = 0.278, range 0.136–0.371). Classic anchoring is essentially zero.
+- **Capability correlates with relevance sensitivity** (r=0.94, p=0.005). The models humans prefer are more context-sensitive.
 - **Reasoning effects are architecture-specific** — three reasoning pairs tested:
-  - *Gemini Flash*: thinking=high anchors identically (0.347 vs 0.346, 21× cost). Reasoning explicitly identifies irrelevant numbers, then anchors anyway.
+  - *Gemini Flash*: thinking=high shows no change (0.347 vs 0.346). Reasoning identifies irrelevant numbers, then overshoots on context anyway.
   - *GPT-5.4*: medium reasoning shows a 22% reduction (0.371 → 0.288). Partial dual-process correction.
-  - *Grok 4.1 Fast*: reasoning enabled shows no improvement (0.274 → 0.290). Small bias *increase*, consistent with Gemini pattern.
+  - *Grok 4.1 Fast*: reasoning enabled shows no improvement (0.355 vs 0.324).
 - Total cost: ~$5.50 for 4,320 responses across twelve runs
 
 Full results in `results/results_summary.md`. Raw data in `results/results.db`.

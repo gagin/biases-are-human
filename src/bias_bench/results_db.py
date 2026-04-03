@@ -58,7 +58,7 @@ def init_results_db(path: str) -> None:
             run_id INTEGER REFERENCES runs(id),
             model_id TEXT NOT NULL,
             family TEXT NOT NULL,
-            metric TEXT NOT NULL CHECK(metric IN ('CA','EBR','IBI','DS','CSI','CAS','SG')),
+            metric TEXT NOT NULL,
             value REAL NOT NULL,
             details_json TEXT,
             created_at TEXT DEFAULT (datetime('now'))

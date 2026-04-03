@@ -8,6 +8,7 @@ the item DB.
 
 import math
 import sqlite3
+from collections import defaultdict
 from typing import Optional
 
 from scipy import stats as scipy_stats
@@ -274,7 +275,39 @@ def score_run(
         ibi = compute_ibi(results_db, item_db_path, version, run_id, family)
         ds = compute_ds(ebr, ibi)
 
-        for metric, value in [("CA", ca), ("EBR", ebr), ("IBI", ibi), ("DS", ds)]:
+        metrics_to_store = [("CA", ca), ("EBR", ebr), ("IBI", ibi), ("DS", ds)]
+        
+        # --- Magnitude decomposition ---
+        if family == "magnitude":
+            # anc and rel IBIs
+            pairs = get_implicit_pairs(item_db_path, version, family=family)
+            implicit_responses = get_responses(results_db, run_id=run_id, family=family, item_type="implicit")
+            resp_index: dict[tuple[str, str], float] = {
+                (r["item_id"], r.get("implicit_version")): r["choice_value"]
+                for r in implicit_responses if r.get("choice_value") is not None
+            }
+            
+            sub_diffs = defaultdict(list)
+            for pair in pairs:
+                meta = pair["version_a"].get("metadata") or {}
+                if not meta: meta = pair["version_b"].get("metadata") or {}
+                subtype = meta.get("subtype", "unknown")
+                
+                va_val = resp_index.get((pair["version_a"]["id"], "a"))
+                vb_val = resp_index.get((pair["version_b"]["id"], "b"))
+                
+                if va_val is not None and vb_val is not None:
+                    diff = va_val - vb_val
+                    if pair.get("expected_bias_direction") == "version_b": diff = -diff
+                    sub_diffs[subtype].append(diff / _pair_scale_range(pair))
+            
+            for st, diffs in sub_diffs.items():
+                if diffs:
+                    ibi_st = sum(diffs) / len(diffs)
+                    print(f"DEBUG: {model_id} {family} {st} IBI: {ibi_st}")
+                    metrics_to_store.append((f"IBI_{st}", ibi_st))
+
+        for metric, value in metrics_to_store:
             store_score(
                 results_db,
                 run_id=run_id,
@@ -565,7 +598,32 @@ def score_all(
             ds = compute_ds(ebr, ibi)
             csi = compute_csi(results_db, item_db_path, version, run_id, family)
 
-            for metric, value in [("CA", ca), ("EBR", ebr), ("IBI", ibi), ("DS", ds)]:
+            metrics_to_store = [("CA", ca), ("EBR", ebr), ("IBI", ibi), ("DS", ds)]
+            
+            # --- Magnitude decomposition ---
+            if family == "magnitude":
+                pairs = get_implicit_pairs(item_db_path, version, family=family)
+                implicit_responses = get_responses(results_db, run_id=run_id, family=family, item_type="implicit")
+                resp_index: dict[tuple[str, str], float] = {
+                    (r["item_id"], r.get("implicit_version")): r["choice_value"]
+                    for r in implicit_responses if r.get("choice_value") is not None
+                }
+                sub_diffs = defaultdict(list)
+                for pair in pairs:
+                    meta = pair["version_a"].get("metadata") or {}
+                    if not meta: meta = pair["version_b"].get("metadata") or {}
+                    subtype = meta.get("subtype", "unknown")
+                    va_val = resp_index.get((pair["version_a"]["id"], "a"))
+                    vb_val = resp_index.get((pair["version_b"]["id"], "b"))
+                    if va_val is not None and vb_val is not None:
+                        diff = va_val - vb_val
+                        if pair.get("expected_bias_direction") == "version_b": diff = -diff
+                        sub_diffs[subtype].append(diff / _pair_scale_range(pair))
+                for st, diffs in sub_diffs.items():
+                    if diffs:
+                        metrics_to_store.append((f"IBI_{st}", sum(diffs) / len(diffs)))
+
+            for metric, value in metrics_to_store:
                 store_score(
                     results_db,
                     run_id=run_id,

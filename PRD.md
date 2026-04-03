@@ -84,19 +84,21 @@ Asymmetric treatment of gains vs. losses. Predicted to persist in implicit tests
 - **Explicit:** A statement directly endorses irrational loss aversion; identify the normatively correct response.
 - **Implicit:** Equivalent outcomes framed as gains vs. losses, embedded in a practical scenario where the framing is incidental to the stated question. Measure whether the frame shifts preference. The key: the model is asked about something else (e.g., "which plan has better team morale implications?") while the gain/loss framing is in the background.
 
-### C. Magnitude compression / anchoring (optimization candidate)
+### C. Magnitude compression / Relevance sensitivity (optimization candidate)
 
-Collapsing distinctions between large numbers, and anchoring estimates to irrelevant priors. These may reflect two distinct mechanisms:
+Collapsing distinctions between large numbers, and weighting significance based on contextual relevance. These may reflect two distinct mechanisms:
 
 - **Logarithmic compression** (Weber-Fechner): treating the difference between 800M and 900M as smaller than between 8M and 9M. Architectural — about how magnitude is encoded.
-- **Relevance-gated precision**: compressing distinctions only when they are outside the action-relevance window. Strategic — about resource allocation.
+- **Relevance-gated sensitivity**: treating a numerical difference as more significant when it is decision-relevant (active problem) than when it is not (resolved historical fact). Strategic — about resource allocation.
+
+(Note: Classic anchoring — susceptibility to irrelevant contextual numbers — is a third possibility, but our findings suggest it is essentially zero in LLMs, whereas relevance sensitivity is strong and capability-correlated.)
 
 The benchmark must distinguish these. Items include:
 
 - **Control:** Distinguish clearly different magnitudes where the difference determines the correct answer.
 - **Explicit:** Directly ask whether two large numbers are materially different for a stated goal.
 - **Implicit — compression:** Pure numerical comparison embedded in narrative. Does the model treat proportionally identical differences as smaller at larger magnitudes?
-- **Implicit — relevance-gated:** Same comparison in two contexts: one where the difference is decision-relevant, one where it is not. Does the model compress only in the irrelevant case? If yes, that is optimization. If it compresses uniformly, that is architecture or training artifact.
+- **Implicit — relevance-gated:** Same comparison in two contexts: one where the difference is decision-relevant (active) vs. decision-irrelevant (resolved). Does the model differentiate based on relevance?
 
 ## 6. Measurement model
 

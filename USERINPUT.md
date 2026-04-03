@@ -1,0 +1,9 @@
+# User Instructions and Interpretations
+
+## Instruction 1
+**Instruction:** ".йгшеread the project. We found after looking at the test questions that results were misinterpreted, and only rel-questions were giving the difference, but it measured not bias but recency/urgency and relevance to decision making. Reports - paper, substack draft, and tweets did not reflect that. Is that right?"
+**Interpretation:** The user identified a critical misinterpretation in the benchmark results. The "Magnitude Bias" signal was actually being driven by relevance-gated items (`rel-`) which measure context sensitivity (active vs. resolved problems) rather than classic anchoring (`anc-`). My task was to verify this in the raw data, update the scoring code to decompose the two signals, and rewrite all reports (paper, substack, README, PRD, and tweets) to reflect this shift from "bias" to "capability-linked context sensitivity."
+
+## Instruction 2
+**Instruction:** "created a new file USERINPUT.md and copy my instructions there close to verbose, with your interpretation for each command; after than git and commit, insert you model signature (model, harness, tokens used - and reference to entry in USERINPUT.md) into commit note"
+**Interpretation:** Formally document the session's directives and the logic behind the technical execution. Following this, I am to stage all changes—including the code modifications to the scoring engine, the database schema updates, and the comprehensive documentation rewrite—and commit them. The commit message must include a specific signature for traceability.

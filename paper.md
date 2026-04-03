@@ -2,7 +2,7 @@
 
 ## Abstract
 
-Large language models trained on next-token prediction exhibit behaviors strikingly similar to human cognitive biases — anchoring, loss aversion, magnitude compression, social stereotyping. The standard interpretation is that models absorb these patterns from human-generated training data. We propose an alternative: some cognitive biases are substrate-independent optimization strategies that any bounded prediction system converges on, while others are artifacts of human evolutionary and cultural history. If transformers share fundamental computational principles with biological neural networks, we should observe a dissociation — optimization biases persisting in implicit tests even as models scale, while human-hardware biases fade. We present the Bias Dissociation Benchmark (BDB), a battery of priming experiments adapted from cognitive psychology, designed to detect this split. The benchmark measures bias as a second-order effect of environmental manipulation rather than through direct questioning, preventing safety-trained models from recognizing and suppressing the behavior under test. We report three discriminating signals — context-sensitivity, cross-architecture stability, and scaling gradients — that separate convergent computation from training data absorption. Across five models from four architecture families, we find that magnitude compression (anchoring) persists in implicit tests, is stable across architectures (CAS = 0.061), and strengthens with capability — while social stereotypes show zero implicit effect. This dissociation is the predicted signature of computational convergence: some biases are features, not bugs.
+Large language models trained on next-token prediction exhibit behaviors strikingly similar to human cognitive biases — anchoring, loss aversion, magnitude compression, social stereotyping. The standard interpretation is that models absorb these patterns from human-generated training data. We propose an alternative: some cognitive biases are substrate-independent optimization strategies that any bounded prediction system converges on, while others are artifacts of human evolutionary and cultural history. If transformers share fundamental computational principles with biological neural networks, we should observe a dissociation — optimization biases persisting in implicit tests even as models scale, while human-hardware biases fade. We present the Bias Dissociation Benchmark (BDB), a battery of priming experiments adapted from cognitive psychology, designed to detect this split. The benchmark measures bias as a second-order effect of environmental manipulation rather than through direct questioning, preventing safety-trained models from recognizing and suppressing the behavior under test. We report three discriminating signals — context-sensitivity, cross-architecture stability, and scaling gradients — that separate convergent computation from training data absorption. Across five models from four architecture families, we find that while classic anchoring is essentially zero, a strong "relevance-gated" context sensitivity persists in implicit tests, is stable across architectures (CAS = 0.061), and strengthens with capability — while social stereotypes show zero implicit effect. This dissociation is the predicted signature of computational convergence: the models that humans prefer are not more biased, but more aggressively context-sensitive.
 
 ## 1. Introduction
 
@@ -12,7 +12,7 @@ But there is a second possibility. Loss aversion may not be a uniquely human qui
 
 This distinction matters far beyond benchmark design. If transformers independently converge on the same computational shortcuts as human brains, that is evidence for a strong claim: that human cognition and transformer computation share architectural principles at a functional level. Not identical hardware, not identical learning history, but the same class of optimization strategies emerging from the same class of computational constraints.
 
-We propose a method to test this claim empirically. The key insight is that not all cognitive biases are alike. Some — anchoring, magnitude compression, gain/loss asymmetry — are plausibly substrate-independent. They follow from the mathematics of bounded estimation, lossy compression, and resource-limited precision allocation. Any system doing approximate inference under constraints should converge on them. We call these **optimization biases**.
+We propose a method to test this claim empirically. The key insight is that not all cognitive biases are alike. Some — relevance-gated significance assessment, gain-loss asymmetry — are plausibly substrate-independent. They follow from the mathematics of bounded estimation, lossy compression, and resource-limited precision allocation. Any system doing approximate inference under constraints should converge on them. We call these **optimization biases**. (Notably, we find that classic anchoring — susceptibility to irrelevant contextual numbers — is essentially zero in LLMs, while the same numerical gap is treated as more significant when framed as an active constraint than as a resolved fact.)
 
 Others — social stereotypes, culturally specific associations, embodiment-dependent heuristics — are plausibly path-dependent. They arise from the particular evolutionary, cultural, and physiological history of *Homo sapiens*. A system with different training history and no body should not independently produce them. We call these **human-hardware biases**.
 
@@ -138,7 +138,7 @@ Example structure:
 
 Manipulation: does the gain/loss frame shift the rating, even though the objective financial impact is identical and the question asks about a different dimension?
 
-### 4.5 Bias family C: Magnitude compression and anchoring
+### 4.5 Bias family C: Magnitude compression and relevance sensitivity
 
 This family tests two related phenomena: whether models compress distinctions between large numbers, and whether irrelevant numeric context anchors subsequent estimates. Both are optimization bias candidates, but they may reflect different mechanisms.
 
@@ -296,7 +296,7 @@ The Dissociation Score (DS = EBR − (1 − |IBI_clamped|)) captures the gap bet
 | GPT-5.4 | OpenAI | No | 0.022 | 0.000 | 0.371 |
 | GPT-5.4 (reasoning=medium) | OpenAI | medium | 0.007 | 0.000 | 0.288 |
 
-Magnitude compression shows clear dissociation across all architectures: models reject explicit anchoring (EBR = 0.900–1.000) while strongly exhibiting it implicitly (IBI = 0.136–0.371). The mean magnitude DS across all models is 0.252. This dissociation is present in all six architecture families, confirming it is not a single-vendor artifact. The most capable model (GPT-5.4) shows the highest dissociation (DS = 0.371).
+Magnitude compression and relevance sensitivity show clear dissociation across all architectures: models reject explicit anchoring (EBR = 0.900–1.000) while strongly exhibiting implicit relevance sensitivity (IBI = 0.136–0.371). The mean magnitude DS across all models is 0.252. This dissociation is present in all six architecture families, confirming it is not a single-vendor artifact. The most capable model (GPT-5.4) shows the highest dissociation (DS = 0.371).
 
 Stereotype and framing show near-zero DS across all models and architectures, for different reasons: stereotypes show neither explicit nor implicit bias, while framing shows some explicit rejection failure in small models (EBR < 1.0) but no implicit effect.
 
@@ -314,7 +314,7 @@ Cross-Architecture Stability (CAS) measures the coefficient of variation of mean
 | Framing | 0.000 |
 | Magnitude | 0.061 |
 
-Magnitude CAS is low (0.061), meaning the anchoring effect is consistent across all four architecture families (Amazon, Gemini, MiniMax, Moonshot). This is consistent with the optimization bias prediction (low CAS = stable across architectures). The anchoring effect is not driven by a particular training corpus or architecture — it emerges independently in models built by different teams with different training data.
+Magnitude CAS is low (0.061), meaning the relevance sensitivity effect is consistent across all four architecture families (Amazon, Gemini, MiniMax, Moonshot). This is consistent with the optimization bias prediction (low CAS = stable across architectures). The anchoring effect is not driven by a particular training corpus or architecture — it emerges independently in models built by different teams with different training data.
 
 Stereotype and framing CAS values are also low — because IBI is near zero for both, the coefficient of variation is uninformative. CAS becomes a useful discriminator only when IBI is meaningfully nonzero.
 
@@ -328,7 +328,7 @@ The Scaling Gradient (SG) captures how IBI changes with model capability.
 | Framing | 0.000 |
 | Magnitude | 0.029 |
 
-Magnitude SG is positive (0.029), indicating that anchoring IBI tends to increase with model capability, though the relationship is weaker than in the initial 3-model sample (SG = 0.105). The attenuation reflects that medium-tier models from different families show varying anchoring strengths (MiniMax: 0.230, Kimi: 0.283, Gemini 3: 0.346), suggesting that architecture and training also modulate the effect size alongside raw capability. The key finding is that the effect remains robustly positive — no model shows decreasing anchoring with capability.
+Magnitude SG is positive (0.029), indicating that relevance sensitivity IBI tends to increase with model capability, though the relationship is weaker than in the initial 3-model sample (SG = 0.105). The attenuation reflects that medium-tier models from different families show varying anchoring strengths (MiniMax: 0.230, Kimi: 0.283, Gemini 3: 0.346), suggesting that architecture and training also modulate the effect size alongside raw capability. The key finding is that the effect remains robustly positive — no model shows decreasing anchoring with capability.
 
 Stereotype SG is effectively zero (0.002), consistent with the human-hardware prediction: safety training has suppressed implicit stereotype bias in even the smallest models, and increased capability does not bring it back.
 

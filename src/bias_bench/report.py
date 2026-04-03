@@ -160,12 +160,17 @@ def _build_family_summary(scores: list[dict], item_db_path: str, version: str, r
     )
     # {family: [ibi_values across all models]}
     ibi_by_family: dict[str, list[float]] = defaultdict(list)
+    # {family: {subtype: [ibi_values]}}
+    ibi_by_subtype: dict[str, dict[str, list[float]]] = defaultdict(lambda: defaultdict(list))
 
     for s in scores:
+        fam = s["family"]
         if s["metric"] == "IBI":
-            fam = s["family"]
             ibi_by_family[fam].append(s["value"])
             ibi_by_family_modelfamily[fam][s["model_family"]].append(s["value"])
+        elif s["metric"].startswith("IBI_"):
+            subtype = s["metric"][4:]
+            ibi_by_subtype[fam][subtype].append(s["value"])
 
     # Read SG details from scores table (computed by scoring.py with CA-based regression)
     sg_details: dict[str, dict] = {}
@@ -210,6 +215,10 @@ def _build_family_summary(scores: list[dict], item_db_path: str, version: str, r
             "r_squared": sg_info.get("r_squared"),
             "p_value": sg_info.get("p_value"),
         }
+        
+        # Add subtype-specific IBIs to summary
+        for st, ibis_st in ibi_by_subtype.get(fam, {}).items():
+            summary[fam][f"ibi_{st}"] = sum(ibis_st) / len(ibis_st) if ibis_st else None
 
     return summary
 
@@ -297,6 +306,15 @@ def _build_markdown(
             f"| {_fmt(info.get('r_squared'))} "
             f"| {pv_str} |"
         )
+        
+        # Subtypes for magnitude
+        if fam == "magnitude":
+            for subtype in ["anchoring", "relevance_gated"]:
+                sub_ibi = info.get(f"ibi_{subtype}")
+                if sub_ibi is not None:
+                    lines.append(
+                        f"| ↳ {subtype} | | {_fmt(sub_ibi)} | | | | | |"
+                    )
 
     lines.append("")
 
@@ -454,6 +472,16 @@ def _print_rich_summary(
             _fmt(info.get("r_squared")),
             pv_str,
         )
+        if fam == "magnitude":
+            for subtype in ["anchoring", "relevance_gated"]:
+                sub_ibi = info.get(f"ibi_{subtype}")
+                if sub_ibi is not None:
+                    t2.add_row(
+                        f"  ↳ {subtype}",
+                        "",
+                        _fmt(sub_ibi),
+                        "", "", "", "", ""
+                    )
 
     console.print(t2)
 

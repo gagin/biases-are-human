@@ -18,11 +18,11 @@ Chronological record of runs, observations, and decisions.
 - Run 9: GPT-5.4 (large)
 
 **Key findings:**
-- Anchoring (magnitude IBI) present in all 9 configs, range 0.136–0.371
+- Relevance sensitivity (magnitude IBI) present in all 9 configs, range 0.136–0.371. Decomposes into zero classic anchoring and strong relevance-gating.
 - Stereotype IBI ≈ 0 across all models
 - Framing IBI = 0 across all models
-- More capable models anchor harder (r=0.79)
-- Gemini thinking mode: no effect on anchoring (0.346 → 0.347 at 21× cost)
+- More capable models show stronger relevance sensitivity (r=0.79)
+- Gemini thinking mode: no effect on relevance sensitivity (0.346 → 0.347 at 21× cost)
 
 **Cost:** ~$4.50 for 3,240 responses.
 
